@@ -76,33 +76,43 @@ alias l='ls $LS_OPTIONS -all'
 # alias cp='cp -i'
 # alias mv='mv -i'
 alias mc='mc -c'
-alias ducks='du -ckhs * |sort -rn |head -11'
-alias psaux='ps awux'
+alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -A -t'
 
 # Aliases in the external file overwrite those above.
 if [ -f ~/.bash_aliases ]; then
-	source ~/.bash_aliases
+  source ~/.bash_aliases
 fi
 
 # Global Bash completion definitions
 if [ -f /etc/bash_completion ]; then
-	source /etc/bash_completion
+  source /etc/bash_completion
 fi
 
 # Load the SSH agent and if it's loaded already, add the default identity
 SSHAGENT=$(which ssh-agent)
 SSHAGENTARGS="-s"
 if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
-	eval `$SSHAGENT $SSHAGENTARGS`
-	[ -n "$SSH_AGENT_PID" ] && trap "kill $SSH_AGENT_PID" 0
+  eval `$SSHAGENT $SSHAGENTARGS`
+  [ -n "$SSH_AGENT_PID" ] && trap "kill $SSH_AGENT_PID" 0
 fi
 
 # Load additional settings
-if [ -d ~/.bashrc.d ]; then
-	for f in `ls -A ~/.bashrc.d`; do
-		source ~/.bashrc.d/$f
-	done
+if [ -d $HOME/.bashrc.d ]; then
+  for f in `ls -A $HOME/.bashrc.d`; do
+    source $HOME/.bashrc.d/$f
+  done
 fi
+
+function ducks
+{
+  if [[ -z "$1" ]]; then
+    du -cks *|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
+  elif [[ -d "$1" ]]; then
+    du -cks "$1/"|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
+  else
+    du -cks *|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
+  fi
+}
