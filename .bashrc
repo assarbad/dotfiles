@@ -108,11 +108,9 @@ fi
 
 function ducks
 {
-  if [[ -z "$1" ]]; then
-    du -cks *|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
-  elif [[ -d "$1" ]]; then
-    du -cks "$1/"|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
+  if [[ -n "$1" && -d "$1" ]]; then
+    du -cks "$1"/*|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
   else
-    du -cks *|sort -rn|head -11|awk '{printf "%-8.2f MiB\t%s\n", $1/1024, $2}'
+    du -cks *|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
   fi
 }
