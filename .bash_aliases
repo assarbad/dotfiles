@@ -3,6 +3,7 @@
 alias debfoster='sudo /usr/bin/debfoster'
 alias deborphan='sudo /usr/bin/deborphan'
 alias search='apt-cache search'
+alias show='apt-cache show'
 alias upgrade='apt-get update && apt-get dist-upgrade'
 if [ $UID -eq 0 ]; then
 	alias beroot='echo You are root already, silly!'
