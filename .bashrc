@@ -73,14 +73,26 @@ if [[ "Linux" == "$(uname -s)" ]]; then
 	alias ll='ls $LS_OPTIONS -l'
 	alias l='ls $LS_OPTIONS -all'
 else
+	[[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
 	alias ll='ls -l'
 	alias l='ls -ahl'
 fi
+# beroot so we feel at home when assuming super-user rights
+if [ $MYUID -eq 0 ]; then
+	alias beroot='echo You are root already, silly!'
+else
+	alias beroot="sudo su -l root -c \"$(which bash) --rcfile $HOME/.bashrc\""
+fi
 
 # Some more alias to avoid making mistakes:
-# alias rm='rm -i'
+if [[ "Linux" == "$(uname -s)" ]]; then
+	alias rm='rm -I'
+fi
 # alias cp='cp -i'
 # alias mv='mv -i'
+
+# Convenience aliases
+alias ..='cd ..'
 alias mc='mc -c'
 alias psaux='ps awwwux'
 alias nano='nano -w'
