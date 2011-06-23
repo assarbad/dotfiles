@@ -43,6 +43,7 @@ fi
 # don't put duplicate lines in the history. See bash(1) for more options
 export HISTCONTROL=erasedups:ignorespace
 export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear"
+export HISTFILESIZE=1000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -66,10 +67,15 @@ shopt -s dotglob
 umask 022
 
 # Alias definitions.
-export LS_OPTIONS='--color=auto --time-style=long-iso'
-alias ls='ls $LS_OPTIONS'
-alias ll='ls $LS_OPTIONS -l'
-alias l='ls $LS_OPTIONS -all'
+if [[ "Linux" == "$(uname -s)" ]]; then
+	export LS_OPTIONS='--color=auto --time-style=long-iso'
+	alias ls='ls $LS_OPTIONS'
+	alias ll='ls $LS_OPTIONS -l'
+	alias l='ls $LS_OPTIONS -all'
+else
+	alias ll='ls -l'
+	alias l='ls -ahl'
+fi
 
 # Some more alias to avoid making mistakes:
 # alias rm='rm -i'
