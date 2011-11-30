@@ -119,7 +119,7 @@ fi
 
 # Load additional settings
 if [ -d $HOME/.bashrc.d ]; then
-  for f in `ls -A $HOME/.bashrc.d`; do
+  for f in `command ls -A $HOME/.bashrc.d`; do
     source $HOME/.bashrc.d/$f
   done
 fi
