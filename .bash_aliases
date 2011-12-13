@@ -1,3 +1,4 @@
+# $Date$ - $Id$
 [ -e "/etc/debian_version" ] || return 
 
 alias debfoster='sudo /usr/bin/debfoster'

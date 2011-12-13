@@ -1,4 +1,5 @@
 # Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
+# $Date$ - $Id$
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
