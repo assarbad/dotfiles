@@ -16,7 +16,6 @@ MYUID=$UID
 [ -n "$SSH_TTY" ] && [ $MYUID -eq 0 ] && export TMOUT=1800
 
 export IGNOREEOF=2
-export CDPATH=/mnt
 [ -d "~/bin" ] && export PATH=$PATH:~/bin
 # Remove empty entries
 export PATH=${PATH//::/:}
@@ -69,8 +68,8 @@ umask 022
 # Alias definitions.
 if [[ "Linux" == "$(uname -s)" ]]; then
 	export LS_OPTIONS='--color=auto --time-style=long-iso'
-	( ls > /dev/null 2>&1 ) || export LS_OPTIONS='--color=auto'
-	( ls > /dev/null 2>&1 ) || export LS_OPTIONS=''
+	( LS_OPTIONS="$LS_OPTIONS" ls . ) > /dev/null 2>&1 || export LS_OPTIONS='--color=auto'
+	( LS_OPTIONS="$LS_OPTIONS" ls . ) > /dev/null 2>&1 || export LS_OPTIONS=''
 	alias ls='ls $LS_OPTIONS'
 	alias ll='ls $LS_OPTIONS -l'
 	alias l='ls $LS_OPTIONS -all'
