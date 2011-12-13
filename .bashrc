@@ -1,5 +1,5 @@
 # Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
-# $Date$ - $Id$
+# $Id$
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -68,9 +68,10 @@ umask 022
 
 # Alias definitions.
 if [[ "Linux" == "$(uname -s)" ]]; then
-	export LS_OPTIONS='--color=auto --time-style=long-iso'
-	( LS_OPTIONS="$LS_OPTIONS" ls . ) > /dev/null 2>&1 || export LS_OPTIONS='--color=auto'
-	( LS_OPTIONS="$LS_OPTIONS" ls . ) > /dev/null 2>&1 || export LS_OPTIONS=''
+	MYLS_OPTIONS='--color=auto --time-style=long-iso'
+	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
+	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+	[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
 	alias ls='ls $LS_OPTIONS'
 	alias ll='ls $LS_OPTIONS -l'
 	alias l='ls $LS_OPTIONS -all'
