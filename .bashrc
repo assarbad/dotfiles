@@ -1,4 +1,4 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
+# Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -69,6 +69,8 @@ umask 022
 # Alias definitions.
 if [[ "Linux" == "$(uname -s)" ]]; then
 	export LS_OPTIONS='--color=auto --time-style=long-iso'
+	( ls > /dev/null 2>&1 ) || export LS_OPTIONS='--color=auto'
+	( ls > /dev/null 2>&1 ) || export LS_OPTIONS=''
 	alias ls='ls $LS_OPTIONS'
 	alias ll='ls $LS_OPTIONS -l'
 	alias l='ls $LS_OPTIONS -all'
@@ -81,15 +83,8 @@ fi
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo You are root already, silly!'
 else
-	alias beroot="sudo su -l root -c \"$(which bash) --rcfile $HOME/.bashrc\""
+	alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME/.bashrc.d' $(which bash) --rcfile $HOME/.bashrc\""
 fi
-
-# Some more alias to avoid making mistakes:
-if [[ "Linux" == "$(uname -s)" ]]; then
-	alias rm='rm -I'
-fi
-# alias cp='cp -i'
-# alias mv='mv -i'
 
 # Convenience aliases
 alias ..='cd ..'
@@ -100,14 +95,10 @@ alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -A -t'
 
 # Aliases in the external file overwrite those above.
-if [ -f ~/.bash_aliases ]; then
-  source ~/.bash_aliases
-fi
+[[ -f ~/.bash_aliases ]] && source ~/.bash_aliases
 
 # Global Bash completion definitions
-if [ -f /etc/bash_completion ]; then
-  source /etc/bash_completion
-fi
+[[ -f /etc/bash_completion ]] && source /etc/bash_completion
 
 # Load the SSH agent and if it's loaded already, add the default identity
 SSHAGENT=$(which ssh-agent)
@@ -117,10 +108,11 @@ if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
   [ -n "$SSH_AGENT_PID" ] && trap "kill $SSH_AGENT_PID" 0
 fi
 
-# Load additional settings
-if [ -d $HOME/.bashrc.d ]; then
-  for f in `command ls -A $HOME/.bashrc.d`; do
-    source $HOME/.bashrc.d/$f
+# Load additional settings (NOTE: does not allow blanks in names of files within that folder)
+[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME/.bashrc.d"
+if [[ -d "$BASHRCDIR" ]]; then
+  for f in `command ls -A "$BASHRCDIR"`; do
+    source "$BASHRCDIR/$f"
   done
 fi
 
