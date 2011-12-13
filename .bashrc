@@ -125,3 +125,11 @@ function ducks
     du -cks *|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
   fi
 }
+
+function __unlink_where_it_does_not_exist__
+{
+	(( $# != 0 )) || { echo "unlink: missing operand"; return; }
+	(( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
+	rm "$1"
+}
+command unlink --help > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
