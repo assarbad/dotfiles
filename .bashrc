@@ -1,5 +1,6 @@
 # Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
 # $Id$
+# vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -22,22 +23,22 @@ export IGNOREEOF=2
 export PATH=${PATH//::/:}
 
 if [ $MYUID -eq 0 ]; then
-	export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
-	NEWPATH=''
-	LASTDIR=''
-	for dir in ${PATH//:/ }; do
-		LASTDIR=$dir
-		[ ! -d $dir ] && continue
-		if [ "$(ls -lLd $dir | grep '^d.......w. ')" ]; then
-			echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
-		elif [ "$NEWPATH" != "$dir" ]; then
-			NEWPATH=$NEWPATH:$dir
-		fi
-	done
-	# Remove the leading colon and export this as the path
-	export PATH=${NEWPATH:1:${#NEWPATH}}
+  export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
+  NEWPATH=''
+  LASTDIR=''
+  for dir in ${PATH//:/ }; do
+    LASTDIR=$dir
+    [ ! -d $dir ] && continue
+    if [ "$(ls -lLd $dir | grep '^d.......w. ')" ]; then
+      echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
+    elif [ "$NEWPATH" != "$dir" ]; then
+      NEWPATH=$NEWPATH:$dir
+    fi
+  done
+  # Remove the leading colon and export this as the path
+  export PATH=${NEWPATH:1:${#NEWPATH}}
 else
-	export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
+  export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
 fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
@@ -68,23 +69,23 @@ umask 022
 
 # Alias definitions.
 if [[ "Linux" == "$(uname -s)" ]]; then
-	MYLS_OPTIONS='--color=auto --time-style=long-iso'
-	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
-	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
-	[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
-	alias ls='ls $LS_OPTIONS'
-	alias ll='ls $LS_OPTIONS -l'
-	alias l='ls $LS_OPTIONS -all'
+  MYLS_OPTIONS='--color=auto --time-style=long-iso'
+  ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
+  ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+  [[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
+  alias ls='ls $LS_OPTIONS'
+  alias ll='ls $LS_OPTIONS -l'
+  alias l='ls $LS_OPTIONS -all'
 else
-	[[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
-	alias ll='ls -l'
-	alias l='ls -ahl'
+  [[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
+  alias ll='ls -l'
+  alias l='ls -ahl'
 fi
 # beroot so we feel at home when assuming super-user rights
 if [ $MYUID -eq 0 ]; then
-	alias beroot='echo You are root already, silly!'
+  alias beroot='echo You are root already, silly!'
 else
-	alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME/.bashrc.d' $(which bash) --rcfile $HOME/.bashrc\""
+  alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME/.bashrc.d' $(which bash) --rcfile $HOME/.bashrc\""
 fi
 
 # Convenience aliases
@@ -128,8 +129,8 @@ function ducks
 
 function __unlink_where_it_does_not_exist__
 {
-	(( $# != 0 )) || { echo "unlink: missing operand"; return; }
-	(( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
-	rm "$1"
+  (( $# != 0 )) || { echo "unlink: missing operand"; return; }
+  (( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
+  rm "$1"
 }
 command unlink --help > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
