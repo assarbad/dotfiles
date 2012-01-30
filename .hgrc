@@ -3,3 +3,6 @@ username = Oliver Schneider <oliver@assarbad.net>
 
 [trusted]
 users = root
+
+[extensions]
+hgext.convert=
