@@ -85,7 +85,7 @@ fi
 if [ $MYUID -eq 0 ]; then
   alias beroot='echo You are root already, silly!'
 else
-  alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME/.bashrc.d' $(which bash) --rcfile $HOME/.bashrc\""
+  alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 fi
 
 # Convenience aliases
