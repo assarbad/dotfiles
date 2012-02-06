@@ -97,7 +97,8 @@ alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -A -t'
 
 # Aliases in the external file overwrite those above.
-[[ -f ~/.bash_aliases ]] && source ~/.bash_aliases
+[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
+[[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
 
 # Global Bash completion definitions
 [[ -f /etc/bash_completion ]] && source /etc/bash_completion
@@ -111,10 +112,9 @@ if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
-[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME/.bashrc.d"
-if [[ -d "$BASHRCDIR" ]]; then
-  for f in `command ls -A "$BASHRCDIR"`; do
-    source "$BASHRCDIR/$f"
+if [[ -d "$BASHRCDIR/.bashrc.d" ]]; then
+  for f in `command ls -A "$BASHRCDIR/.bashrc.d"`; do
+    source "$BASHRCDIR/.bashrc.d/$f"
   done
 fi
 
