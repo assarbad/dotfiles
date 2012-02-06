@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 SRCDIR=/.bash
 SRCFILES=".bashrc .bash_aliases .hgrc .vimrc"
-TGTDIRS="oliver::/home/oliver"
+TGTDIRS="oliver::/home/oliver root:/root"
 
 function cpnew
 {

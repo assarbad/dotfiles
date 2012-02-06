@@ -5,8 +5,9 @@ CVSNT=cvsnt
 alias cvsup="$CVSNT -q up -dRP"
 export EDITOR=vim
 [[ $UID -eq 0 ]] || alias visudo='sudo -E visudo'
-[ -e "/etc/debian_version" ] || return 
+
 ## ----------------------------------------
+[ -e "/etc/debian_version" ] || return 
 alias debfoster='sudo /usr/bin/debfoster'
 alias deborphan='sudo /usr/bin/deborphan'
 alias search='apt-cache search'
