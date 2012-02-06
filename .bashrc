@@ -99,7 +99,7 @@ alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -A -t'
-(vim --help|grep -q '[:space:]*-p') && { alias vim="vim -p -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; } || { alias vim="vim -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; }
+(vim --help|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; } || { alias vim="vim -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; }
 
 # Aliases in the external file overwrite those above.
 [[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
