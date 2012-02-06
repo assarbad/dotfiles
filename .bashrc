@@ -93,7 +93,7 @@ fi
 
 # Convenience aliases
 alias ..='cd ..'
-#alias .='cd -'
+alias -- -='cd -'
 alias mc='mc -c'
 alias psaux='ps awwwux'
 alias nano='nano -w'
