@@ -35,7 +35,9 @@ set laststatus=2
 set statusline=%F%m%r%h%w\ (%{&ff}){%Y}\ [%l,%v][%p%%]
 " search-related
 set incsearch    " find the next match as we type the search
-" set hlsearch     " highlight searches by default
+set hlsearch     " highlight searches by default
+" ... and how to get rid of the highlights? Like so:
+nnoremap <esc> :noh<return><esc>
 set ignorecase   " ignore case when searching
 set smartcase
 " syntax highlighting
