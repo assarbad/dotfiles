@@ -27,7 +27,7 @@ inoremap ;; <End>;
 noremap ; :
 noremap , ;
 " toggle line numbers
-nmap <C-N><C-N> :set invnumber<CR>
+nmap <C-N><C-N> <silent>:set invnumber<CR>
 highlight LineNr term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 set nonumber " but turn off line numbers by default
 " status line
@@ -37,7 +37,8 @@ set statusline=%F%m%r%h%w\ (%{&ff}){%Y}\ [%l,%v][%p%%]
 set incsearch    " find the next match as we type the search
 set hlsearch     " highlight searches by default
 " ... and how to get rid of the highlights? Like so:
-nnoremap <esc> :noh<return><esc>
+"nnoremap <esc> <silent>:noh<return><esc> <--- behaves weird ...
+nnoremap <CR> <silent>:noh<CR><CR>
 set ignorecase   " ignore case when searching
 set smartcase
 " syntax highlighting
