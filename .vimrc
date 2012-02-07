@@ -10,3 +10,11 @@ set showmatch
 set ruler
 " set paste
 syntax on
+:nmap <C-t> :tabnew<CR>
+:imap <C-t> <Esc>:tabnew<CR>
+:map  <F11> :tabprevious <CR>
+:map  <F12> :tabnext     <CR>
+:nmap <F11> :tabprevious <CR>
+:nmap <F12> :tabnext     <CR>
+:imap <F11> :tabprevious <CR>
+:imap <F12> :tabnext     <CR>
