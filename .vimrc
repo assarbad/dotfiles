@@ -10,6 +10,7 @@ set showmatch
 set ruler
 " set paste
 syntax on
+if version >= 700
 :nmap <C-t> :tabnew<CR>
 :imap <C-t> <Esc>:tabnew<CR>
 :map  <F11> :tabprevious <CR>
@@ -18,3 +19,4 @@ syntax on
 :nmap <F12> :tabnext     <CR>
 :imap <F11> :tabprevious <CR>
 :imap <F12> :tabnext     <CR>
+endif
