@@ -8,7 +8,6 @@ set shiftwidth=4
 set showmatch
 set ruler        " show the cursor position all the time
 set history=1000 " store lots of :cmdline history
-set showcmd      " show incomplete cmds down the bottom
 set showmode     " show current mode down the bottom
 set nowrap       " dont wrap lines
 set linebreak    " wrap lines at convenient points
@@ -49,6 +48,7 @@ syntax on
 " set expandtab
 " set paste
 if version >= 700
+  set showcmd      " show incomplete cmds down the bottom
   nmap <C-t> :tabnew<CR>
   imap <C-t> <Esc>:tabnew<CR>
   map  <F11> :tabprevious <CR>
