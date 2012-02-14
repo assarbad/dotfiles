@@ -67,6 +67,13 @@ shopt -s dotglob
 # Light Gray  0;37     White         1;37
 umask 022
 
+# Get rid of older aliases, if any
+for i in l ll ls beroot .. - mc psaux nano currdate ssh vim unlink; do
+  (alias|grep -q "alias $i=") && unalias -- $i
+done
+# Check for BASHRCDIR variable ...
+[[ -d "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
+[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
 # Alias definitions.
 if [[ "Linux" == "$(uname -s)" ]]; then
   MYLS_OPTIONS='--color=auto --time-style=long-iso'
@@ -88,9 +95,6 @@ else
   alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 fi
 
-# Check for BASHRCDIR variable ...
-[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
-
 # Convenience aliases
 alias ..='cd ..'
 alias -- -='cd -'
@@ -99,7 +103,9 @@ alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -A -t'
-(vim --help|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; } || { alias vim="vim -N -n -i NONE -u \"$BASHRCDIR/.vimrc\""; }
+[[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
+(vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE $VIMRC"; } || { alias vim="vim -N -n -i NONE $VIMRC"; }
+unset VIMRC
 
 # Aliases in the external file overwrite those above.
 [[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
