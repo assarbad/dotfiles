@@ -67,10 +67,6 @@ shopt -s dotglob
 # Light Gray  0;37     White         1;37
 umask 022
 
-# Get rid of older aliases, if any
-for i in l ll ls beroot .. - mc psaux nano currdate ssh vim unlink; do
-  (alias|grep -q "alias $i=") && unalias -- $i
-done
 # Check for BASHRCDIR variable ...
 [[ -d "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
 [[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
