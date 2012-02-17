@@ -4,6 +4,7 @@ CVSNT=cvsnt
 [[ -n "$(which $CVSNT 2> /dev/null)" ]] || CVSNT=cvs
 alias cvsup="$CVSNT -q up -dRP"
 export EDITOR=vim
+export VISUAL=vim
 [[ $UID -eq 0 ]] || alias visudo='sudo -E visudo'
 
 ## ----------------------------------------
