@@ -1,0 +1,12 @@
+# vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
+function qcow2-mount
+{
+  [[ -n "$1" ]] || { echo -e "ERROR: no file name given.\n\tSyntax:\n\tqcow2-mount <image> <mount-point>"; return; }
+  [[ -f "$1" ]] || { echo -e "ERROR: file does not exist.\n\tSyntax:\n\tqcow2-mount <image> <mount-point>"; return; }
+  [[ -n "$2" ]] || { echo -e "ERROR: no mount point directory given.\n\tSyntax:\n\tqcow2-mount <image> <mount-point>"; return; }
+  [[ -d "$2" ]] || { echo -e "ERROR: mount point directory does not exist.\n\tSyntax:\n\tqcow2-mount <image> <mount-point>"; return; }
+  local MYMOUNT="mount"
+  [[ "$UID" == "0" ]] || MYMOUNT="sudo $MYMOUNT"
+  echo "$MYMOUNT -o loop,offset=32256 \"$1\" \"$2\""
+  $MYMOUNT -o loop,offset=32256 "$1" "$2"
+}
