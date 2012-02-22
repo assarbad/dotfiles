@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SRCDIR=/.bash
-SRCFILES=".bashrc .bash_aliases .hgrc .vimrc"
+SRCFILES=".bashrc .bash_aliases .hgrc .vimrc .bashrc.d/prune-kernels"
 TGTDIRS="oliver::/home/oliver root:/root"
 
 function cpnew

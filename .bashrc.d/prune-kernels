@@ -2,17 +2,20 @@
 
 function prune-kernels
 {
-  [[ -f "/etc/debian_version" ]] || { echo "ERROR: This has only been tested on Debian/Ubuntu."; return; }
+  [[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+  [[ -e "/vmlinuz" ]] || { echo -e "\033[01;32mERROR:\033[00m Expected /vmlinuz to exist."; return; }
   [[ "$UID" -eq "0" ]] || local SUDO=sudo
   # Figure out the name of the newest and the previous kernel
   local OLDKRNL=$(readlink -f /vmlinuz.old)
   local NOWKRNL=$(readlink -f /vmlinuz)
-  # Also prune "/vmlinuz.old"?
+  # If vmlinuz doesn't exist, Also prune "/vmlinuz.old"?
+  [[ -e "/vmlinuz.old" ]] || OLDKRNL="$NOWKRNL"
+  # Also prune "/vmlinuz.old"? If so, pretend old and new have the same name to skip only the new one
   [[ "$1" == "--old" ]] && local OLDKRNL="$NOWKRNL"
   # Strip path
   OLDKRNL="${OLDKRNL##*/vmlinuz-}"
   NOWKRNL="${NOWKRNL##*/vmlinuz-}"
-  local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep 'linux-image-[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
+  local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
   echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
   [[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
   echo -ne " (\033[0;32mcurrently running\033[00m)"
