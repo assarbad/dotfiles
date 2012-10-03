@@ -7,3 +7,11 @@ function delist-me
 	[[ -z "$MYIP" ]] && { echo "ERROR: no IP given"; return; }
 	echo "-$MYIP"|sudo tee -a /proc/net/xt_recent/tpit
 }
+
+function delist-frisk
+{
+  grep src=213\.220\.100\. /proc/net/xt_recent/tpit|awk '{print $1}'|sed 's/src=//'|while read ip
+  do
+    delist-me $ip
+  done
+}

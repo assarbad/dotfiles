@@ -8,8 +8,6 @@ function cpnew
 	cp --preserve=timestamps "$1" "$2" && chown $3 "$2"
 }
 
-umount $SRCDIR
-mount $SRCDIR
 for src in $SRCFILES; do
 	for tgtdir in $TGTDIRS; do
 		OWNER=${tgtdir%:*}
