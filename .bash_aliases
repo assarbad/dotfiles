@@ -1,5 +1,8 @@
 # $Id$
 # vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
+TMUX="TERM=screen-256color-bce tmux"
+alias tmux="$TMUX attach || $TMUX"
+unset TMUX
 CVSNT=cvsnt
 [[ -n "$(which $CVSNT 2> /dev/null)" ]] || CVSNT=cvs
 alias cvsup="$CVSNT -q up -dRP"
