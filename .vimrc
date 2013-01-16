@@ -1,10 +1,32 @@
-set nocompatible
-set backspace=2
-set background=dark
-set autoindent
-set smartindent
+set background=dark " using dark terminal make certain elements a little brighter ;)
+set backspace=indent,eol,start " make backspace more convenient
+
+" Load plugins
+runtime ftplugin/man.vim
+
+" Tab related settings
 set tabstop=4
 set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+" Autocommands {{{1
+if has("autocmd")
+  filetype plugin indent on
+  augroup vimrcEx
+  au!
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+  augroup END
+else
+  set autoindent		" always set autoindenting on
+endif
+
+set nocompatible
+set autoindent
+set smartindent
 set showmatch
 set ruler        " show the cursor position all the time
 set history=1000 " store lots of :cmdline history
@@ -39,6 +61,7 @@ set hlsearch     " highlight searches by default
 "nnoremap <esc> <silent>:noh<return><esc> <--- behaves weird ...
 nnoremap <CR> <silent>:noh<CR><CR>
 set ignorecase   " ignore case when searching
+
 set smartcase
 " syntax highlighting
 filetype on
