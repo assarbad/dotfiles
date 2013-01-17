@@ -8,26 +8,12 @@ runtime ftplugin/man.vim
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-set expandtab
-
-" Autocommands {{{1
-if has("autocmd")
-  filetype plugin indent on
-  augroup vimrcEx
-  au!
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-  augroup END
-else
-  set autoindent		" always set autoindenting on
-endif
-
+set noexpandtab
 set nocompatible
 set autoindent
 set smartindent
 set showmatch
+set list
 set ruler        " show the cursor position all the time
 set history=1000 " store lots of :cmdline history
 set showmode     " show current mode down the bottom
@@ -42,8 +28,8 @@ set wrap!        " turn off word wrapping
 " set off the other paren
 highlight MatchParen ctermbg=4
 " quickly set comma or semicolon at the end of the string
-inoremap ,, <End>,
-inoremap ;; <End>;
+"inoremap ,, <End>,
+"inoremap ;; <End>;
 " allow command mode with semi-colon, and comma
 noremap ; :
 noremap , ;
@@ -68,7 +54,6 @@ filetype on
 filetype plugin on
 filetype indent on
 syntax on
-" set expandtab
 " set paste
 if version >= 700
   set showcmd      " show incomplete cmds down the bottom
@@ -93,3 +78,11 @@ highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 " http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
 cmap w!! %!sudo tee > /dev/null %
+
+" Shortcut to rapidly toggle `set list`
+nmap <leader>l :set list!<CR>
+
+" Use the same symbols as TextMate for tabstops and EOLs
+set listchars=tab:›\ ,eol:¬
+highlight NonText ctermfg=DarkGrey guifg=#4a4a59
+highlight SpecialKey ctermfg=DarkGrey guifg=#4a4a59
