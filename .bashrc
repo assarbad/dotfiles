@@ -133,6 +133,11 @@ function ducks
   fi
 }
 
+function cdf()
+{
+  cd *"$1"*/
+}
+
 function __unlink_where_it_does_not_exist__
 {
   (( $# != 0 )) || { echo "unlink: missing operand"; return; }

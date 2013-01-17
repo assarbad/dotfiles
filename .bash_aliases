@@ -18,6 +18,7 @@ alias search='apt-cache search'
 alias show='apt-cache show'
 alias upgrade='apt-get update && apt-get dist-upgrade'
 alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -lf $i; done'
+alias chorme="sudo /bin/chown -hR $(whoami):"
 if [ $UID -ne 0 ]; then
   alias apt-get='sudo /usr/bin/apt-get'
   alias aptitude='sudo /usr/bin/aptitude'
