@@ -1,0 +1,12 @@
+function adduser2group
+{
+	local USRNAME=$1
+	local GRPNAME=$2
+	[[ -n "$USRNAME" ]] || { echo -e "ERROR: you gave no username.\n\nSyntax:\n\tadduser2group <username> <groupname>"; return; }
+	[[ -n "$GRPNAME" ]] || { echo -e "ERROR: you gave no groupname.\n\nSyntax:\n\tadduser2group <username> <groupname>"; return; }
+	local CURRSUPPGRPS=$(id -nG $USRNAME)
+	local CURRPRIMGRP=$(id -ng $USRNAME)
+	echo "Adding user $USRNAME to group $GRPNAME"
+	echo -e "\tusermod -g $CURRPRIMGRP -G ${CURRSUPPGRPS// /,},$GRPNAME $USRNAME"
+	usermod -g $CURRPRIMGRP -G ${CURRSUPPGRPS// /,},$GRPNAME $USRNAME
+}
