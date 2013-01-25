@@ -1,3 +1,5 @@
+# vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
+
 function adduser2group
 {
 	local USRNAME=$1

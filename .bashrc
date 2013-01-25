@@ -98,7 +98,7 @@ alias mc='mc -c'
 alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
-alias ssh='ssh -A -t'
+alias ssh='ssh -t'
 [[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
 (vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE $VIMRC"; } || { alias vim="vim -N -n -i NONE $VIMRC"; }
 unset VIMRC

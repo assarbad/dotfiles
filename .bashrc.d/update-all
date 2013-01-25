@@ -1,26 +1,27 @@
-# vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
+# vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
+
 function update-all
 {
-  echo -e "\033[0;31m$(hostname)\033[0m\n------------------------------"
-  sudo apt-get update
-  for i in $VMNAMES; do
-    echo -e "\033[0;31m$i\033[0m\n------------------------------"
-    ssh $i "sudo apt-get update"
-  done
-  echo -e "\033[1;32mAPT caches updated on ${VMNAMES// /, } and $(hostname)."
+	echo -e "\033[0;31m$(hostname)\033[0m\n------------------------------"
+	sudo apt-get update
+	for i in $VMNAMES; do
+		echo -e "\033[0;31m$i\033[0m\n------------------------------"
+		ssh $i "sudo apt-get update"
+	done
+	echo -e "\033[1;32mAPT caches updated on ${VMNAMES// /, } and $(hostname)."
 }
 
 function upgrade-all
 {
-  update-all
-  echo -e "\033[0;31m$(hostname)\033[0m\n------------------------------"
-  sudo apt-get dist-upgrade
-  sudo apt-get autoremove
-  sudo apt-get autoclean
-  for i in $VMNAMES; do
-    echo -e "\033[0;31m$i\033[0m\n------------------------------"
-    ssh $i "sudo apt-get dist-upgrade"
-    ssh $i "sudo apt-get autoremove"
-    ssh $i "sudo apt-get autoclean"
-  done
+	update-all
+	echo -e "\033[0;31m$(hostname)\033[0m\n------------------------------"
+	sudo apt-get dist-upgrade
+	sudo apt-get autoremove
+	sudo apt-get autoclean
+	for i in $VMNAMES; do
+		echo -e "\033[0;31m$i\033[0m\n------------------------------"
+		ssh $i "sudo apt-get dist-upgrade"
+		ssh $i "sudo apt-get autoremove"
+		ssh $i "sudo apt-get autoclean"
+	done
 }

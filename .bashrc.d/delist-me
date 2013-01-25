@@ -1,4 +1,5 @@
-# vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
+# vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
+
 function delist-me
 {
 	local MYIP=$(echo $SSH_CLIENT|awk '{print $1}')
@@ -10,8 +11,8 @@ function delist-me
 
 function delist-frisk
 {
-  grep src=213\.220\.100\. /proc/net/xt_recent/tpit|awk '{print $1}'|sed 's/src=//'|while read ip
-  do
-    delist-me $ip
-  done
+	grep src=213\.220\.100\. /proc/net/xt_recent/tpit|awk '{print $1}'|sed 's/src=//'|while read ip
+	do
+		delist-me $ip
+	done
 }
