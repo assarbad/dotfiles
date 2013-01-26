@@ -1,5 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
 
+return
 if [[ -z "$TMUX" ]]; then
 	# we're not in a tmux session
 	if [ ! -z "$SSH_TTY" ]; then
