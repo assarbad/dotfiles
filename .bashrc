@@ -43,8 +43,8 @@ fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
 export HISTCONTROL=erasedups:ignorespace
-export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear"
-export HISTFILESIZE=1000
+export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:pushf:ducks:psaux"
+export HISTFILESIZE=3000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -98,7 +98,7 @@ alias mc='mc -c'
 alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
-alias ssh='ssh -t'
+alias ssh='ssh -at'
 [[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
 (vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE $VIMRC"; } || { alias vim="vim -N -n -i NONE $VIMRC"; }
 unset VIMRC
@@ -112,9 +112,15 @@ unset VIMRC
 # Load the SSH agent and if it's loaded already, add the default identity
 SSHAGENT=$(which ssh-agent)
 SSHAGENTARGS="-s"
-if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
-  eval `$SSHAGENT $SSHAGENTARGS`
-  [ -n "$SSH_AGENT_PID" ] && trap "kill $SSH_AGENT_PID" 0
+if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
+  eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
+  [[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
+else
+  SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u)|head -n 1)
+  export SSH_AUTH_SOCK
+fi
+if [[ -n "$SSH_AUTH_SOCK" ]]; then
+  ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
@@ -133,9 +139,16 @@ function ducks
   fi
 }
 
+function pushf()
+{
+  local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
+  pushd "$FOLDER1"/
+}
+
 function cdf()
 {
-  cd *"$1"*/
+  local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
+  cd "$FOLDER1"/
 }
 
 function __unlink_where_it_does_not_exist__
@@ -144,4 +157,4 @@ function __unlink_where_it_does_not_exist__
   (( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
   rm "$1"
 }
-command unlink --help > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
+type unlink > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
