@@ -99,6 +99,7 @@ alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -at'
+alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $(id -u) -exec ls -ahl {} \;'
 [[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
 (vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE $VIMRC"; } || { alias vim="vim -N -n -i NONE $VIMRC"; }
 unset VIMRC
@@ -116,7 +117,7 @@ if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
   eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
   [[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
 else
-  SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u)|head -n 1)
+  SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
   export SSH_AUTH_SOCK
 fi
 if [[ -n "$SSH_AUTH_SOCK" ]]; then

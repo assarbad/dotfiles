@@ -1,0 +1,29 @@
+# vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
+
+# Alias for convenience
+TMUX="TERM=screen-256color-bce tmux"
+alias mux="$TMUX attach-session -d -t $(hostname -s) || $TMUX new-session -s $(hostname -s) -n shell"
+unset TMUX
+
+# Check whether the session exists already
+tmux has-session -t $(hostname -s) 2> /dev/null && return
+if [[ "yggdrasil" == "$(hostname -s)" ]]; then
+	SESSNAME=$(hostname -s)
+	# Create new tmux session with first window named CCC (command&control center)
+	tmux new-session -s $SESSNAME -n CCC -d
+	tmux send-keys -t $SESSNAME 'cd ~' C-m C-l
+	# Create pane below the top one, just running a shell
+	tmux split-window -v -p 60 -t $SESSNAME:1
+	tmux send-keys -t $SESSNAME 'cd ~' C-m C-l
+	# Select the first pane (with htop) again
+	tmux select-pane -t $SESSNAME:1.1
+	# Split it so to the right of it we can watch some log files
+	#tmux split-window -h -p 33 -t $SESSNAME:1
+	#tmux send-keys -t $SESSNAME 'cd ~' C-m C-l
+	# Start htop as superuser in the upper left pane
+	tmux send-keys -t $SESSNAME:1.1 'sudo htop' C-m
+	# Tail some log files
+	tmux send-keys -t $SESSNAME:1.2 'sudo tail -F /var/log/syslog' C-m
+	# Attach to the newly created session
+	#tmux attach -t $SESSNAME
+fi
