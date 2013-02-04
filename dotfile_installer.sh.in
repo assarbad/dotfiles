@@ -38,7 +38,7 @@ read -p "Install $DIRSELF and copy .bashrc and friends into $TGTDIR? " ans
 if [[ "${ans:0:1}"  ||  "${ans:0:1}" ]]; then
 	(
 		( untar_payload "$TGTDIR" ) || { ERR=$?; print_error "at [$FUNCNAME:$LINENO]"; exit $ERR; }
-		[[ -d "$TGTDIR/$DOTF" ]] && make -C "$TGTDIR/$DOTF" TGTDIR=$TGTDIR && \
+		[[ -d "$TGTDIR/$DOTF" ]] && make -C "$TGTDIR/$DOTF" TGTDIR=$TGTDIR install && \
 		echo -e "\033[01;31mDONE!\033[00m"
 	) || { ERR=$?; print_error "at [$FUNCNAME:$LINENO]"; exit $ERR; }
 fi

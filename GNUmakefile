@@ -3,12 +3,12 @@
 TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
-.PHONY: setup clean rebuild
+.PHONY: install setup clean rebuild
 
 SRCFILES := .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(wildcard .bashrc.d/*)
 
 define make_single_rule
-all: $(TGTDIR)/$(1)
+install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
@@ -28,7 +28,7 @@ $(PAYLOAD): $(filter-out $(DOTFILES)/$(SETUP),$(wildcard $(DOTFILES)/*) $(wildca
 	tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
-rebuild: clean all
+rebuild: clean setup
 
 clean:
 	rm -f $(SETUP) $(PAYLOAD)
