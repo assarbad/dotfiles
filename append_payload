@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+SYNTAX_ARGS="[--binary|-b] [--uuencode|-u] [--input=FILE|-i=FILE] [--output=FILE|-o=FILE] [--] \033[1;37mPAYLOAD\033[00m"
+# default encoding
+TGZ=1
+# output file name (default)
+OFILE=install.sh
+# input file name (default)
+IFILE=$OFILE.in
+# flag to see whether the file arguments are now expected
+let FNAME=0
+# name of payload file
+PAYLOAD=""
+
+# print_error <error-string>
+function print_error
+{
+	echo -e "\033[01;31mERROR:\033[00m $1"
+}
+
+# error_exit <exit-code> <error-string>
+function error_exit
+{
+
+	exit $1
+}
+
+# show_syntax <exit-code> [error-message]
+function show_syntax
+{
+	local MSG=""
+	[[ -z "$2" ]] || MSG="$2"
+	error_exit $1 "$MSG\n\033[1;36mSyntax:\033[00m\n\t\033[1;37m${0##*/}\033[00m $SYNTAX_ARGS\n"
+}
+
+# parse command line arguments
+for i in "$@"; do
+	(($FNAME)) && break
+	case $i in
+		--uuencode|-u)
+			TGZ=0
+			;;
+		--input=*)
+			IFILE=${i##--input=}
+			;;
+		--output=*)
+			OFILE=${i##--output=}
+			;;
+		-i=*)
+			IFILE=${i##-i=}
+			;;
+		-o=*)
+			OFILE=${i##-o=}
+			;;
+		--help|-h|-\?)
+			show_syntax
+			exit 0
+			;;
+		--) # GNU convention, ends the argument list for file names looking like options
+			let FNAME=1
+			;;
+		-*)
+			echo -e "\033[1;33mWARNING:\033[00m unknown option '$i'. Ignoring it.\n\tIn case you want to give a file name starting with dashes, precede it with the '--' option."
+			;;
+		*)
+			PAYLOAD="$i"
+			break
+			;;
+	esac
+done
+
+# Sanity checking
+[[ -n "$PAYLOAD" && -n "$OFILE" && -n "$IFILE" ]] || { show_syntax 1 "you either set an empty input/output file or forgot to give a payload."; }
+echo -e "$PAYLOAD\n$IFILE"|while read f; do
+	[[ -f "$(readlink -f "$f")" ]] || { show_syntax 1 "the given file argument ($f) does not exist or isn't a file."; }
+done || exit $? # need to pass on the exit code from the subshell
+[[ "$(readlink -f "$IFILE")" != "$(readlink -f "$OFILE")" ]] || { show_syntax 1 "this seems odd. You gave identical files for input and output."; }
+[[ "$(readlink -f "$OFILE")" != "$(readlink -f "$PAYLOAD")" ]] || { show_syntax 1 "this seems odd. You gave identical files for payload and output."; }
+
+# Do the job
+sed -e "s/TGZ=./TGZ=$TGZ/" "$IFILE" > "$OFILE" && chmod a+x "$OFILE"
+echo "PAYLOAD:" >> "$OFILE"
+if (($TGZ)); then
+	cat $PAYLOAD >> "$OFILE"
+else
+	cat $PAYLOAD|uuencode - >> "$OFILE"
+fi
