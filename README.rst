@@ -1,4 +1,5 @@
-﻿ Oliver's dotfiles
+﻿===================
+ Oliver's dotfiles
 ===================
 :Author: Oliver Schneider
 
