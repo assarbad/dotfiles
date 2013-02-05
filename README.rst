@@ -45,6 +45,12 @@ target location you'd have to set the ``TGTDIR`` variable in one of two ways:
 - ``TGTDIR=/my/custom/target/directory make install``
 - ``make TGTDIR=/my/custom/target/directory install``
 
+**One important note:** the make file is currently hardcoded to create hard
+links. This means the source and destination have to be on the same volume.
+I may fix this at some point. At this time I don't think it is inconvenient.
+If you do and you'd like to pull updates from me ("upstream"), feel free to
+complain about it and I may be faster fixing it.
+
 Hope this is useful for someone else. Write me an email if it is :)
 
 .. _Bash Cookbook: http://bashcookbook.com/
