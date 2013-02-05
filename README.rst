@@ -26,16 +26,14 @@ You'll also find a ``GNUmakefile`` that can be used for two things.
 - ``make install``
 
 The default behavior is to create a self-contained installer named
-``dotfile_installer``, based on the script of the same basename with the
-suffix ``.sh.in``. This installer will contain all the files from this
-folder, including the ``.hg`` folder (this is intentional!).
+``dotfile_installer.sh`` (``uuencode``-d), based on the script of
+the same basename with the suffix ``.sh.in``. In addition a second
+version named ``dotfile_installer.bin`` gets created as well. This
+installer will contain all the files from this folder, including
+the ``.hg`` folder (this is intentional!).
 
 This way you can simply build this file once and download from a location
-you trust. Keep in mind that your web server may try to outsmart you, so
-you may want to choose an extension such as ``.bin`` or give the MIME type
-explicitly. This shouldn't matter in the default build, however, where
-the created installer is ``uuencode``-d and thus should behave correctly
-when downloaded as 7-bit ASCII.
+you trust.
 
 The other thing is to install it to your home folder. To do this, make sure
 you are in the folder in which the dotfiles reside (``~/.dotfiles`` on my
