@@ -1,6 +1,6 @@
 # Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
 # $Id$
-# vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 filetype=sh:
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -23,22 +23,22 @@ export IGNOREEOF=2
 export PATH=${PATH//::/:}
 
 if [ $MYUID -eq 0 ]; then
-  export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
-  NEWPATH=''
-  LASTDIR=''
-  for dir in ${PATH//:/ }; do
-    LASTDIR=$dir
-    [ ! -d $dir ] && continue
-    if [ "$(ls -lLd $dir | grep '^d.......w. ')" ]; then
-      echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
-    elif [ "$NEWPATH" != "$dir" ]; then
-      NEWPATH=$NEWPATH:$dir
-    fi
-  done
-  # Remove the leading colon and export this as the path
-  export PATH=${NEWPATH:1:${#NEWPATH}}
+	export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
+	NEWPATH=''
+	LASTDIR=''
+	for dir in ${PATH//:/ }; do
+		LASTDIR=$dir
+		[ ! -d $dir ] && continue
+		if [ "$(ls -lLd $dir | grep '^d.......w. ')" ]; then
+			echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
+		elif [ "$NEWPATH" != "$dir" ]; then
+			NEWPATH=$NEWPATH:$dir
+		fi
+	done
+	# Remove the leading colon and export this as the path
+	export PATH=${NEWPATH:1:${#NEWPATH}}
 else
-  export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
+	export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
 fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
@@ -68,27 +68,33 @@ shopt -s dotglob
 umask 022
 
 # Check for BASHRCDIR variable ...
-[[ -d "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
-[[ -n "$BASHRCDIR" ]] || BASHRCDIR="$HOME"
-# Alias definitions.
+[[ -d "${BASHRCDIR:-$HOME}" ]] || BASHRCDIR="$HOME"
+BASHRCDIR=${BASHRCDIR:-$HOME}
+# Alias definitions for ls. Figure out the feature set ...
 if [[ "Linux" == "$(uname -s)" ]]; then
-  MYLS_OPTIONS='--color=auto --time-style=long-iso'
-  ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
-  ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
-  [[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
-  alias ls='ls $LS_OPTIONS'
-  alias ll='ls $LS_OPTIONS -l'
-  alias l='ls $LS_OPTIONS -all'
+	MYLS_OPTIONS='--color=auto --time-style=long-iso'
+	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
+	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+	[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
+	alias ls='ls $LS_OPTIONS'
+	alias ll='ls $LS_OPTIONS -l'
+	alias l='ls $LS_OPTIONS -all'
 else
-  [[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
-  alias ll='ls -l'
-  alias l='ls -ahl'
+	[[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
+	alias ll='ls -l'
+	alias l='ls -ahl'
+fi
+# color hard links in cyan, but a little darker than soft links
+if [[ -e "/etc/debian_version" ]]; then
+	LS_COLORS="ln=01;36:mh=00;36"
+	ls -ahl > /dev/null 2>&1 || LS_COLORS="ln=01;36:hl=00;36"
+	export LS_COLORS
 fi
 # beroot so we feel at home when assuming super-user rights
 if [ $MYUID -eq 0 ]; then
-  alias beroot='echo You are root already, silly!'
+	alias beroot='echo You are root already, silly!'
 else
-  alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
+	alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 fi
 
 # Convenience aliases
@@ -114,48 +120,48 @@ unset VIMRC
 SSHAGENT=$(which ssh-agent)
 SSHAGENTARGS="-s"
 if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
-  eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
-  [[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
+	eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
+	[[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
 else
-  SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
-  export SSH_AUTH_SOCK
+	SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
+	export SSH_AUTH_SOCK
 fi
 if [[ -n "$SSH_AUTH_SOCK" ]]; then
-  ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+	ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
 if [[ -d "$BASHRCDIR/.bashrc.d" ]]; then
-  for f in `command ls -A "$BASHRCDIR/.bashrc.d"`; do
-    source "$BASHRCDIR/.bashrc.d/$f"
-  done
+	for f in `command ls -A "$BASHRCDIR/.bashrc.d"`; do
+		source "$BASHRCDIR/.bashrc.d/$f"
+	done
 fi
 
 function ducks
 {
-  if [[ -n "$1" && -d "$1" ]]; then
-    du -cks "$1"/*|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
-  else
-    du -cks *|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
-  fi
+	if [[ -n "$1" && -d "$1" ]]; then
+		du -cks "$1"/*|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
+	else
+		du -cks *|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
+	fi
 }
 
 function pushf()
 {
-  local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
-  pushd "$FOLDER1"/
+	local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
+	pushd "$FOLDER1"/
 }
 
 function cdf()
 {
-  local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
-  cd "$FOLDER1"/
+	local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
+	cd "$FOLDER1"/
 }
 
 function __unlink_where_it_does_not_exist__
 {
-  (( $# != 0 )) || { echo "unlink: missing operand"; return; }
-  (( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
-  rm "$1"
+	(( $# != 0 )) || { echo "unlink: missing operand"; return; }
+	(( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
+	rm "$1"
 }
 type unlink > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
