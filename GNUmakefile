@@ -12,7 +12,7 @@ install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-	cp -flr $$^ $$@
+	ln -f $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 endef
 
 SETUP    := dotfile_installer
