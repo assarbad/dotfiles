@@ -1,4 +1,4 @@
-# vim: set autoindent smartindent ts=4 sw=4 noet filetype=sh:
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # Alias for convenience
 TMUX="TERM=screen-256color-bce tmux"

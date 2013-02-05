@@ -1,0 +1,14 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+[[ -e "/etc/debian_version" ]] || return
+
+function refresh-dotfiles
+{
+	local MYBRCD="${BASHRCDIR:-$HOME}/.bashrc.d"
+	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
+	echo "Refreshing $MYBRCD from default pull location"
+	[[ -d "$MYBRCD/.hg" ]] && type hg 2> /dev/null && hg pull -u || hg up
+	[[ -e "$MYBRCD/GNUmakefile" ]] && \
+		( TGTDIR="${BASHRCDIR:-$HOME}" make -C "$MYBRCD" install ) && \
+		source "${BASHRCDIR:-$HOME}/.bashrc"
+}
