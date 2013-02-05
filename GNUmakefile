@@ -5,7 +5,7 @@ TGTDIR := $(realpath $(TGTDIR))
 
 .PHONY: install setup clean rebuild
 
-SRCFILES := .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(wildcard .bashrc.d/*)
+SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(wildcard .bashrc.d/*)
 
 define make_single_rule
 install: $(TGTDIR)/$(1)
