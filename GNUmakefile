@@ -23,19 +23,19 @@ SETUPS   := $(SETUP).sh $(SETUP).bin
 setup: $(SETUPS)
 
 $(SETUP).bin: $(PAYLOAD)
-	./append_payload -b "-i=$(basename $@).sh.in" "-o=$@" $^
+	cd $(DOTFILES) && ./append_payload -b "-i=$(basename $@).sh.in" "-o=$@" $^
 
 $(SETUP).sh: $(PAYLOAD)
-	./append_payload -u "-i=$(basename $@).sh.in" "-o=$@" $^
+	cd $(DOTFILES) && ./append_payload -u "-i=$(basename $@).sh.in" "-o=$@" $^
 
 $(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
-	tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+	cd $(DOTFILES) && tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
 clean:
-	rm -f $(SETUPS) $(PAYLOAD)
+	cd $(DOTFILES) && rm -f $(SETUPS) $(PAYLOAD)
 
 .INTERMEDIATE: $(PAYLOAD)
 
