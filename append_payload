@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 function __onboard_readlink()
 {
-	[[ "$1" == "-f" ]] && shift
 	local DIR=$(echo "${1%/*}")
-	(cd "$DIR" && echo "$(pwd -P)")
+	(cd "$DIR" && echo "$(pwd -P)/${1##*/}")
 }
-type readlink > /dev/null 2>&1 || alias readlink=__onboard_readlink
+READLINK="readlink -f"
+type readlink > /dev/null 2>&1 || READLINK=__onboard_readlink
 SYNTAX_ARGS="[--binary|-b] [--uuencode|-u] [--input=FILE|-i=FILE] [--output=FILE|-o=FILE] [--] \033[1;37mPAYLOAD\033[00m"
 # default encoding
 TGZ=1
@@ -81,10 +81,10 @@ done
 # Sanity checking
 [[ -n "$PAYLOAD" && -n "$OFILE" && -n "$IFILE" ]] || { show_syntax 1 "you either set an empty input/output file or forgot to give a payload."; }
 echo -e "$PAYLOAD\n$IFILE"|while read f; do
-	[[ -f "$(readlink -f "$f")" ]] || { show_syntax 1 "the given file argument ($f) does not exist or isn't a file."; }
+	[[ -f "$($READLINK "$f")" ]] || { show_syntax 1 "the given file argument ($f) does not exist or isn't a file."; }
 done || exit $? # need to pass on the exit code from the subshell
-[[ "$(readlink -f "$IFILE")" != "$(readlink -f "$OFILE")" ]] || { show_syntax 1 "this seems odd. You gave identical files for input and output."; }
-[[ "$(readlink -f "$OFILE")" != "$(readlink -f "$PAYLOAD")" ]] || { show_syntax 1 "this seems odd. You gave identical files for payload and output."; }
+[[ "$($READLINK "$IFILE")" != "$($READLINK "$OFILE")" ]] || { show_syntax 1 "this seems odd. You gave identical files for input and output."; }
+[[ "$($READLINK "$OFILE")" != "$($READLINK "$PAYLOAD")" ]] || { show_syntax 1 "this seems odd. You gave identical files for payload and output."; }
 
 # Do the job
 sed -e "s/TGZ=./TGZ=$TGZ/" "$IFILE" > "$OFILE" && chmod a+x "$OFILE"

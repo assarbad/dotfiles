@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 function __onboard_readlink()
 {
-	[[ "$1" == "-f" ]] && shift
 	local DIR=$(echo "${1%/*}")
-	(cd "$DIR" && echo "$(pwd -P)")
+	(cd "$DIR" && echo "$(pwd -P)/${1##*/}")
 }
-type readlink > /dev/null 2>&1 || alias readlink=__onboard_readlink
+READLINK="readlink -f"
+type readlink > /dev/null 2>&1 || READLINK=__onboard_readlink
 TGZ=1
-SELF=$(readlink -f $0)
+SELF=$($READLINK $0)
 SDIR=${SELF%/*}
 SELF=${SELF##*/}
 DIRSELF="$SDIR/$SELF"
