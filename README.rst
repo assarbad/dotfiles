@@ -14,7 +14,7 @@ Pick whatever you like. I have borrowed stuff here and there myself.
 One shameless plug, however. I warmly recommend the following books:
 
 - `Bash Cookbook`_ by Carl Albing, JP Vossen, Cameron Newham
-- `Practical Vim`_ by Drew Neil (also check out his `vimcasts.org`_)
+- `Practical Vim`_ by Drew Neil (also check out his `vimcasts.org`_ and dotfiles_)
 - `Hacking Vim`_ by Kim Schulz
 
 The mysterious ``GNUmakefile``
@@ -57,3 +57,4 @@ Hope this is useful for someone else. Write me an email if it is :)
 .. _Practical Vim: http://pragprog.com/book/dnvim/practical-vim
 .. _Hacking Vim: http://www.packtpub.com/hacking-vim-cookbook-get-most-out-latest-vim-editor/book
 .. _vimcasts.org: http://vimcasts.org/
+.. _dotfiles: https://github.com/nelstrom/dotfiles
