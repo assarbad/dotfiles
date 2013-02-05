@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+function __onboard_readlink()
+{
+	[[ "$1" == "-f" ]] && shift
+	local DIR=$(echo "${1%/*}")
+	(cd "$DIR" && echo "$(pwd -P)")
+}
+type readlink > /dev/null 2>&1 || alias readlink=__onboard_readlink
 SYNTAX_ARGS="[--binary|-b] [--uuencode|-u] [--input=FILE|-i=FILE] [--output=FILE|-o=FILE] [--] \033[1;37mPAYLOAD\033[00m"
 # default encoding
 TGZ=1
