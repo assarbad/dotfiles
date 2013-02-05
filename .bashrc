@@ -90,7 +90,7 @@ if [[ -e "/etc/debian_version" ]] && type dircolors > /dev/null 2>&1; then
 	# ls: unrecognized prefix: mh
 	# ls: unparsable value for LS_COLORS environment variable
 	# However, this output doesn't seem to be shown when piping. How useless.
-	command dircolors|command grep -q 'lh=' && export LS_COLORS="ln=01;36:hl=00;36"
+	command dircolors|command grep -q 'hl=' && export LS_COLORS="ln=01;36:hl=00;36"
 	command dircolors|command grep -q 'mh=' && export LS_COLORS="ln=01;36:mh=00;36"
 fi
 # beroot so we feel at home when assuming super-user rights
