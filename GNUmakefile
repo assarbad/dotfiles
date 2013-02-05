@@ -18,20 +18,24 @@ endef
 SETUP    := dotfile_installer
 PAYLOAD  := dotfiles.tgz
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+SETUPS   := $(SETUP).sh $(SETUP).bin
 
-setup: $(SETUP)
+setup: $(SETUPS)
 
-dotfile_installer: $(PAYLOAD)
-	./append_payload -u "-i=$@.sh.in" "-o=$@" $^
+$(SETUP).bin: $(PAYLOAD)
+	./append_payload -b "-i=$(basename $@).sh.in" "-o=$@" $^
 
-$(PAYLOAD): $(filter-out $(DOTFILES)/$(SETUP),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
+$(SETUP).sh: $(PAYLOAD)
+	./append_payload -u "-i=$(basename $@).sh.in" "-o=$@" $^
+
+$(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
 	tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
 clean:
-	rm -f $(SETUP) $(PAYLOAD)
+	rm -f $(SETUPS) $(PAYLOAD)
 
 .INTERMEDIATE: $(PAYLOAD)
 

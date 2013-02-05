@@ -36,6 +36,9 @@ function show_syntax
 for i in "$@"; do
 	(($FNAME)) && break
 	case $i in
+		--binary|-b)
+			TGZ=1
+			;;
 		--uuencode|-u)
 			TGZ=0
 			;;
