@@ -16,27 +16,27 @@ $(TGTDIR)/$(1): $(realpath $(1))
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-PAYLOAD  := $(DOTFILES)/dotfiles.tgz
-SETUP    := $(DOTFILES)/dotfile_installer
+PAYLOAD  := dotfiles.tgz
+SETUP    := dotfile_installer
 SETUPS   := $(SETUP).sh $(SETUP).bin
 
 setup: $(SETUPS)
 
 $(SETUP).bin: $(PAYLOAD)
-	cd $(DOTFILES) && ./append_payload -b "-i=$(basename $@).sh.in" "-o=$(notdir $@)" $(notdir $^)
+	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $^)
 
 $(SETUP).sh: $(PAYLOAD)
-	cd $(DOTFILES) && ./append_payload -u "-i=$(basename $@).sh.in" "-o=$(notdir $@)" $(notdir $^)
+	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $^)
 
-$(PAYLOAD): $(filter-out $(SETUPS) $(PAYLOAD),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
-	cd $(DOTFILES) && rm -f $(notdir $(SETUPS) $(PAYLOAD))
+$(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
+	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
 	tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
 clean:
-	cd $(DOTFILES) && rm -f $(notdir $(SETUPS) $(PAYLOAD))
+	rm -f $(notdir $(SETUPS) $(PAYLOAD))
 
 .INTERMEDIATE: $(PAYLOAD)
 
