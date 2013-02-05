@@ -4,10 +4,10 @@
 
 function refresh-dotfiles
 {
-	local MYBRCD="${BASHRCDIR:-$HOME}/.bashrc.d"
+	local MYBRCD="${BASHRCDIR:-$HOME}/.dotfiles"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
 	echo "Refreshing $MYBRCD from default pull location"
-	[[ -d "$MYBRCD/.hg" ]] && type hg 2> /dev/null && hg pull -u || hg up
+	[[ -d "$MYBRCD/.hg" ]] && type hg 2> /dev/null && hg pull -R "$MYBRCD" -u || hg up -R "$MYBRCD"
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
 		( TGTDIR="${BASHRCDIR:-$HOME}" make -C "$MYBRCD" install ) && \
 		source "${BASHRCDIR:-$HOME}/.bashrc"
