@@ -85,12 +85,12 @@ else
 	alias l='ls -ahl'
 fi
 # color hard links in cyan, but a little darker than soft links
-if [[ -e "/etc/debian_version" ]]; then
+if [[ -e "/etc/debian_version" ]] && type dircolors > /dev/null 2>&1; then
 	LS_COLORS="ln=01;36:mh=00;36"
 	# ls (from GNU coreutils) misbehaves in that it "succeeds" silently (exit code 0) although LS_COLORS is erroneous ... pain
 	# ls: unrecognized prefix: mh
 	# ls: unparsable value for LS_COLORS environment variable
-	command ls -ahl 2>&1|command grep -q '^ls: unrecognized prefix: mh' && LS_COLORS="ln=01;36:hl=00;36"
+	command dircolors|command grep -q 'mh=' && LS_COLORS="ln=01;36:hl=00;36"
 	export LS_COLORS
 fi
 # beroot so we feel at home when assuming super-user rights
