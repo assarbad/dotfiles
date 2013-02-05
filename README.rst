@@ -22,6 +22,9 @@ The mysterious ``GNUmakefile``
 
 You'll also find a ``GNUmakefile`` that can be used for two things.
 
+- ``make`` (default and alias for ``make setup``)
+- ``make install``
+
 The default behavior is to create a self-contained installer named
 ``dotfile_installer``, based on the script of the same basename with the
 suffix ``.sh.in``. This installer will contain all the files from this
@@ -33,6 +36,16 @@ you may want to choose an extension such as ``.bin`` or give the MIME type
 explicitly. This shouldn't matter in the default build, however, where
 the created installer is ``uuencode``-d and thus should behave correctly
 when downloaded as 7-bit ASCII.
+
+The other thing is to install it to your home folder. To do this, make sure
+you are in the folder in which the dotfiles reside (``~/.dotfiles`` on my
+systems) and then run ``make install``. If you would want to use an alternate
+target location you'd have to set the ``TGTDIR`` variable in one of two ways:
+
+- ``TGTDIR=/my/custom/target/directory make install``
+- ``make TGTDIR=/my/custom/target/directory install``
+
+Hope this is useful for someone else. Write me an email if it is :)
 
 .. _Bash Cookbook: http://bashcookbook.com/
 .. _Practical Vim: http://pragprog.com/book/dnvim/practical-vim
