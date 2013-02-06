@@ -137,7 +137,6 @@ fi
 while read srcdir; do
 	if [[ -d "$srcdir" ]]; then
 		for f in $(command ls -A "$srcdir"); do
-			echo "Sourcing: $srcdir/$f"
 			[[ -f "$srcdir" ]] && source "$srcdir/$f"
 		done
 	fi
