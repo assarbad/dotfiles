@@ -102,6 +102,7 @@ fi
 
 # Convenience aliases
 alias ..='cd ..'
+alias ...='cd ../..'
 alias -- -='cd -'
 alias mc='mc -c'
 alias psaux='ps awwwux'
@@ -134,13 +135,14 @@ if [[ -n "$SSH_AUTH_SOCK" ]]; then
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
-while read srcdir; do
+# NB: Worst-case scenario iff HOST is empty is that we source all files twice ...
+for srcdir in "$BASHRCDIR/.bashrc.d" "$BASHRCDIR/.bashrc.d/$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))"; do
 	if [[ -d "$srcdir" ]]; then
 		for f in $(command ls -A "$srcdir"); do
 			[[ -f "$srcdir" ]] && source "$srcdir/$f"
 		done
 	fi
-done < <(echo -e "$BASHRCDIR/.bashrc.d\n$BASHRCDIR/.bashrc.d/$(hostname -s 2> /dev/null)")
+done
 
 function ducks
 {
