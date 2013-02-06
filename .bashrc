@@ -134,11 +134,14 @@ if [[ -n "$SSH_AUTH_SOCK" ]]; then
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
-if [[ -d "$BASHRCDIR/.bashrc.d" ]]; then
-	for f in `command ls -A "$BASHRCDIR/.bashrc.d"`; do
-		source "$BASHRCDIR/.bashrc.d/$f"
-	done
-fi
+while read srcdir; do
+	if [[ -d "$srcdir" ]]; then
+		for f in $(command ls -A "$srcdir"); do
+			echo "Sourcing: $srcdir/$f"
+			[[ -f "$srcdir" ]] && source "$srcdir/$f"
+		done
+	fi
+done < <(echo -e "$BASHRCDIR/.bashrc.d\n$BASHRCDIR/.bashrc.d/$(hostname -s 2> /dev/null)")
 
 function ducks
 {
