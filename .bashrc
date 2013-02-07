@@ -139,7 +139,7 @@ fi
 for srcdir in "$BASHRCDIR/.bashrc.d" "$BASHRCDIR/.bashrc.d/$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))"; do
 	if [[ -d "$srcdir" ]]; then
 		for f in $(command ls -A "$srcdir"); do
-			[[ -f "$srcdir" ]] && source "$srcdir/$f"
+			[[ -d "$srcdir/$f" ]] || source "$srcdir/$f"
 		done
 	fi
 done
