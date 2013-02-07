@@ -5,14 +5,15 @@ TGTDIR := $(realpath $(TGTDIR))
 
 .PHONY: install setup clean rebuild
 
-SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(shell find .bashrc.d -type d)
+SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(shell find .bashrc.d -type f)
 
 define make_single_rule
 install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-	cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
+	@echo "Linking/copying: $$(notdir $$^) -> $$(dir $$@)"
+	@cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -40,4 +41,4 @@ clean:
 
 .INTERMEDIATE: $(PAYLOAD)
 
-$(foreach goal,$(SRCFILES),$(eval $(call make_single_rule,$(goal))))
+$(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
