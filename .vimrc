@@ -83,6 +83,10 @@ cmap w!! %!sudo tee > /dev/null %
 nmap <leader>l :set list!<CR>
 
 " Use the same symbols as TextMate for tabstops and EOLs
-set listchars=tab:›\ ,eol:¬
+if &encoding == 'utf-8'
+	set listchars=tab:›\ ,eol:¬
+else
+	set listchars=tab:&gt;\ 
+endif
 highlight NonText ctermfg=DarkGrey guifg=#4a4a59
 highlight SpecialKey ctermfg=DarkGrey guifg=#4a4a59

@@ -6,6 +6,7 @@ users = root, oliver, jobber
 
 [extensions]
 hgext.convert=
+color =
 
 [hostfingerprints]
 vcs.assarbad.net = 2A:D6:5F:AE:64:2B:BB:96:48:8F:89:DE:67:B6:E3:2B:39:0D:DE:1E
