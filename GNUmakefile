@@ -12,7 +12,6 @@ install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-	if test 
 	cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 endef
 
