@@ -5,15 +5,15 @@ TGTDIR := $(realpath $(TGTDIR))
 
 .PHONY: install setup clean rebuild
 
-SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(wildcard .bashrc.d/*)
+SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases .vim $(shell find .bashrc.d -type d)
 
 define make_single_rule
 install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-	test -d $$^ || cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
-	test -d $$^ && cp -lfr $$^ $$(dir $$@) 2>/dev/null || cp -fr $$^ $(dir $$@)/
+	if test 
+	cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
