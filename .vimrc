@@ -42,7 +42,7 @@ set hlsearch     " highlight searches by default
 set ignorecase   " ignore case when searching
 set smartcase    " ... but only when typing all lowercase, otherwise case-sensitive
 " ... and how to get rid of the highlighted search matches? Like so:
-nmap <leader>h :nohl<CR>
+nmap <leader>h :nohlsearch<CR>
 
 " syntax highlighting
 filetype on
