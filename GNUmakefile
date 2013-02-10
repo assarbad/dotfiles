@@ -32,7 +32,7 @@ $(SETUP).sh: $(PAYLOAD)
 $(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
 	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
 	@test -d .hg && rm -f .hg/rm -f hg-bundle-*
-	tar -C $(DOTFILES) -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+	tar -C $(DOTFILES) --exclude='.hg/hgrc' --transform 's|hgrc.dotfiles|.hg/hgrc|' -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
