@@ -3,9 +3,6 @@ set nocompatible
 set background=dark " using dark terminal make certain elements a little brighter ;)
 set backspace=indent,eol,start " make backspace more convenient
 
-" Load plugins
-runtime ftplugin/man.vim
-
 " Indentation/tab related settings
 set tabstop=4
 set shiftwidth=4
@@ -44,10 +41,7 @@ set smartcase    " ... but only when typing all lowercase, otherwise case-sensit
 " ... and how to get rid of the highlighted search matches? Like so:
 nmap <leader>h :nohlsearch<CR>
 
-" syntax highlighting
-filetype on
-filetype plugin on
-filetype indent on
+silent! runtime ftplugin/man.vim | filetype on | filetype plugin on | filetype indent on
 syntax on
 if version >= 700
 	set showcmd      " show incomplete cmds down the bottom
@@ -79,7 +73,7 @@ nmap <leader>l :set list!<CR>:set number!<CR>
 if &encoding == 'utf-8'
 	set listchars=tab:›\ ,eol:¬
 else
-	set listchars=tab:&gt;\ 
+	set listchars=tab:>\ 
 endif
 highlight NonText ctermfg=DarkGrey guifg=#4a4a59
 highlight SpecialKey ctermfg=DarkGrey guifg=#4a4a59
@@ -88,3 +82,6 @@ highlight MatchParen ctermbg=4
 highlight LineNr term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 " Highlight odd tabs in the middle of the line
 match errorMsg /[^\t]\zs\t\+/
+
+" Allow expanding to current active file directory (Practical Vim, page 95)
+cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
