@@ -20,6 +20,7 @@ DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 PAYLOAD  := dotfiles.tgz
 SETUP    := dotfile_installer
 SETUPS   := $(SETUP).sh $(SETUP).bin
+BUNDLE   := dotfiles.hg
 
 setup: $(SETUPS)
 
@@ -29,16 +30,18 @@ $(SETUP).bin: $(PAYLOAD)
 $(SETUP).sh: $(PAYLOAD)
 	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $^)
 
-$(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
-	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
+$(PAYLOAD): $(filter-out $(addprefix %/,$(BUNDLE) $(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
+	@rm -f $(notdir $(SETUPS) $(PAYLOAD) $(BUNDLE))
 	@test -d .hg && rm -f .hg/rm -f hg-bundle-*
-	tar -C $(DOTFILES) --exclude='.hg/hgrc' --transform 's|hgrc.dotfiles|.hg/hgrc|' -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+	hg -R $(dir $@) bundle -a $(BUNDLE)
+	tar -C $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+	@rm -f $(BUNDLE)
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
 clean:
-	rm -f $(notdir $(SETUPS) $(PAYLOAD))
+	rm -f $(notdir $(SETUPS) $(PAYLOAD) $(BUNDLE))
 
 .INTERMEDIATE: $(PAYLOAD)
 
