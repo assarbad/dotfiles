@@ -85,3 +85,7 @@ match errorMsg /[^\t]\zs\t\+/
 
 " Allow expanding to current active file directory (Practical Vim, page 95)
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+
+" Make very magic search the default
+nnoremap / /\v
+cnoremap s/ s/\v
