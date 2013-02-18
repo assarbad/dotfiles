@@ -51,6 +51,7 @@ export HISTFILESIZE=3000
 shopt -s checkwinsize
 shopt -s cdspell
 shopt -s dotglob
+shopt -s extglob
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(lesspipe)"
