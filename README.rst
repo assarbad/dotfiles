@@ -31,6 +31,7 @@ the same basename with the suffix ``.sh.in``. In addition a second
 version named ``dotfile_installer.bin`` gets created as well. This
 installer will contain all the files from this folder, including
 the ``.hg`` folder (this is intentional!).
+You can usually find the latest version of the installer `here`_.
 
 This way you can simply build this file once and download from a location
 you trust.
@@ -50,3 +51,4 @@ Hope this is useful for someone else. Write me an email if it is :)
 .. _Hacking Vim: http://www.packtpub.com/hacking-vim-cookbook-get-most-out-latest-vim-editor/book
 .. _vimcasts.org: http://vimcasts.org/
 .. _dotfiles: https://github.com/nelstrom/dotfiles
+.. _here: http://devnull.assarbad.net/dfinst/
