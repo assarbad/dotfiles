@@ -1,10 +1,5 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-# Alias for convenience
-TMUX="TERM=screen-256color-bce tmux"
-alias mux="$TMUX attach-session -d -t $(hostname -s) || $TMUX new-session -s $(hostname -s) -n shell"
-unset TMUX
-
 # Check whether the session exists already
 tmux has-session -t $(hostname -s) 2> /dev/null && return
 if [[ "yggdrasil" == "$(hostname -s)" ]]; then
