@@ -122,7 +122,7 @@ unset VIMRC
 [[ -f /etc/bash_completion ]] && source /etc/bash_completion
 
 # Load the SSH agent and if it's loaded already, add the default identity
-if [[ -n "$SSH_AUTH_SOCK" ]] && [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
+if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	SSHAGENT=$(which ssh-agent)
 	SSHAGENTARGS="-s"
 	if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
@@ -132,7 +132,7 @@ if [[ -n "$SSH_AUTH_SOCK" ]] && [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; 
 		SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
 		export SSH_AUTH_SOCK
 	fi
-	ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+	[[ -n "$SSH_AUTH_SOCK" ]] && ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
 fi
 
 # Load additional settings (NOTE: does not allow blanks in names of files within that folder)
