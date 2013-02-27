@@ -122,16 +122,16 @@ unset VIMRC
 [[ -f /etc/bash_completion ]] && source /etc/bash_completion
 
 # Load the SSH agent and if it's loaded already, add the default identity
-SSHAGENT=$(which ssh-agent)
-SSHAGENTARGS="-s"
-if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
-	eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
-	[[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
-else
-	SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
-	export SSH_AUTH_SOCK
-fi
-if [[ -n "$SSH_AUTH_SOCK" ]]; then
+if [[ -n "$SSH_AUTH_SOCK" ]] && [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
+	SSHAGENT=$(which ssh-agent)
+	SSHAGENTARGS="-s"
+	if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
+		eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
+		[[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"; }
+	else
+		SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
+		export SSH_AUTH_SOCK
+	fi
 	ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
 fi
 
