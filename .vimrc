@@ -89,3 +89,8 @@ cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 " Make very magic search the default
 nnoremap / /\v
 cnoremap s/ s/\v
+
+" Make an effort to tell Vim about capable terminals
+if $COLORTERM == 'gnome-terminal'
+	set t_Co=256
+endif
