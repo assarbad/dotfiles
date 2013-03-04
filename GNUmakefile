@@ -3,7 +3,7 @@
 TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
-.PHONY: install setup clean rebuild
+.PHONY: install setup clean rebuild help
 
 SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(shell find .bashrc.d -type f) $(shell find .vim -type f)
 
@@ -12,8 +12,13 @@ install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
+ifeq ($(NOLINK),)
 	@echo "Linking/copying: $$(notdir $$^) -> $$(dir $$@)"
 	@cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
+else
+	@echo "Copying: $$(notdir $$^) -> $$(dir $$@)"
+	@cp -fr $$^ $$@
+endif
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -42,6 +47,19 @@ rebuild: clean setup
 
 clean:
 	rm -f $(notdir $(SETUPS) $(PAYLOAD) $(BUNDLE))
+
+help:
+	-@echo "USAGE:\n"
+	-@echo "  Create the installer script with payload:"
+	-@echo "    make setup\n"
+	-@echo "Install into TGTDIR:"
+	-@echo "    make install\n"
+	-@echo "    TGTDIR defaults to $$HOME unless you override it.\n"
+	-@echo "    Ways to override:"
+	-@echo "      make TGTDIR=/target/dir install"
+	-@echo "      TGTDIR=/target/dir make install"
+	-@echo "\n"
+	-@echo "NOTE: you may set the variable NOLINK to a non-empty value to copy instead of hard-link by default"
 
 .INTERMEDIATE: $(PAYLOAD)
 

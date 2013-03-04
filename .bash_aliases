@@ -37,13 +37,14 @@ fi
 if [[ -e "/etc/redhat-release" ]]; then
   alias search='yum -C search'
   alias show='yum -C info'
-  alias upgrade='yum update'
   if [[ $UID -ne 0 ]]; then
     for i in ifconfig:/sbin/ifconfig service:/sbin/service htop:/usr/bin/htop iptables:/sbin/iptables; do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
     done
     alias chorme="sudo /bin/chown -hR $(whoami):"
+    alias upgrade='sudo yum update'
   else
     alias chorme="chown -hR $(whoami):"
+    alias upgrade='yum update'
   fi
 fi
