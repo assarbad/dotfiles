@@ -10,23 +10,40 @@ if [[ -n "$(which vim 2> /dev/null)" ]]; then
 fi
 [[ $UID -eq 0 ]] || alias visudo='sudo -E visudo'
 
+# Syntax: __create_abs_alias <name> <command>
+function __create_abs_alias
+{
+  file "$2" > /dev/null 2>&1 && type "$2" > /dev/null 2>&1 && [[ -n "$3" ]] && { alias $1="$3 $2"; } || { alias $1="$2"; }
+}
+
 ## ----------------------------------------
 if [[ -e "/etc/debian_version" ]]; then
-  alias debfoster='sudo /usr/bin/debfoster'
-  alias deborphan='sudo /usr/bin/deborphan'
+  alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -lf $i; done'
   alias search='apt-cache search'
   alias show='apt-cache show'
   alias upgrade='apt-get update && apt-get dist-upgrade'
-  alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -lf $i; done'
-  alias chorme="sudo /bin/chown -hR $(whoami):"
-  if [ $UID -ne 0 ]; then
-    alias apt-get='sudo /usr/bin/apt-get'
-    alias aptitude='sudo /usr/bin/aptitude'
-    alias dpkg-reconfigure='sudo /usr/sbin/dpkg-reconfigure'
-    alias visudo='sudo /usr/sbin/visudo'
-    alias ifconfig='sudo /sbin/ifconfig'
-    alias service='sudo /usr/sbin/service'
-    alias htop='sudo /usr/bin/htop'
-    alias iptables='sudo /sbin/iptables'
+  for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
+    __create_abs_alias ${i%%:*} "${i#*:}"
+  done
+  if [[ $UID -ne 0 ]]; then
+    for i in apt-get:/usr/bin/apt-get aptitude:/usr/bin/aptitude dpkg-reconfigure:/usr/sbin/dpkg-reconfigure ifconfig:/sbin/ifconfig service:/usr/sbin/service htop:/usr/bin/htop iptables:/sbin/iptables apt-file:/usr/bin/apt-file; do
+      __create_abs_alias ${i%%:*} "${i#*:}" sudo
+    done
+    alias chorme="sudo /bin/chown -hR $(whoami):"
+  else
+    alias chorme="chown -hR $(whoami):"
+  fi
+fi
+if [[ -e "/etc/redhat-release" ]]; then
+  alias search='yum -C search'
+  alias show='yum -C info'
+  alias upgrade='yum update'
+  if [[ $UID -ne 0 ]]; then
+    for i in ifconfig:/sbin/ifconfig service:/sbin/service htop:/usr/bin/htop iptables:/sbin/iptables; do
+      __create_abs_alias ${i%%:*} "${i#*:}" sudo
+    done
+    alias chorme="sudo /bin/chown -hR $(whoami):"
+  else
+    alias chorme="chown -hR $(whoami):"
   fi
 fi
