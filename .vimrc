@@ -61,6 +61,8 @@ if version >= 700
 	" now set it up to change the status line based on mode
 	au InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
 	au InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
+	" Toggle NERDTree
+	map <leader>t :NERDTreeToggle<CR>
 endif
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 " http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
@@ -96,6 +98,3 @@ cnoremap s/ s/\v
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
 endif
-
-" Toggle NERDTree
-map <leader>t :NERDTreeToggle<CR>
