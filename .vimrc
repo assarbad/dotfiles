@@ -20,8 +20,6 @@ set wildmode=list:longest,full " make cmdline tab completion similar to bash
 set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
 set scrolloff=3  " keep 3 lines when scrolling
 set nobackup     " do not keep a backup file
-" allow command mode with semi-colon
-noremap ; :
 
 " status line and layout of the work space
 set laststatus=2
@@ -44,7 +42,10 @@ nmap <leader>h :nohlsearch<CR>
 silent! runtime ftplugin/man.vim | filetype on | filetype plugin on | filetype indent on
 syntax on
 if version >= 700
-	set showcmd      " show incomplete cmds down the bottom
+	" https://github.com/tpope/vim-sensible
+	runtime! plugin/sensible.vim
+	" Only use pathogen on Vim 7.0 and up
+	execute pathogen#infect()
 	nmap <C-t> :tabnew<CR>
 	imap <C-t> <Esc>:tabnew<CR>
 	map  <F11> :tabprevious <CR>
@@ -86,11 +87,15 @@ match errorMsg /[^\t]\zs\t\+/
 " Allow expanding to current active file directory (Practical Vim, page 95)
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" Make very magic search the default
-nnoremap / /\v
+" Use the leader for very magic search
+nnoremap <leader>/ /\v
+" Make very magic mode the default for subst
 cnoremap s/ s/\v
 
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
 endif
+
+" Toggle NERDTree
+map <leader>t :NERDTreeToggle<CR>
