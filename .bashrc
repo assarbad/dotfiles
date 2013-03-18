@@ -112,7 +112,7 @@ alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 alias ssh='ssh -at'
 alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $(id -u) -exec ls -ahl {} \;'
 [[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
-(vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="vim -p -N -n -i NONE $VIMRC"; } || { alias vim="vim -N -n -i NONE $VIMRC"; }
+(vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="HOME=$BASHRCDIR vim -p -N -n -i NONE $VIMRC"; } || { alias vim="HOME=$BASHRCDIR vim -N -n -i NONE $VIMRC"; }
 unset VIMRC
 
 # Aliases in the external file overwrite those above.

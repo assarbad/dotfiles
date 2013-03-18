@@ -98,3 +98,4 @@ cnoremap s/ s/\v
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
 endif
+set noundofile
