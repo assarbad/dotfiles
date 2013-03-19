@@ -98,4 +98,8 @@ cnoremap s/ s/\v
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
 endif
-set noundofile
+
+" Check for the undo persistence and if it exists, disable it
+if exists('+undofile')
+	set noundofile
+endif
