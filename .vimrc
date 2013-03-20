@@ -100,6 +100,6 @@ if $COLORTERM == 'gnome-terminal'
 endif
 
 " Check for the undo persistence and if it exists, disable it
-if exists('persistent_undo')
+if has('persistent_undo')
 	set noundofile
 endif
