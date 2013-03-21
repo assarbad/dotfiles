@@ -12,7 +12,7 @@ install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-ifeq ($(HARDLINK),)
+ifdef HARDLINK
 	@echo "Linking/copying: $$(notdir $$^) -> $$(dir $$@)"
 	@cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 else
@@ -25,20 +25,32 @@ DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 PAYLOAD  := dotfiles.tgz
 SETUP    := dotfile_installer
 SETUPS   := $(SETUP).sh $(SETUP).bin
+ifdef WEBDIR
+PSETUPS   := $(patsubst %,$(WEBDIR)/%,$(SETUPS))
+endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
-setup: $(SETUPS)
+ifndef WEBDIR
+setup: $(SETUPS) 
+else
+setup: $(PSETUPS)
+	hg -R $(DOTFILES) tip|perl -ple 's/\s+<[^>]+>//g'|tee "$(WEBDIR)/tip.txt"
 
-$(SETUP).bin: $(PAYLOAD) $(SENTINEL)
+$(WEBDIR)/%: %
+	cp -a $< $@
+endif
+
+$(filter %.bin,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
 	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
-$(SETUP).sh: $(PAYLOAD) $(SENTINEL)
+$(filter %.sh,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
 	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
 $(PAYLOAD): $(SENTINEL)
 	hg -R $(DOTFILES) update
 	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
 	tar -C $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
