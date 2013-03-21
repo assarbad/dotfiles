@@ -39,11 +39,15 @@ set smartcase    " ... but only when typing all lowercase, otherwise case-sensit
 " ... and how to get rid of the highlighted search matches? Like so:
 nmap <leader>h :nohlsearch<CR>
 
-silent! runtime ftplugin/man.vim | filetype on | filetype plugin on | filetype indent on
+filetype on | filetype plugin on | filetype indent on
 syntax on
 if version >= 700
 	" https://github.com/tpope/vim-sensible
-	runtime! plugin/sensible.vim
+	runtime! bundle/vim-sensible/plugin/sensible.vim
+	" Check for the undo persistence and if it exists, disable it
+	if exists('+undofile')
+		set noundofile
+	endif
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
 	nmap <C-t> :tabnew<CR>
@@ -92,14 +96,9 @@ cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 " Use the leader for very magic search
 nnoremap <leader>/ /\v
 " Make very magic mode the default for subst
-cnoremap s/ s/\v
+"cnoremap s/ s/\v
 
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
-endif
-
-" Check for the undo persistence and if it exists, disable it
-if has('persistent_undo')
-	set noundofile
 endif
