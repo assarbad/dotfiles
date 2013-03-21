@@ -35,9 +35,9 @@ $(SETUP).bin: $(PAYLOAD) $(SENTINEL)
 $(SETUP).sh: $(PAYLOAD) $(SENTINEL)
 	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
-$(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
+$(PAYLOAD): $(SENTINEL)
+	hg -R $(DOTFILES) update
 	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
-	@test -d .hg && rm -f .hg/rm -f hg-bundle-*
 	tar -C $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 .NOTPARALLEL: rebuild
