@@ -58,6 +58,8 @@ help:
 	-@echo "      TGTDIR=/target/dir make install"
 	-@echo "\n"
 	-@echo "NOTE: you may set the variable HARDLINK to a non-empty value to hard-link instead of copying by default"
+	-@echo "\nAlternative one method to install:"
+	-@echo "hg clone https://bitbucket.org/assarbad/dotfiles .dotfiles && make -C .dotfiles install"
 
 .INTERMEDIATE: $(PAYLOAD)
 
