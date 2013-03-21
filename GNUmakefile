@@ -34,7 +34,7 @@ ifndef WEBDIR
 setup: $(SETUPS) 
 else
 setup: $(PSETUPS)
-	hg -R $(DOTFILES) tip|perl -ple 's/\s+<[^>]+>//g'|tee "$(WEBDIR)/tip.txt"
+	hg -R $(DOTFILES) tip|perl -ple 's/\s+<[^>]+>//g'|tee "$(WEBDIR)/tip.txt" && touch -r $(SENTINEL)
 
 $(WEBDIR)/%: %
 	cp -a $< $@
