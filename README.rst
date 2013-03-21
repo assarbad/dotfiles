@@ -44,6 +44,10 @@ target location you'd have to set the ``TGTDIR`` variable in one of two ways:
 - ``TGTDIR=/my/custom/target/directory make install``
 - ``make TGTDIR=/my/custom/target/directory install``
 
+You can also set the variable HARDLINK to some non-empty value in order to
+have ``cp`` attempt to hardlink source and destination. If this fails it will
+automatically fall back to default copy.
+
 Hope this is useful for someone else. Write me an email if it is :)
 
 .. _Bash Cookbook: http://bashcookbook.com/
