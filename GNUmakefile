@@ -12,7 +12,7 @@ install: $(TGTDIR)/$(1)
 $(TGTDIR)/$(1): $(realpath $(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
-ifeq ($(NOLINK),)
+ifeq ($(HARDLINK),)
 	@echo "Linking/copying: $$(notdir $$^) -> $$(dir $$@)"
 	@cp -lfr $$^ $$@ 2>/dev/null || cp -fr $$^ $$@
 else
@@ -25,28 +25,26 @@ DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 PAYLOAD  := dotfiles.tgz
 SETUP    := dotfile_installer
 SETUPS   := $(SETUP).sh $(SETUP).bin
-BUNDLE   := dotfiles.hg
+SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
 setup: $(SETUPS)
 
-$(SETUP).bin: $(PAYLOAD)
-	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $^)
+$(SETUP).bin: $(PAYLOAD) $(SENTINEL)
+	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
-$(SETUP).sh: $(PAYLOAD)
-	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $^)
+$(SETUP).sh: $(PAYLOAD) $(SENTINEL)
+	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
-$(PAYLOAD): $(filter-out $(addprefix %/,$(BUNDLE) $(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
-	@rm -f $(notdir $(SETUPS) $(PAYLOAD) $(BUNDLE))
+$(PAYLOAD): $(filter-out $(addprefix %/,$(SETUPS) $(PAYLOAD)),$(wildcard $(DOTFILES)/*) $(wildcard $(DOTFILES)/.bashrc.d/*))
+	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
 	@test -d .hg && rm -f .hg/rm -f hg-bundle-*
-	hg -R $(dir $@) bundle -a $(BUNDLE)
 	tar -C $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
-	@rm -f $(BUNDLE)
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
 clean:
-	rm -f $(notdir $(SETUPS) $(PAYLOAD) $(BUNDLE))
+	rm -f $(notdir $(SETUPS) $(PAYLOAD))
 
 help:
 	-@echo "USAGE:\n"
@@ -59,7 +57,7 @@ help:
 	-@echo "      make TGTDIR=/target/dir install"
 	-@echo "      TGTDIR=/target/dir make install"
 	-@echo "\n"
-	-@echo "NOTE: you may set the variable NOLINK to a non-empty value to copy instead of hard-link by default"
+	-@echo "NOTE: you may set the variable HARDLINK to a non-empty value to hard-link instead of copying by default"
 
 .INTERMEDIATE: $(PAYLOAD)
 

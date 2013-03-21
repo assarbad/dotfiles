@@ -11,7 +11,7 @@ SELF=$($READLINK $0)
 SDIR=${SELF%/*}
 SELF=${SELF##*/}
 DIRSELF="$SDIR/$SELF"
-[[ "x$1" == "x--help" ]] && { echo "Syntax: $SELF [target-directory]"; exit 255; }
+[[ "x$1" == "x--help" ]] && { echo "Syntax: $SELF <--help|--extract|{target-directory}>"; exit 255; }
 TGTDIR=${1:-$HOME}
 DOTF=".dotfiles"
 
@@ -41,6 +41,22 @@ function untar_payload
 	exit 0
 }
 
+function extract_payload
+{
+	local TGTDIR=$1
+	match=$(grep --text --line-number '^PAYLOAD:$' "$DIRSELF" | cut -d ':' -f 1)
+	payload_start=$((match + 1))
+	local PAYLOAD="$TGTDIR/payload.tgz"
+	[[ -d "$TGTDIR/$DOTF" ]] || mkdir -p "$TGTDIR/$DOTF"
+	if (($TGZ)); then
+		tail -n +$payload_start "$DIRSELF" > "$PAYLOAD" || { exit_error 1 "failed to extract payload ($DIRSELF) as $PAYLOAD'."; }
+	else
+		tail -n +$payload_start "$DIRSELF" | uudecode > "$PAYLOAD" || { exit_error 1 "failed to extract payload ($DIRSELF) as $PAYLOAD'."; }
+	fi
+	exit 0
+}
+
+[[ "x$1" == "x--extract" ]] && 
 read -p "Install $DIRSELF and copy .bashrc and friends into $TGTDIR (^C to cancel)? " ans
 if [[ "${ans:0:1}"  ||  "${ans:0:1}" ]]; then
 	(
@@ -49,5 +65,4 @@ if [[ "${ans:0:1}"  ||  "${ans:0:1}" ]]; then
 		echo -e "\033[01;31mDONE!\033[00m"
 	) || { ERR=$?; print_error "at [$FUNCNAME:$LINENO]"; exit $ERR; }
 fi
-
 exit 0
