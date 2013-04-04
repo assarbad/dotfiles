@@ -8,6 +8,16 @@ users = root, oliver, jobber
 hgext.convert=
 hgext.fetch=
 color=
+#commitsigs=
+#
+#[gpg]
+#cmd = gpg2
+#key = 0E88590F
+#
+#[commitsigs]
+#scheme = gnupg
+#gnupg.path = gpg2
+#gnupg.flags = --local-user oliver@assarbad.net
 
 [hostfingerprints]
 vcs.assarbad.net = 2A:D6:5F:AE:64:2B:BB:96:48:8F:89:DE:67:B6:E3:2B:39:0D:DE:1E

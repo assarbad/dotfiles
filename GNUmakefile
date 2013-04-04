@@ -5,7 +5,7 @@ TGTDIR := $(realpath $(TGTDIR))
 
 .PHONY: install setup clean rebuild help
 
-SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(shell find .bashrc.d -type f) $(shell find .vim -type f)
+SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
 
 define make_single_rule
 install: $(TGTDIR)/$(1)
@@ -49,7 +49,7 @@ $(filter %.sh,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
 $(PAYLOAD): $(SENTINEL)
 	hg -R $(DOTFILES) update
 	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
-	tar -C $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
+	tar -vC $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
 
 .NOTPARALLEL: rebuild
