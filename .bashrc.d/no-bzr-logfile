@@ -1,0 +1,2 @@
+export BZR_LOG=/dev/null
+
