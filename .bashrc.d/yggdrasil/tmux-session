@@ -18,7 +18,7 @@ if [[ "yggdrasil" == "$(hostname -s)" ]]; then
 	# Start htop as superuser in the upper left pane
 	tmux send-keys -t $SESSNAME:1.1 'sudo htop' C-m
 	# Tail some log files
-	tmux send-keys -t $SESSNAME:1.2 'sudo tail -F /var/log/syslog /var/log/sshd.log' C-m
+	tmux send-keys -t $SESSNAME:1.2 'sudo tail -F /var/log/syslog' C-m
 	# Attach to the newly created session
-	tmux attach -t $SESSNAME
+	#tmux attach -t $SESSNAME
 fi
