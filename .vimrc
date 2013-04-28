@@ -94,7 +94,7 @@ match errorMsg /[^\t]\zs\t\+/
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " Use the leader for very magic search
-nnoremap <leader>/ /\v
+"nnoremap <leader>/ /\v
 " Make very magic mode the default for subst
 "cnoremap s/ s/\v
 
