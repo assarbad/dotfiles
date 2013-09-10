@@ -10,7 +10,8 @@ function refresh-dotfiles
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
 		[[ "$MYBRCD/hgrc.dotfiles" -nt "$MYBRCD/.hg/hgrc" ]] && cp -a "$MYBRCD/hgrc.dotfiles" "$MYBRCD/.hg/hgrc"
-		grep -q '^bitbucket' "$MYBRCD/.hg/hgrc" && SRCREPO=bitbucket
+		SEARCH=bb_https
+		grep -q "^$SEARCH" "$MYBRCD/.hg/hgrc" && SRCREPO=$SEARCH
 		type hg 2> /dev/null && hg pull -R "$MYBRCD" -u $SRCREPO || hg up -R "$MYBRCD"
 	fi
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
