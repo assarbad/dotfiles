@@ -1,5 +1,7 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
+# Disable this for now ... (TODO)
+return
 # Check whether the session exists already
 tmux has-session -t $(hostname -s) 2> /dev/null && return
 if [[ "yggdrasil" == "$(hostname -s)" ]]; then

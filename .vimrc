@@ -76,12 +76,7 @@ cmap w!! %!sudo tee > /dev/null %
 " Shortcut to rapidly toggle `set list`
 nmap <leader>l :set list!<CR>:set number!<CR>
 
-" Use the same symbols as TextMate for tabstops and EOLs
-if &encoding == 'utf-8'
-	set listchars=tab:›\ ,eol:¬
-else
-	set listchars=tab:>\ 
-endif
+set listchars=tab:>\ 
 highlight NonText ctermfg=DarkGrey guifg=#4a4a59
 highlight SpecialKey ctermfg=DarkGrey guifg=#4a4a59
 " Matching parentheses should be highlighted

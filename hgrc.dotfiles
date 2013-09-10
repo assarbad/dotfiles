@@ -1,7 +1,9 @@
 [paths]
-default = https://vcs.assarbad.net/mercurial/dotfiles
-assarbad = https://vcs.assarbad.net/mercurial/dotfiles
-bitbucket = https://bitbucket.org/assarbad/dotfiles
+default   = https://vcs.assarbad.net/mercurial/dotfiles
+assarbad  = https://vcs.assarbad.net/mercurial/dotfiles
+bitbucket = ssh://hg@bitbucket.org/assarbad/dotfiles
+bb_https  = https://bitbucket.org/assarbad/dotfiles
 
 [hostfingerprints]
 vcs.assarbad.net = 2A:D6:5F:AE:64:2B:BB:96:48:8F:89:DE:67:B6:E3:2B:39:0D:DE:1E
+bitbucket.org    = 24:9C:45:8B:9C:AA:BA:55:4E:01:6D:58:FF:E4:28:7D:2A:14:AE:3B
