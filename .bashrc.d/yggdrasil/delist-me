@@ -6,7 +6,9 @@ function delist-me
 	[[ -n "$MYIP" ]] || [[ -n "$1" ]] || { echo "ERROR: The SSH_CLIENT does not seem to exist. Oops."; return; }
 	[[ -z "$MYIP" ]] || MYIP="$1"
 	[[ -z "$MYIP" ]] && { echo "ERROR: no IP given"; return; }
-	echo "-$MYIP"|sudo tee -a /proc/net/xt_recent/tpit
+	for i in /proc/net/xt_recent/*tpit; do
+		echo "-$MYIP"|sudo tee -a $i
+	done
 }
 
 function delist-frisk
