@@ -18,7 +18,7 @@ function __create_abs_alias
 
 ## ----------------------------------------
 if [[ -e "/etc/debian_version" ]]; then
-  alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -lf $i; done'
+  alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do ssh-keygen -r $(hostname -s) -f $i; done'
   alias search='apt-cache search'
   alias show='apt-cache show'
   alias upgrade='apt-get update && apt-get dist-upgrade'

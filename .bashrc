@@ -135,15 +135,24 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	[[ -n "$SSH_AUTH_SOCK" ]] && ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
 fi
 
-# Load additional settings (NOTE: does not allow blanks in names of files within that folder)
+# Load additional settings
 # NB: Worst-case scenario iff HOST is empty is that we source all files twice ...
-for srcdir in "$BASHRCDIR/.bashrc.d" "$BASHRCDIR/.bashrc.d/$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))"; do
-	if [[ -d "$srcdir" ]]; then
-		for f in $(command ls -A "$srcdir"); do
-			[[ -d "$srcdir/$f" ]] || source "$srcdir/$f"
+BASHHOST=$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))
+BASHSRCDIR="$BASHRCDIR/.bashrc.d"
+if [[ -d "$BASHSRCDIR" ]]; then
+	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
+		source "$f"
+	done
+	[[ -f "$BASHSRCDIR/_machine.$BASHHOST" ]] && source 
+	if [[ -d "$BASHSRCDIR/_machine.$BASHHOST" ]]; then
+		echo "$BASHHOST: $BASHSRCDIR/_machine.$BASHHOST"
+		for f in $(find "$BASHSRCDIR/_machine.$BASHHOST" -maxdepth 1 -type f); do
+			source "$f"
 		done
 	fi
-done
+fi
+unset BASHHOST
+unset BASHSRCDIR
 
 function ducks
 {
