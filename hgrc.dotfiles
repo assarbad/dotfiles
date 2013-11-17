@@ -1,5 +1,5 @@
 [paths]
-default   = https://vcs.assarbad.net/mercurial/dotfiles
+default   = https://bitbucket.org/assarbad/dotfiles
 assarbad  = https://vcs.assarbad.net/mercurial/dotfiles
 bitbucket = ssh://hg@bitbucket.org/assarbad/dotfiles
 bb_https  = https://bitbucket.org/assarbad/dotfiles
