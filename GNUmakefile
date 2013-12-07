@@ -3,7 +3,7 @@
 TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
-.PHONY: install setup clean rebuild help
+.PHONY: install setup clean rebuild help ./append_payload
 
 SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
 
@@ -31,9 +31,9 @@ endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
 ifndef WEBDIR
-setup: $(SETUPS) 
+setup: ./append_payload $(SETUPS)
 else
-setup: $(PSETUPS)
+setup: ./append_payload $(PSETUPS)
 	hg -R $(DOTFILES) tip|perl -ple 's/\s+<[^>]+>//g'|tee "$(WEBDIR)/tip.txt" && touch -r $(SENTINEL) "$(WEBDIR)/tip.txt"
 
 $(WEBDIR)/%: %
@@ -44,6 +44,7 @@ $(filter %.bin,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
 	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
 $(filter %.sh,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
+	./append_payload canrun
 	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
 $(PAYLOAD): $(SENTINEL)
@@ -51,6 +52,8 @@ $(PAYLOAD): $(SENTINEL)
 	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
 	tar -vC $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
 
+./append_payload:
+	./append_payload canrun
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup

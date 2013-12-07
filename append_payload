@@ -6,6 +6,8 @@ function __onboard_readlink()
 }
 READLINK="readlink -f"
 type readlink > /dev/null 2>&1 || READLINK=__onboard_readlink
+type uuencode > /dev/null 2>&1 || { echo "ERROR: uuencode binary is missing."; exit 1; }
+[[ "$@" == "canrun" ]] && exit 0
 SYNTAX_ARGS="[--binary|-b] [--uuencode|-u] [--input=FILE|-i=FILE] [--output=FILE|-o=FILE] [--] \033[1;37mPAYLOAD\033[00m"
 # default encoding
 TGZ=1
