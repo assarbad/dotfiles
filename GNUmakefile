@@ -44,7 +44,6 @@ $(filter %.bin,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
 	./append_payload -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
 $(filter %.sh,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
-	./append_payload canrun
 	./append_payload -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
 
 $(PAYLOAD): $(SENTINEL)
@@ -77,5 +76,8 @@ help:
 	-@echo "hg clone https://bitbucket.org/assarbad/dotfiles .dotfiles && make -C .dotfiles install"
 
 .INTERMEDIATE: $(PAYLOAD)
+
+install:
+	-@test -d .hg && cp hgrc.dotfiles .hg/hgrc
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))

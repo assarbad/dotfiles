@@ -1,3 +1,6 @@
+[ui]
+username = Oliver Schneider <oliver@assarbad.net>
+
 [paths]
 default   = https://bitbucket.org/assarbad/dotfiles
 assarbad  = https://vcs.assarbad.net/mercurial/dotfiles
