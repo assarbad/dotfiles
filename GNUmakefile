@@ -31,7 +31,7 @@ endif
 	if [ -n "$(realpath $$(APPENDS)/$(1))" ]; then \
 		test -f "$(realpath $$(APPENDS)/$(1))" && cat "$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
 	fi
-	if [ -n "$$(OVERRIDES)/$(1)" ]; then \
+	if [ -n "$(realpath $$(OVERRIDES)/$(1))" ]; then \
 		test -f "$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
 	fi
 endef
