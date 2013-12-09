@@ -145,7 +145,6 @@ if [[ -d "$BASHSRCDIR" ]]; then
 	done
 	[[ -f "$BASHSRCDIR/_machine.$BASHHOST" ]] && source 
 	if [[ -d "$BASHSRCDIR/_machine.$BASHHOST" ]]; then
-		echo "$BASHHOST: $BASHSRCDIR/_machine.$BASHHOST"
 		for f in $(find "$BASHSRCDIR/_machine.$BASHHOST" -maxdepth 1 -type f); do
 			source "$f"
 		done
