@@ -5,15 +5,15 @@ TGTDIR := $(realpath $(TGTDIR))
 
 .PHONY: install setup clean rebuild help ./append_payload
 
-HOSTNAME := $(shell hostname -s)
+HOSTNAME ?= $(shell hostname -s)
 SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
 
 define make_single_rule
 install: $(TGTDIR)/$(1) 
-$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1)))
-	-@echo "sources: $$^"
+.PHONY: $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
+$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
 ifdef HARDLINK
@@ -23,8 +23,12 @@ else
 	@echo "Copying: $$(notdir $$<) -> $$(dir $$@)"
 	@cp -fr $$< $$@
 endif
-	@test -f $$(realpath $$(APPENDS)/$(1)) && cat $$(realpath $$(APPENDS)/$(1)) >> $$@
-	@test -f $$(realpath $$(OVERRIDES)/$(1)) && cp =fr $$(realpath $$(OVERRIDES)/$(1)) $$@
+	if [ -n "$$(realpath $$(APPENDS)/$(1))" ]; then \
+		test -f "$$(realpath $$(APPENDS)/$(1))" && cat "$$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
+	fi
+	if [ -n "$$(realpath $$(OVERRIDES)/$(1))" ]; then \
+		test -f "$$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
+	fi
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
