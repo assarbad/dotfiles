@@ -10,11 +10,21 @@ appended (on a per-file basis) to the respective global settings.
 
 Please mind the ``.hgignore`` file in the parent folder.
 
-The structure of this folder is that there are two top-level subfolders:
+The structure of this folder is that there are three top-level subfolders:
 
 * ``append``
+* ``custom``
 * ``override``
 
-Underneath will be the (short) hostname for each respective machine, followed
-by a structure that resembles the structure of the ``$HOME`` directory on the
-target machine.
+Underneath ``append`` and ``override`` there will be the (short) hostname for
+each respective machine, inside of which a lives folder structure that
+resembles the structure of the ``$HOME`` directory on the target machine.
+There's one important aspect here. Only files that already exist in the global
+settings will be considered from the ``append`` and ``override`` folders.
+
+Inside of ``custom`` there will be scripts (must be executable!) named after
+the (short) hostname of the target machine that will be run after the other
+processing has finished. The special script ``ALL`` will be called right before
+the machine-specific script, if it exists.
+The custom scripts should use the environment variable ``TGTDIR`` and fall back
+to using ``HOME`` if the former isn't set.

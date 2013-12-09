@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+[[ -n "$TGTDIR" ]] || TGTDIR="$HOME"
+if [[ -e "/etc/debian_version" ]]; then
+	if [[ ! -e "$TGTDIR/.selected_editor" ]]; then
+		VIM=$(which vim.nox)
+		if [[ -n "$VIM" ]]; then
+			echo "SELECTED_EDITOR=\"$VIM\""|tee "$TGTDIR/.selected_editor"
+		fi
+	fi
+fi

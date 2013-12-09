@@ -3,6 +3,7 @@
 TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
+.DEFAULT: install
 .PHONY: install setup clean rebuild help ./append_payload
 
 HOSTNAME ?= $(shell hostname -s)
@@ -12,10 +13,11 @@ SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach
 #       matching default source file will be ignored.
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
+CUSTOMSCR:= machine-specific/custom
 
 define make_single_rule
 install: $(TGTDIR)/$(1) 
-.PHONY: $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
+.PHONY: $(realpath $$(APPENDS)/$(1)) $(realpath $$(OVERRIDES)/$(1))
 $(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
@@ -26,11 +28,11 @@ else
 	@echo "Copying: $$(notdir $$<) -> $$(dir $$@)"
 	@cp -fr $$< $$@
 endif
-	@if [ -n "$$(realpath $$(APPENDS)/$(1))" ]; then \
-		test -f "$$(realpath $$(APPENDS)/$(1))" && cat "$$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
+	@if [ -n "$(realpath $$(APPENDS)/$(1))" ]; then \
+		test -f "$(realpath $$(APPENDS)/$(1))" && cat "$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
 	fi
-	@if [ -n "$$(realpath $$(OVERRIDES)/$(1))" ]; then \
-		test -f "$$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
+	@if [ -n "$$(OVERRIDES)/$(1)" ]; then \
+		test -f "$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
 	fi
 endef
 
@@ -85,12 +87,15 @@ help:
 	-@echo "      TGTDIR=/target/dir make install"
 	-@echo "\n"
 	-@echo "NOTE: you may set the variable HARDLINK to a non-empty value to hard-link instead of copying by default"
+	-@echo "ALSO NOTE: you may override the hostname using the HOSTNAME variable"
 	-@echo "\nAlternative one method to install:"
 	-@echo "hg clone https://bitbucket.org/assarbad/dotfiles .dotfiles && make -C .dotfiles install"
 
 .INTERMEDIATE: $(PAYLOAD)
 
 install:
-	-@test -d .hg && cp hgrc.dotfiles .hg/hgrc
+	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
+	@if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
+	@if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
