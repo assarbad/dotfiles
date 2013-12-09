@@ -1,4 +1,9 @@
 syntax: glob
+.ssh/identity
+.ssh/id_dsa
+.ssh/id_rsa
+.ssh/id_dsa.pub
+.ssh/id_rsa.pub
 dotfile_installer
 dotfile_installer.sh
 dotfile_installer.bin
