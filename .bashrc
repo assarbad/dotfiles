@@ -109,7 +109,7 @@ alias mc='mc -c'
 alias psaux='ps awwwux'
 alias nano='nano -w'
 alias currdate='date +"%Y-%m-%d %H:%M:%S"'
-alias ssh='ssh -at'
+alias ssh='ssh -t'
 alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $(id -u) -exec ls -ahl {} \;'
 [[ -f "$BASHRCDIR/.vimrc" ]] && VIMRC="-u \"$BASHRCDIR/.vimrc\""
 (vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="HOME=$BASHRCDIR vim -p -N -n -i NONE $VIMRC"; } || { alias vim="HOME=$BASHRCDIR vim -N -n -i NONE $VIMRC"; }
