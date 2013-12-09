@@ -7,6 +7,9 @@ TGTDIR := $(realpath $(TGTDIR))
 
 HOSTNAME ?= $(shell hostname -s)
 SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
+# NOTE: those overrides are limited to files that already exist among the files that are
+#       processed by default. That is, files that exist in these folders but have no
+#       matching default source file will be ignored.
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
 
