@@ -19,19 +19,19 @@ define make_single_rule
 install: $(TGTDIR)/$(1) 
 .PHONY: $(realpath $$(APPENDS)/$(1)) $(realpath $$(OVERRIDES)/$(1))
 $(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
-	-@test -L $$@ && rm -f $$@ || true
-	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
+	-test -L $$@ && rm -f $$@ || true
+	-test -d $$(dir $$@) || mkdir -p $$(dir $$@)
 ifdef HARDLINK
 	@echo "Linking/copying: $$(notdir $$<) -> $$(dir $$@)"
-	@cp -lfr $$< $$@ 2>/dev/null || cp -fr $$< $$@
+	cp -lfr $$< $$@ 2>/dev/null || cp -fr $$< $$@
 else
 	@echo "Copying: $$(notdir $$<) -> $$(dir $$@)"
-	@cp -fr $$< $$@
+	cp -fr $$< $$@
 endif
-	@if [ -n "$(realpath $$(APPENDS)/$(1))" ]; then \
+	if [ -n "$(realpath $$(APPENDS)/$(1))" ]; then \
 		test -f "$(realpath $$(APPENDS)/$(1))" && cat "$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
 	fi
-	@if [ -n "$$(OVERRIDES)/$(1)" ]; then \
+	if [ -n "$$(OVERRIDES)/$(1)" ]; then \
 		test -f "$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
 	fi
 endef
@@ -94,8 +94,8 @@ help:
 .INTERMEDIATE: $(PAYLOAD)
 
 install:
-	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
-	@if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
-	@if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
+	if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
+	if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
+	if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
