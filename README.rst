@@ -44,9 +44,24 @@ target location you'd have to set the ``TGTDIR`` variable in one of two ways:
 - ``TGTDIR=/my/custom/target/directory make install``
 - ``make TGTDIR=/my/custom/target/directory install``
 
-You can also set the variable HARDLINK to some non-empty value in order to
+You can also set the variable ``HARDLINK`` to some non-empty value in order to
 have ``cp`` attempt to hardlink source and destination. If this fails it will
 automatically fall back to default copy.
+
+Another thing you can override is the variable ``HOSTNAME`` which can be used
+to pretend that you are installing this on a particular host. Of course this is
+mainly useful in conjunction with the machine-specific settings and nothing
+else.
+
+For example a really harmless way to test what would get installed is to
+designate a target directory, set a host name and then use the install target::
+
+  #!/usr/bin/env bash
+  TGTDIR="$HOME/dotfile-test"
+  [[ -e "$TGTDIR" ]] && rm -rf "$TGTDIR"
+  mkdir -p "$TGTDIR"
+  export TGTDIR
+  make HOSTNAME=themachine install
 
 Hope this is useful for someone else. Write me an email if it is :)
 

@@ -28,10 +28,10 @@ else
 	@echo "Copying: $$(notdir $$<) -> $$(dir $$@)"
 	@cp -fr $$< $$@
 endif
-	if [ -n "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" ]; then \
+	@if [ -n "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" ]; then \
 		test -f "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" && cat "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" >> "$$@"; \
 	fi
-	if [ -n "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" ]; then \
+	@if [ -n "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" ]; then \
 		test -f "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" && cp -fr "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" "$$@"; \
 	fi
 endef
