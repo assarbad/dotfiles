@@ -29,10 +29,16 @@ else
 	@cp -fr $$< $$@
 endif
 	@if [ -n "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" ]; then \
-		test -f "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" && cat "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" >> "$$@"; \
+		if [ -f "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" ]; then \
+			echo "       ... appending $$(APPENDS)/$(1)"; \
+			cat "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" >> "$$@"; \
+		fi; \
 	fi
 	@if [ -n "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" ]; then \
-		test -f "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" && cp -fr "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" "$$@"; \
+		if [ -f "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" ]; then \
+			echo "       ... overwriting with $$(OVERRIDES)/$(1)"; \
+			cp -fr "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" "$$@"; \
+		fi; \
 	fi
 endef
 
