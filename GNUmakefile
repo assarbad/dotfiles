@@ -4,7 +4,7 @@ TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
 .DEFAULT: install
-.PHONY: install setup clean rebuild help ./append_payload
+.PHONY: install test setup clean rebuild help ./append_payload
 
 HOSTNAME ?= $(shell hostname -s)
 SRCFILES := .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
@@ -16,9 +16,9 @@ APPENDS  := machine-specific/append/$(HOSTNAME)
 CUSTOMSCR:= machine-specific/custom
 
 define make_single_rule
-install: $(TGTDIR)/$(1) 
+install: $$(TGTDIR)/$(1) 
 .PHONY: $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
-$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
+$$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
 ifdef HARDLINK
@@ -77,6 +77,12 @@ $(PAYLOAD): $(SENTINEL)
 
 .NOTPARALLEL: rebuild
 rebuild: clean setup
+
+test: TGTDIR:=$(HOME)/dotfile-test
+test:
+	test -d "$(TGTDIR)" && rm -rf "$(TGTDIR)"
+	test -d "$(TGTDIR)" || mkdir -p "$(TGTDIR)"
+	$(MAKE) TGTDIR="$(TGTDIR)" install
 
 clean:
 	rm -f $(notdir $(SETUPS) $(PAYLOAD))
