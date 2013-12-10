@@ -17,8 +17,8 @@ CUSTOMSCR:= machine-specific/custom
 
 define make_single_rule
 install: $(TGTDIR)/$(1) 
-.PHONY: $(realpath $$(APPENDS)/$(1)) $(realpath $$(OVERRIDES)/$(1))
-$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(APPENDS)/$(1)) $$(realpath $$(OVERRIDES)/$(1))
+.PHONY: $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
+$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
 ifdef HARDLINK
@@ -28,11 +28,11 @@ else
 	@echo "Copying: $$(notdir $$<) -> $$(dir $$@)"
 	@cp -fr $$< $$@
 endif
-	@if [ -n "$(realpath $$(APPENDS)/$(1))" ]; then \
-		test -f "$(realpath $$(APPENDS)/$(1))" && cat "$(realpath $$(APPENDS)/$(1))" >> "$$@"; \
+	if [ -n "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" ]; then \
+		test -f "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" && cat "$$(realpath $$(wildcard $$(APPENDS)/$(1)))" >> "$$@"; \
 	fi
-	@if [ -n "$(realpath $$(OVERRIDES)/$(1))" ]; then \
-		test -f "$(realpath $$(OVERRIDES)/$(1))" && cp -fr "$(realpath $$(OVERRIDES)/$(1))" "$$@"; \
+	if [ -n "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" ]; then \
+		test -f "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" && cp -fr "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" "$$@"; \
 	fi
 endef
 
