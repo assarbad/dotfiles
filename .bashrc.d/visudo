@@ -1,6 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-EDITOR=$(which vim.nox)
+EDITOR=$(which vim.nox 2> /dev/null)
 [[ -z "$EDITOR" ]] && EDITOR=vim
 export EDITOR
 [[ $MYUID -eq 0 ]] || alias visudo="sudo -E visudo"
