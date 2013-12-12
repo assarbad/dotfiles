@@ -1,7 +1,7 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # We depend on Debian/Ubuntu
-[[ -e "/etc/debian_version" ]] && return
+[[ -e "/etc/debian_version" ]] || return
 
 function prune-kernels
 {

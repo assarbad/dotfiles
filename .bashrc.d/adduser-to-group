@@ -1,6 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-# We don't need this on Debian/Ubuntu
+# We don't need this on Debian/Ubuntu (use adduser instead)
 [[ -e "/etc/debian_version" ]] && return
 
 # More convenient way to add users on systems where usermod doesn't understand the "append" switch (old old systems)
