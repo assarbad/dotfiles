@@ -1,5 +1,4 @@
 # Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
-# $Id$
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 filetype=sh:
 
 # If not running interactively, don't do anything
@@ -121,6 +120,9 @@ unset VIMRC
 # Global Bash completion definitions
 [[ -f /etc/bash_completion ]] && source /etc/bash_completion
 
+# On Windows we return early
+[ -n "$COMSPEC" ] && return
+
 # Load the SSH agent and if it's loaded already, add the default identity
 if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	SSHAGENT=$(which ssh-agent)
@@ -138,6 +140,7 @@ fi
 # Load additional settings
 # NB: Worst-case scenario iff HOST is empty is that we source all files twice ...
 BASHHOST=$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))
+BASHZONE=$(cat $BASHRCDIR/.domain.alias 2>/dev/null || echo $(hostname -d 2>/dev/null))
 BASHSRCDIR="$BASHRCDIR/.bashrc.d"
 if [[ -d "$BASHSRCDIR" ]]; then
 	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
@@ -149,7 +152,13 @@ if [[ -d "$BASHSRCDIR" ]]; then
 			source "$f"
 		done
 	fi
+	if [[ -d "$BASHSRCDIR/_domain.$BASHZONE" ]]; then
+		for f in $(find "$BASHSRCDIR/_domain.$BASHZONE" -maxdepth 1 -type f); do
+			source "$f"
+		done
+	fi
 fi
+unset BASHZONE
 unset BASHHOST
 unset BASHSRCDIR
 
