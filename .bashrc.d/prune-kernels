@@ -1,5 +1,8 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
+# We depend on Debian/Ubuntu
+[[ -e "/etc/debian_version" ]] && return
+
 function prune-kernels
 {
 	[[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
