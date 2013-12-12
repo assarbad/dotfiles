@@ -1,7 +1,5 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-[[ -e "/etc/debian_version" ]] || return
-
 function refresh-dotfiles
 {
 	local MYBRCD="${BASHRCDIR:-$HOME}/.dotfiles"
