@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+sed -i -e '/^Host fafnir-old/{n;+d}' $TGTDIR/.ssh/config
