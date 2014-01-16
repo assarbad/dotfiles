@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
+# Remove the line right after the matching line, i.e. ProxyCommand
 sed -i -e '/^Host fafnir-old/{n;+d}' $TGTDIR/.ssh/config
