@@ -2,5 +2,5 @@
 
 # Alias for convenience
 TMUX="TERM=screen-256color-bce tmux"
-alias mux="$TMUX attach-session -d -t $(hostname -s) || $TMUX new-session -s $(hostname -s) -n shell"
+alias mux="$TMUX attach-session -t $(hostname -s) || $TMUX new-session -s $(hostname -s) -n shell"
 unset TMUX
