@@ -118,7 +118,11 @@ unset VIMRC
 [[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
 
 # Global Bash completion definitions
-[[ -f /etc/bash_completion ]] && source /etc/bash_completion
+if [[ -n "$PS1" ]]; then
+	for i in /etc/bash_completion /usr/local/share/bash-completion/bash_completion.sh; do
+		[[ -f "$i" ]] && source "$i"
+	done
+fi
 
 # On Windows we return early
 [ -n "$COMSPEC" ] && return
