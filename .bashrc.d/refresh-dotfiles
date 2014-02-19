@@ -12,7 +12,9 @@ function refresh-dotfiles
 		grep -q "^$SEARCH" "$MYBRCD/.hg/hgrc" && SRCREPO=$SEARCH
 		type hg 2> /dev/null && hg pull -R "$MYBRCD" -u $SRCREPO || hg up -R "$MYBRCD"
 	fi
+	local GMAKE=make
+	type gmake 2> /dev/null && GMAKE=gmake
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
-		( TGTDIR="${BASHRCDIR:-$HOME}" make -C "$MYBRCD" install ) && \
+		( TGTDIR="${BASHRCDIR:-$HOME}" $GMAKE -C "$MYBRCD" install ) && \
 		source "${BASHRCDIR:-$HOME}/.bashrc"
 }
