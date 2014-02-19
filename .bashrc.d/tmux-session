@@ -1,6 +1,16 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # Alias for convenience
-TMUX="TERM=screen-256color-bce tmux"
+TMUX="tmux"
+[[ -n "$TERM" ]] && TMUX="TERM=$TERM tmux"
+if type toe 2> /dev/null; then
+	# Use one of the following terminal types if available
+	for i in screen-256color-bce screen-256color xterm-256color; do
+		if toe|grep -q $i; then
+			TMUX="TERM=$i tmux"
+			break;
+		fi
+	done
+fi
 alias mux="$TMUX attach-session -t $(hostname -s) || $TMUX new-session -s $(hostname -s) -n shell"
 unset TMUX
