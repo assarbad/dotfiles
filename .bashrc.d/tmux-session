@@ -8,7 +8,6 @@ if type toe > /dev/null 2>&1; then
 	for i in screen-256color-bce screen-256color xterm-256color; do
 		if toe -a|grep -q ^$i; then
 			TMUX="TERM=$i tmux"
-			echo "TMUX = $TMUX"
 			break;
 		fi
 	done
