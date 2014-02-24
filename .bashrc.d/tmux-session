@@ -3,11 +3,12 @@
 # Alias for convenience
 TMUX="tmux"
 [[ -n "$TERM" ]] && TMUX="TERM=$TERM tmux"
-if type toe 2> /dev/null; then
+if type toe > /dev/null 2>&1; then
 	# Use one of the following terminal types if available
 	for i in screen-256color-bce screen-256color xterm-256color; do
-		if toe|grep -q $i; then
+		if toe -a|grep -q ^$i; then
 			TMUX="TERM=$i tmux"
+			echo "TMUX = $TMUX"
 			break;
 		fi
 	done
