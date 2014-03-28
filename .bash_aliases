@@ -3,7 +3,7 @@
 CVSNT=cvsnt
 [[ -n "$(which $CVSNT 2> /dev/null)" ]] || CVSNT=cvs
 alias cvsup="$CVSNT -q up -dRP"
-alias refresh-bashrc="source ~/.bashrc"
+alias sb="source ~/.bashrc"
 if [[ -n "$(which vim 2> /dev/null)" ]]; then
   export EDITOR=$(which vim)
   export VISUAL=$(which vim)
