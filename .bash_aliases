@@ -21,7 +21,12 @@ if [[ -e "/etc/debian_version" ]]; then
   alias search='apt-cache search'
   alias show='apt-cache show'
   alias upgrade='apt-get update && apt-get dist-upgrade'
-  alias apt-inst='apt-get --no-install-recommends install'
+  alias apti='apt-get --no-install-recommends install'
+  alias setup='apt-get install'
+  alias purge='apt-get purge'
+  alias lp='command dpkg -l'
+  alias lpi='command dpkg -l|grep ^ii'
+  alias lpg='command dpkg -l|grep -iE'
   for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
     __create_abs_alias ${i%%:*} "${i#*:}"
   done
