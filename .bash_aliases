@@ -28,7 +28,7 @@ if [[ -e "/etc/debian_version" ]]; then
   alias lpi='command dpkg -l|grep ^ii'
   alias lpg='command dpkg -l|grep -iE'
   if type "istat" > /dev/null 2>&1; then
-    alias wistat='watch -n 10 "istat|cut -c 1-$(tput cols)"'
+    alias wistat='watch -n 10 "istat|cut -c 1-\$(tput cols)"'
   fi
   for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
     __create_abs_alias ${i%%:*} "${i#*:}"
