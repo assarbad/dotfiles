@@ -46,6 +46,7 @@ if [[ -e "/etc/debian_version" ]]; then
               ip6tables:/sbin/ip6tables \
               ip6tables-save:/sbin/ip6tables-save \
               ip6tables-restore:/sbin/ip6tables-restore \
+              ipset:/sbin/ipset \
               apt-file:/usr/bin/apt-file
     do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
