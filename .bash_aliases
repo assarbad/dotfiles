@@ -1,8 +1,5 @@
 # $Id$
 # vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
-CVSNT=cvsnt
-[[ -n "$(which $CVSNT 2> /dev/null)" ]] || CVSNT=cvs
-alias cvsup="$CVSNT -q up -dRP"
 alias sb="source ~/.bashrc"
 if [[ -n "$(which vim 2> /dev/null)" ]]; then
   export EDITOR=$(which vim)
@@ -22,6 +19,7 @@ if [[ -e "/etc/debian_version" ]]; then
   alias search='apt-cache search'
   alias show='apt-cache show'
   alias upgrade='apt-get update && apt-get dist-upgrade'
+  alias apt-inst='apt-get --no-install-recommends install'
   for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
     __create_abs_alias ${i%%:*} "${i#*:}"
   done

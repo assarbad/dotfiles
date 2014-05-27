@@ -1,5 +1,5 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-for i in vgcfgbackup vgchange vgconvert vgdisplay vgextend vgimportclone vgmknodes vgremove vgs vgsplit vgcfgrestore vgck vgcreate vgexport vgimport vgmerge vgreduce vgrename vgscan pvchange pvck pvcreate pvdisplay pvmove pvremove pvresize pvs pvscan; do
+for i in vgcfgbackup vgchange vgconvert vgdisplay vgextend vgimportclone vgmknodes vgremove vgs vgsplit vgcfgrestore vgck vgcreate vgexport vgimport vgmerge vgreduce vgrename vgscan pvchange pvck pvcreate pvdisplay pvmove pvremove pvresize pvs pvscan lvchange lvcreate lvextend lvmchange lvmdiskscan lvreduce lvrename lvs lvconvert lvdisplay lvm lvmconf lvmdump lvmsar lvremove lvresize lvscan; do
 	alias $i="sudo $i"
 done
