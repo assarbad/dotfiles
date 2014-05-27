@@ -188,10 +188,15 @@ function cdf()
 	cd "$FOLDER1"/
 }
 
+function ccd()
+{
+	mkdir -p "$1" && cd "$1"
+}
+
 function __unlink_where_it_does_not_exist__
 {
 	(( $# != 0 )) || { echo "unlink: missing operand"; return; }
 	(( $# > 1 )) && { shift; echo "unlink: extra operand(s) $@"; return; }
 	rm "$1"
 }
-type unlink > /dev/null 2>&1 || alias unlink='__unlink_where_it_does_not_exist__'
+type unlink > /dev/null 2>&1 && unset __unlink_where_it_does_not_exist__ || alias unlink='__unlink_where_it_does_not_exist__'

@@ -10,7 +10,9 @@ fi
 # Syntax: __create_abs_alias <name> <command>
 function __create_abs_alias
 {
-  file "$2" > /dev/null 2>&1 && type "$2" > /dev/null 2>&1 && [[ -n "$3" ]] && { alias $1="$3 $2"; } || { alias $1="$2"; }
+  file "$2" > /dev/null 2>&1 || return
+  type "$2" > /dev/null 2>&1 || return
+  [[ -n "$3" ]] && { alias $1="$3 $2"; } || { alias $1="$2"; }
 }
 
 ## ----------------------------------------
@@ -24,7 +26,20 @@ if [[ -e "/etc/debian_version" ]]; then
     __create_abs_alias ${i%%:*} "${i#*:}"
   done
   if [[ $UID -ne 0 ]]; then
-    for i in apt-get:/usr/bin/apt-get aptitude:/usr/bin/aptitude dpkg-reconfigure:/usr/sbin/dpkg-reconfigure ifconfig:/sbin/ifconfig service:/usr/sbin/service htop:/usr/bin/htop iptables:/sbin/iptables apt-file:/usr/bin/apt-file; do
+    for i in apt-get:/usr/bin/apt-get \
+              aptitude:/usr/bin/aptitude \
+              dpkg-reconfigure:/usr/sbin/dpkg-reconfigure \
+              ifconfig:/sbin/ifconfig \
+              service:/usr/sbin/service \
+              htop:/usr/bin/htop \
+              iptables:/sbin/iptables \
+              iptables-save:/sbin/iptables-save \
+              iptables-restore:/sbin/iptables-restore \
+              ip6tables:/sbin/ip6tables \
+              ip6tables-save:/sbin/ip6tables-save \
+              ip6tables-restore:/sbin/ip6tables-restore \
+              apt-file:/usr/bin/apt-file
+    do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
     done
     alias chorme="sudo /bin/chown -hR $(whoami):"
@@ -36,7 +51,11 @@ if [[ -e "/etc/redhat-release" ]]; then
   alias search='yum -C search'
   alias show='yum -C info'
   if [[ $UID -ne 0 ]]; then
-    for i in ifconfig:/sbin/ifconfig service:/sbin/service htop:/usr/bin/htop iptables:/sbin/iptables; do
+    for i in ifconfig:/sbin/ifconfig \
+              service:/sbin/service \
+              htop:/usr/bin/htop \
+              iptables:/sbin/iptables
+    do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
     done
     alias chorme="sudo /bin/chown -hR $(whoami):"
@@ -46,3 +65,4 @@ if [[ -e "/etc/redhat-release" ]]; then
     alias upgrade='yum update'
   fi
 fi
+unset __create_abs_alias
