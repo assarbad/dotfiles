@@ -164,7 +164,7 @@ syntax keyword iptablesTarget
 syntax keyword iptablesBuiltinChain
     \ INPUT OUTPUT FORWARD PREROUTING POSTROUTING
 
-syntax keyword iptablesCommand -A -D -I -R -L -F -Z -N -X -P -E
+syntax keyword iptablesCommand -4 -6 -A -D -I -R -L -F -Z -N -X -P -E
     \ --append --delete --insert --replace --list --flush --zero
     \ --new-chain --delete-chain --policy --rename-chain
 
