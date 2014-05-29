@@ -40,6 +40,7 @@ if [[ -e "/etc/debian_version" ]]; then
               ifconfig:/sbin/ifconfig \
               service:/usr/sbin/service \
               htop:/usr/bin/htop \
+              lsof:/usr/bin/lsof \
               iptables:/sbin/iptables \
               iptables-save:/sbin/iptables-save \
               iptables-restore:/sbin/iptables-restore \
