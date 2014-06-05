@@ -5,14 +5,14 @@ if [[ -L "/sbin/firewall" ]]; then
 	alias fwshow="$([[ $UID -eq 0 ]] || echo "sudo ")$(readlink -nf "/sbin/firewall") show"
 	function fwdelist
 	{
-		local __fw__sudo=$([[ $UID -eq 0 ]] || echo "sudo ")
+		local fwsudo=$([[ $UID -eq 0 ]] || echo "sudo ")
 		[[ -n "$1" ]] ||  { echo -e "SYNTAX:\n\tfwdelist <IP> [IP ...]"; return; }
 		for ip in "$@"; do
-			echo "-$ip"|${__fw__sudo}tee /proc/net/xt_recent/fastpit |${__fw__sudo} tee /proc/net/xt_recent/slowpit
-			for ${__fw__sudo}ipset in ssh_dynblock4 ssh_dynblock6; do
-				if ${__fw__sudo}ipset save $ipset|grep ^add|grep -q "$ip"; then
+			echo "-$ip"|${fwsudo} tee /proc/net/xt_recent/fastpit |${fwsudo} tee /proc/net/xt_recent/slowpit
+			for ipset in ssh_dynblock4 ssh_dynblock6; do
+				if ${fwsudo} ipset save $ipset|grep ^add|grep -q "$ip"; then
 					echo "Removing $ip from $ipset"
-					${__fw__sudo}ipset del "$ipset" "$ip"
+					${fwsudo} ipset del "$ipset" "$ip"
 				fi
 			done
 		done
