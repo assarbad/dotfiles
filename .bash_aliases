@@ -49,6 +49,10 @@ if [[ -e "/etc/debian_version" ]]; then
               ip6tables-save:/sbin/ip6tables-save \
               ip6tables-restore:/sbin/ip6tables-restore \
               ipset:/sbin/ipset \
+              iptraf-ng:/usr/sbin/iptraf-ng \
+              tcpdump:/usr/sbin/tcpdump \
+              netsniff-ng:/usr/sbin/netsniff-ng \
+              firewall:/sbin/firewall \
               apt-file:/usr/bin/apt-file
     do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
