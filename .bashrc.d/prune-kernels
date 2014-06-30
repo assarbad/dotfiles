@@ -40,4 +40,8 @@ function prune-kernels
 	else
 		echo -e "\033[01;32mNothing else to clean up.\033[00m"
 	fi
+	if $SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'; then
+		local LINUXINCLUDES=$($SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'|awk '{print $2}')
+		echo -e "\033[01;32mRemove remaining packages with: ${SUDO} apt-get --purge autoremove $LINUXINCLUDES\033[00m"
+	fi
 }
