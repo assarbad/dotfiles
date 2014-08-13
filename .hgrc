@@ -4,11 +4,15 @@ username = Oliver Schneider <oliver@assarbad.net>
 [trusted]
 users = root, oliver, jobber
 
+[alias]
+diff = diff --git
+
 [extensions]
 hgext.convert=
 hgext.fetch=
 hgext.purge=
 color=
+shelve=
 #commitsigs=
 #
 #[gpg]
