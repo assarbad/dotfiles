@@ -132,7 +132,6 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	SSHAGENT=$(which ssh-agent)
 	SSHAGENTARGS="-s"
 	USERSOCK="$HOME/.ssh/ssh_auth_sock"
-	[[ -z "$SSH_AUTH_SOCK" ]] || echo "SSH_AUTH_SOCK = $SSH_AUTH_SOCK"
 	if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
 		eval "$($SSHAGENT $SSHAGENTARGS)"
 		[[ -n "$SSH_AGENT_PID" ]] && trap "kill $SSH_AGENT_PID" 0
