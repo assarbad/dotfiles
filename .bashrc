@@ -131,16 +131,28 @@ fi
 if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	SSHAGENT=$(which ssh-agent)
 	SSHAGENTARGS="-s"
+	USERSOCK="$HOME/.ssh/ssh_auth_sock"
+	[[ -z "$SSH_AUTH_SOCK" ]] || echo "SSH_AUTH_SOCK = $SSH_AUTH_SOCK"
 	if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
-		eval "$($SSHAGENT $SSHAGENTARGS|grep -v ^echo)"
-		[[ -n "$SSH_AGENT_PID" ]] && { trap "kill $SSH_AGENT_PID" 0; }
+		eval "$($SSHAGENT $SSHAGENTARGS)"
+		[[ -n "$SSH_AGENT_PID" ]] && trap "kill $SSH_AGENT_PID" 0
+		[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
+		ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
+	elif [[ "$SSH_AUTH_SOCK" == "$USERSOCK" ]] && [[ -h "$SSH_AUTH_SOCK" ]]; then
+		echo "Not replacing existing symbolic link"
 	elif [[ -S "$SSH_AUTH_SOCK" ]]; then
 		echo "Using existing socket: '$SSH_AUTH_SOCK'"
+		[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
+		ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
 	else
 		SSH_AUTH_SOCK=$(find /tmp/ssh-* -type s -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
-		export SSH_AUTH_SOCK
+		if [[ -n "$SSH_AUTH_SOCK" ]]; then
+			echo "Found existing socket: $SSH_AUTH_SOCK"
+			[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
+			ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
+		fi
 	fi
-	[[ -n "$SSH_AUTH_SOCK" ]] && ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+	export SSH_AUTH_SOCK="$USERSOCK"
 fi
 
 # Load additional settings
