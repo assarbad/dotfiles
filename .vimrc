@@ -92,6 +92,7 @@ cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 "nnoremap <leader>/ /\v
 " Make very magic mode the default for subst
 "cnoremap s/ s/\v
+set nofoldenable    " disable folding
 
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
