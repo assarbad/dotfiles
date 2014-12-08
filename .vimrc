@@ -50,8 +50,6 @@ if version >= 700
 	endif
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
-	nmap <C-t> :tabnew<CR>
-	imap <C-t> <Esc>:tabnew<CR>
 	map  <F11> :tabprevious <CR>
 	map  <F12> :tabnext     <CR>
 	nmap <F11> :tabprevious <CR>
