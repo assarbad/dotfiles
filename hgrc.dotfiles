@@ -5,6 +5,7 @@ username = Oliver Schneider <oliver@assarbad.net>
 default   = https://bitbucket.org/assarbad/dotfiles
 assarbad  = https://vcs.assarbad.net/mercurial/dotfiles
 bitbucket = ssh://hg@bitbucket.org/assarbad/dotfiles
+default-push = ssh://hg@bitbucket.org/assarbad/dotfiles
 yggdrasil = ssh://oliver@yggdrasil.assarbad.net//data/oliver/dotfiles
 bb_https  = https://bitbucket.org/assarbad/dotfiles
 
