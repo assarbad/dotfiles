@@ -87,9 +87,9 @@ match errorMsg /[^\t]\zs\t\+/
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " Use the leader for very magic search
-"nnoremap <leader>/ /\v
+nnoremap / /\v
 " Make very magic mode the default for subst
-"cnoremap s/ s/\v
+cnoremap s/ s/\v
 set nofoldenable    " disable folding
 
 " Make an effort to tell Vim about capable terminals
