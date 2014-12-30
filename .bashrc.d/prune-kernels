@@ -45,5 +45,5 @@ function prune-kernels
 		echo -e "\033[01;32mRemove remaining packages with: ${SUDO} apt-get --purge autoremove $LINUXINCLUDES\033[00m"
 	fi
 	echo -e "If you want to purge the uninstalled packages as well, use:"
-	echo -e "\tapt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ {print \$2}')"
+	echo -e "\tapt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ && \$2 ~ /^linux-(headers|image)/ {print \$2}')"
 }
