@@ -95,9 +95,13 @@ if [[ -e "/etc/debian_version" ]] && type dircolors > /dev/null 2>&1; then
 fi
 # beroot so we feel at home when assuming super-user rights
 if [ $MYUID -eq 0 ]; then
-	alias beroot='echo You are root already, silly!'
+	alias beroot='echo NOP'
 else
-	alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
+	if type hostname 2>&1 > /dev/null && [[ "  " == " $(hostname -d) " ]]; then
+		alias beroot="sudo su -"
+	else
+		alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
+	fi
 fi
 
 # Convenience aliases
