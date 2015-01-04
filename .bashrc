@@ -93,16 +93,6 @@ if [[ -e "/etc/debian_version" ]] && type dircolors > /dev/null 2>&1; then
 	command dircolors|command grep -q 'hl=' && export LS_COLORS="ln=01;36:hl=00;36"
 	command dircolors|command grep -q 'mh=' && export LS_COLORS="ln=01;36:mh=00;36"
 fi
-# beroot so we feel at home when assuming super-user rights
-if [ $MYUID -eq 0 ]; then
-	alias beroot='echo NOP'
-else
-	if type hostname 2>&1 > /dev/null && [[ "  " == " $(hostname -d) " ]]; then
-		alias beroot="sudo su -"
-	else
-		alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
-	fi
-fi
 
 # Convenience aliases
 alias ..='cd ..'
@@ -163,6 +153,7 @@ fi
 BASHHOST="$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))"
 # hostname -s anf -f are standard, -d is GNU only, it seems ... not on MacOS
 BASHZONE="$(cat $BASHRCDIR/.domain.alias 2>/dev/null || echo $(hostname -f 2>/dev/null))"; BASHZONE="${BASHZONE##$BASHHOST.}"
+[[ -n "$BASHZONE" ]] || BASHZONE="$BASHHOST"
 BASHSRCDIR="$BASHRCDIR/.bashrc.d"
 if [[ -d "$BASHSRCDIR" ]]; then
 	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
@@ -178,6 +169,16 @@ if [[ -d "$BASHSRCDIR" ]]; then
 		for f in $(find "$BASHSRCDIR/_domain.$BASHZONE" -maxdepth 1 -type f); do
 			source "$f"
 		done
+	fi
+fi
+# beroot so we feel at home when assuming super-user rights
+if [ $MYUID -eq 0 ]; then
+	alias beroot='echo NOP'
+else
+	if [[ " assarbad.net " == " ${BASHZONE} " ]]; then
+		alias beroot="sudo su -"
+	else
+		alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 	fi
 fi
 unset BASHZONE
