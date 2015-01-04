@@ -30,6 +30,11 @@ if [[ -e "/etc/debian_version" ]]; then
   if type "istat" > /dev/null 2>&1; then
     alias wistat='watch -n 10 "istat|cut -c 1-\$(tput cols)"'
   fi
+  if type "colordiff" > /dev/null 2>&1; then
+    alias diff="command colordiff -u"
+  else
+    alias diff="command diff -u"
+  fi
   for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
     __create_abs_alias ${i%%:*} "${i#*:}"
   done
