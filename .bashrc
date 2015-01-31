@@ -175,10 +175,17 @@ fi
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo NOP'
 else
-	if [[ " assarbad.net " == " ${BASHZONE} " ]]; then
-		alias beroot="sudo su -"
+	if type lsb_release > /dev/null 2>&1; then
+		case $(lsb_release -sc) in
+		wheezy|precise|trusty)
+			alias beroot="sudo su -"
+			;;
+		*)
+			alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
+			;;
+		esac
 	else
-		alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
+		alias beroot="sudo su -"
 	fi
 fi
 unset BASHZONE
