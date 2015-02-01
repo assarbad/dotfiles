@@ -36,6 +36,8 @@ if [ $MYUID -eq 0 ]; then
 	done
 	# Remove the leading colon and export this as the path
 	export PATH=${NEWPATH:1:${#NEWPATH}}
+	unset LASTDIR
+	unset LASTDIR
 else
 	export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
 fi
@@ -79,6 +81,7 @@ if [[ "Linux" == "$(uname -s)" ]]; then
 	alias ls='ls $LS_OPTIONS'
 	alias ll='ls $LS_OPTIONS -l'
 	alias l='ls $LS_OPTIONS -all'
+	unset MYLS_OPTIONS
 else
 	[[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
 	alias ll='ls -l'
@@ -146,6 +149,9 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 		fi
 	fi
 	export SSH_AUTH_SOCK="$USERSOCK"
+	unset USERSOCK
+	unset SSHAGENT
+	unset SSHAGENTARGS
 fi
 
 # Load additional settings
@@ -175,22 +181,18 @@ fi
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo NOP'
 else
-	if type lsb_release > /dev/null 2>&1; then
-		case $(lsb_release -sc) in
-		wheezy|precise|trusty)
-			alias beroot="sudo su -"
-			;;
-		*)
-			alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
-			;;
-		esac
-	else
-		alias beroot="sudo su -"
-	fi
+	alias beroot="sudo su -"
 fi
+# alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 unset BASHZONE
 unset BASHHOST
 unset BASHSRCDIR
+unset MYUID
+
+[[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
+if type lsb_release > /dev/null 2>&1; then
+	echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ} ${cR_}($(lsb_release -sc))${cZ}"
+fi
 
 function ducks
 {

@@ -1,6 +1,7 @@
 # $Id$
 # vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
 alias sb="source ~/.bashrc"
+type sort > /dev/null 2>&1 && { alias e="env|sort -i"; } || { alias e="env"; }
 if [[ -n "$(which vim 2> /dev/null)" ]]; then
   export EDITOR=$(which vim)
   export VISUAL=$(which vim)
