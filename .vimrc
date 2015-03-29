@@ -3,6 +3,9 @@ set nocompatible
 set background=dark " using dark terminal make certain elements a little brighter ;)
 set backspace=indent,eol,start " make backspace more convenient
 
+" No octal numbers if leading 0
+set nrformats=
+
 " Indentation/tab related settings
 set tabstop=4
 set shiftwidth=4
