@@ -59,7 +59,7 @@ if version >= 700
 	nmap <F12> :tabnext     <CR>
 	imap <F11> :tabprevious <CR>
 	imap <F12> :tabnext     <CR>
-	set spl=en spell  " use English for spellchecking
+	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
 	set numberwidth=4 " width for line number gutter
 	au FileType python inoremap :: <End>:
@@ -68,11 +68,21 @@ if version >= 700
 	au InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 	" Toggle NERDTree
 	map <leader>t :NERDTreeToggle<CR>
+	" Toggle highlighting cursor line and column
+	fu! ToggleCurline ()
+		if &cursorline && &cursorcolumn
+			set nocursorline
+			set nocursorcolumn
+		else
+			set cursorline
+			set cursorcolumn
+		endif
+	endfunction
+	nmap <silent><C-c> :call ToggleCurline()<CR>
 endif
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 " http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
 cmap w!! %!sudo tee > /dev/null %
-"command! -bar -nargs=0 SudoW :silent exe "write !sudo tee % >/dev/null" | silent edit!
 
 " Shortcut to rapidly toggle `set list`
 nmap <leader>l :set list!<CR>:set number!<CR>
