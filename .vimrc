@@ -1,28 +1,28 @@
-set nocompatible
+set nocompatible    " this is Vim, not Vi
 
 set background=dark " using dark terminal make certain elements a little brighter ;)
 set backspace=indent,eol,start " make backspace more convenient
 
-" No octal numbers if leading 0
-set nrformats=
 
 " Indentation/tab related settings
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set noexpandtab
-set autoindent
-set smartindent
+set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab autoindent smartindent
 
 " General settings
+set nrformats=   " No octal numbers if leading 0
 set history=1000 " store lots of :cmdline history
+set undolevels=1000 " use many muchos levels of undo
 set showmode     " show current mode down the bottom
 set nowrap       " dont wrap lines
 set linebreak    " wrap lines at convenient points
 set wildmode=list:longest,full " make cmdline tab completion similar to bash
+set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dbg
 set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
 set scrolloff=3  " keep 3 lines when scrolling
 set nobackup     " do not keep a backup file
+"set noswapfile   " create no swap file
+set title        " change the terminal's title
+set visualbell   " don't beep
+set noerrorbells " don't beep
 
 " status line and layout of the work space
 set laststatus=2
@@ -41,6 +41,10 @@ set ignorecase   " ignore case when searching
 set smartcase    " ... but only when typing all lowercase, otherwise case-sensitive
 " ... and how to get rid of the highlighted search matches? Like so:
 nmap <leader>h :nohlsearch<CR>
+
+" Follow and back in Vim help (from: Hacking Vim 7.2)
+nmap <buffer> <CR> <C-]>
+nmap <buffer> <BS> <C-T>
 
 filetype on | filetype plugin on | filetype indent on
 syntax on
@@ -62,14 +66,14 @@ if version >= 700
 	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
 	set numberwidth=4 " width for line number gutter
-	au FileType python inoremap :: <End>:
+	autocmd FileType python inoremap :: <End>:
 	" now set it up to change the status line based on mode
-	au InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
-	au InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
+	autocmd InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
+	autocmd InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 	" Toggle NERDTree
 	map <leader>t :NERDTreeToggle<CR>
 	" Toggle highlighting cursor line and column
-	fu! ToggleCurline ()
+	function! ToggleCurline ()
 		if &cursorline && &cursorcolumn
 			set nocursorline
 			set nocursorcolumn
