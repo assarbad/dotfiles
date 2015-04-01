@@ -118,3 +118,4 @@ install: remove-obsolete
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
 .NOTPARALLEL: install remove-obsolete
+.INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD)
