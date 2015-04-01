@@ -3,7 +3,7 @@
 # Alias for convenience
 _TMUX_="tmux"
 [[ -n "$TERM" ]] && _TMUX_="TERM=$TERM tmux"
-if type toe > /dev/null 2>&1; then
+if (type toe && toe -a) > /dev/null 2>&1; then
 	# Use one of the following terminal types if available
 	for i in screen-256color-bce screen-256color xterm-256color; do
 		if toe -a|grep -q ^$i; then
