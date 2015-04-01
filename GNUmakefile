@@ -4,16 +4,17 @@ TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
 
 .DEFAULT: install
-.PHONY: install test setup clean rebuild help ./append_payload
+.PHONY: install test setup clean rebuild help ./append_payload remove-obsolete
 
 HOSTNAME ?= $(shell hostname -s)
-SRCFILES := .gitconfig .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f))
+SRCFILES := .gitconfig .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliases $(foreach fldr,.bashrc.d .bazaar .gnupg .ssh .vim,$(shell find $(fldr) -type f|grep -v '/.git/'))
 # NOTE: those overrides are limited to files that already exist among the files that are
 #       processed by default. That is, files that exist in these folders but have no
 #       matching default source file will be ignored.
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
 CUSTOMSCR:= machine-specific/custom
+VIM_RMOLD:= .vim/.remove-obsolete.sh
 
 define make_single_rule
 install: $$(TGTDIR)/$(1) 
@@ -50,6 +51,10 @@ ifdef WEBDIR
 PSETUPS   := $(patsubst %,$(WEBDIR)/%,$(SETUPS))
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
+
+remove-obsolete: $(VIM_RMOLD)
+	-@echo "Removing obsolete files from $(TGTDIR)/.vim ..."
+	@$< "$(TGTDIR)"
 
 ifndef WEBDIR
 setup: ./append_payload $(SETUPS)
@@ -105,9 +110,11 @@ help:
 
 .INTERMEDIATE: $(PAYLOAD)
 
-install:
+install: remove-obsolete
 	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
 	if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
 	if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
+
+.NOTPARALLEL: install remove-obsolete

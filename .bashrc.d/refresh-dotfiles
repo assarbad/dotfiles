@@ -15,6 +15,6 @@ function refresh-dotfiles
 	local GMAKE=make
 	type gmake 2> /dev/null && GMAKE=gmake
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
-		( TGTDIR="${BASHRCDIR:-$HOME}" $GMAKE -C "$MYBRCD" install ) && \
+		( TGTDIR="${BASHRCDIR:-$HOME}" $GMAKE --no-print-directory -C "$MYBRCD" install ) && \
 		source "${BASHRCDIR:-$HOME}/.bashrc"
 }
