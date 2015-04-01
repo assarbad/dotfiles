@@ -23,7 +23,7 @@ endif
 
 function! s:UpdateStatusLine(is_in_focus, is_insert_mode)
     let l:bufnr    = bufnr('%')
-    let l:fname    = expand('%:f')
+    let l:fname    = expand('%:t')
     let l:ftype    = strlen(&filetype) ? &filetype : 'none'
     let l:datetime = strftime('%Y-%m-%d %T',getftime(expand('%'))) " 10+1+8=19
     let l:scm_stat = exists('g:loaded_fugitive') ? fugitive#statusline() : ''

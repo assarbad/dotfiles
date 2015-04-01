@@ -31,11 +31,6 @@ mostly `:set` calls.)  Here's a taste:
 * `'incsearch'`: Start searching before pressing enter.
 * `'listchars'`: Makes `:set list` (visible whitespace) prettier.
 * `'scrolloff'`: Always show at least one line above/below the cursor.
-* `'directory'`: Dump swap files under `~/.local/share/vim/swap`,
-  `~/Library/Vim/swap`, or `~\Application Data\Vim\swap`, depending on your
-  platform.  Also `'backupdir'` and `'undodir'`.  The directories aren't
-  created automatically, so try `mkdir -p ~/Library/Vim/{swap,backup,undo}`.
-* `nmap Y y$`: Make `Y` behave like `C` and `D`.
 * `runtime! macros/matchit.vim`: Load the version of matchit.vim that ships
   with Vim.
 
@@ -62,30 +57,6 @@ below.
 
 Feel free to [let me know][GitHub issues] which setting you object to, so I
 can reassess whether it makes sense to include it.
-
-> What's with these `.*.un~` files?
-
-Basically, they make it so that you can undo things that happened in a
-previous invocation of Vim.  See `:help undo-persistence` for details.  If you
-don't like them strewn all over the file system, you have a few options.
-
-1.  Create the appropriate directory that sensible.vim automatically
-    configures for your platform:
-
-    * `~/.local/share/vim/undo` on Linux
-    * `~/Library/Vim/undo` on OS X
-    * `~\Application Data\Vim\undo` on Windows
-
-2.  Provide your own preferred location in `'undodir'`:
-
-        set undodir^=~/.vim/undo//
-
-3.  Disable them entirely:
-
-        set noundofile
-
-You can also just globally ignore them in your SCM of choice.  That's what I
-do.
 
 ## Contributing
 
