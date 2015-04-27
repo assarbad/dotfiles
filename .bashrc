@@ -111,15 +111,15 @@ alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $(id -u) -exec ls -a
 (vim --help 2> /dev/null|grep -q '[[:space:]]*-p') && { alias vim="HOME=$BASHRCDIR vim -p -N -n -i NONE $VIMRC"; } || { alias vim="HOME=$BASHRCDIR vim -N -n -i NONE $VIMRC"; }
 unset VIMRC
 
-# Aliases in the external file overwrite those above.
-[[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
-
 # Global Bash completion definitions
 if [[ -n "$PS1" ]]; then
 	for i in /etc/bash_completion /usr/local/share/bash-completion/bash_completion.sh; do
 		[[ -f "$i" ]] && source "$i"
 	done
 fi
+
+# Aliases in the external file overwrite those above.
+[[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
 
 # On Windows we return early
 [ -n "$COMSPEC" ] && return

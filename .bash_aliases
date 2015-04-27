@@ -24,7 +24,7 @@ if [[ -e "/etc/debian_version" ]]; then
   alias upgrade='apt-get update && apt-get dist-upgrade'
   alias apti='apt-get --no-install-recommends install'
   alias setup='apt-get install'
-  alias purge='apt-get purge'
+  alias purge='apt-get --purge remove'
   alias lp='command dpkg -l'
   alias lpi='command dpkg -l|grep ^ii'
   alias lpg='command dpkg -l|grep -iE'
@@ -87,3 +87,31 @@ if [[ -e "/etc/redhat-release" ]]; then
   fi
 fi
 unset __create_abs_alias
+
+# http://unix.stackexchange.com/a/4220
+function make-completion-wrapper () {
+	local function_name="$2"
+	local arg_count=$(($#-3))
+	local comp_function_name="$1"
+	shift 2
+	local function="
+		function $function_name {
+			((COMP_CWORD+=$arg_count))
+			COMP_WORDS=( "$@" \${COMP_WORDS[@]:1} )
+			"$comp_function_name"
+			return 0
+		}"
+	eval "$function"
+}
+
+make-completion-wrapper _apt_get    _apt_get_apti    apt-get --no-install-recommends install
+make-completion-wrapper _apt_get   _apt_get_setup    apt-get install
+make-completion-wrapper _apt_get   _apt_get_purge    apt-get --purge remove
+make-completion-wrapper _apt_cache _apt_cache_search apt-cache search
+make-completion-wrapper _apt_cache _apt_cache_show   apt-cache show
+complete -F _apt_get_apti  apti
+complete -F _apt_get_setup setup
+complete -F _apt_get_purge purge
+complete -F _apt_cache_search search
+complete -F _apt_cache_show show
+unset make-completion-wrapper
