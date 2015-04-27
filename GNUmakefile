@@ -14,12 +14,15 @@ SRCFILES := .gitconfig .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliase
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
 CUSTOMSCR:= machine-specific/custom
+LOCAL_OVERRIDES:= $(HOME)/.local/dotfiles/override/$(HOSTNAME)
+LOCAL_APPENDS  := $(HOME)/.local/dotfiles/append/$(HOSTNAME)
+LOCAL_CUSTOMSCR:= $(HOME)/.local/dotfiles/custom
 VIM_RMOLD:= .vim/.remove-obsolete.sh
 
 define make_single_rule
 install: $$(TGTDIR)/$(1) 
-.PHONY: $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
-$$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1)))
+.PHONY: $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1))) $$(realpath $$(wildcard $$(LOCAL_APPENDS)/$(1))) $$(realpath $$(wildcard $$(LOCAL_OVERRIDES)/$(1)))
+$$(TGTDIR)/$(1): $$(realpath $(1)) $$(realpath $$(wildcard $$(APPENDS)/$(1))) $$(realpath $$(wildcard $$(OVERRIDES)/$(1))) $$(realpath $$(wildcard $$(LOCAL_APPENDS)/$(1))) $$(realpath $$(wildcard $$(LOCAL_OVERRIDES)/$(1)))
 	-@test -L $$@ && rm -f $$@ || true
 	-@test -d $$(dir $$@) || mkdir -p $$(dir $$@)
 ifdef HARDLINK
@@ -41,6 +44,18 @@ endif
 			cp -fr "$$(realpath $$(wildcard $$(OVERRIDES)/$(1)))" "$$@"; \
 		fi; \
 	fi
+	@if [ -n "$$(realpath $$(wildcard $$(LOCAL_APPENDS)/$(1)))" ]; then \
+		if [ -f "$$(realpath $$(wildcard $$(LOCAL_APPENDS)/$(1)))" ]; then \
+			echo "       ... appending $$(LOCAL_APPENDS)/$(1)"; \
+			cat "$$(realpath $$(wildcard $$(LOCAL_APPENDS)/$(1)))" >> "$$@"; \
+		fi; \
+	fi
+	@if [ -n "$$(realpath $$(wildcard $$(LOCAL_OVERRIDES)/$(1)))" ]; then \
+		if [ -f "$$(realpath $$(wildcard $$(LOCAL_OVERRIDES)/$(1)))" ]; then \
+			echo "       ... overwriting with $$(LOCAL_OVERRIDES)/$(1)"; \
+			cp -fr "$$(realpath $$(wildcard $$(LOCAL_OVERRIDES)/$(1)))" "$$@"; \
+		fi; \
+	fi
 endef
 
 DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -51,6 +66,9 @@ ifdef WEBDIR
 PSETUPS   := $(patsubst %,$(WEBDIR)/%,$(SETUPS))
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
+
+.PHONY: all
+all: setup
 
 remove-obsolete: $(VIM_RMOLD)
 	-@echo "Removing obsolete files from $(TGTDIR)/.vim ..."
@@ -114,6 +132,8 @@ install: remove-obsolete
 	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
 	if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
 	if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
+	if [ -x "$(LOCAL_CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"; fi
+	if [ -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"; fi
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
