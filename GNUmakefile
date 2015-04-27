@@ -14,8 +14,8 @@ SRCFILES := .gitconfig .multitailrc .vimrc .tmux.conf .hgrc .bashrc .bash_aliase
 OVERRIDES:= machine-specific/override/$(HOSTNAME)
 APPENDS  := machine-specific/append/$(HOSTNAME)
 CUSTOMSCR:= machine-specific/custom
-LOCAL_OVERRIDES:= $(HOME)/.local/dotfiles/override/$(HOSTNAME)
-LOCAL_APPENDS  := $(HOME)/.local/dotfiles/append/$(HOSTNAME)
+LOCAL_OVERRIDES:= $(HOME)/.local/dotfiles/override
+LOCAL_APPENDS  := $(HOME)/.local/dotfiles/append
 LOCAL_CUSTOMSCR:= $(HOME)/.local/dotfiles/custom
 VIM_RMOLD:= .vim/.remove-obsolete.sh
 
