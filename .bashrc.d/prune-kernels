@@ -28,7 +28,7 @@ function prune-kernels
 	local PACKAGES=$(for i in $VERSIONS; do echo -n "linux-image-$i linux-headers-$i "; done)
 	if [[ -n "$PACKAGES" ]]; then
 		echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
-		$SUDO apt-get remove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+		$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
 	else
 		echo -e "\033[01;32mNo packages need to be removed.\033[00m"
 	fi
