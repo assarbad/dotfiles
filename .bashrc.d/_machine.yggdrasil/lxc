@@ -1,0 +1,6 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+[[ $UID -eq 0 ]] || \
+for i in /usr/bin/lxc-*; do
+	[[ -x "$i" ]] && alias ${i##*/}="sudo $i"
+done
