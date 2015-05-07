@@ -1,6 +1,11 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-[[ $UID -eq 0 ]] || \
+[[ $UID -eq 0 ]] || _SUDO="sudo "
 for i in /usr/bin/lxc-*; do
-	[[ -x "$i" ]] && alias ${i##*/}="sudo $i"
+	[[ -x "$i" ]] && alias ${i##*/}="${_SUDO}$i"
 done
+unset _SUDO
+
+alias LXC-ls='lxc-ls -f'
+alias LXC-stopall='for i in $(lxc-ls -1 --running); do lxc-stop -n $i; done'
+alias LXC-startall='for i in $(lxc-ls -1 --stopped); do lxc-start -dn $i; done'
