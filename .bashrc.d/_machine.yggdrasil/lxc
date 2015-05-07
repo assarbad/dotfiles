@@ -7,5 +7,5 @@ done
 unset _SUDO
 
 alias LXC-ls='lxc-ls -f'
-alias LXC-stopall='for i in $(lxc-ls -1 --running); do lxc-stop -n $i; done'
-alias LXC-startall='for i in $(lxc-ls -1 --stopped); do lxc-start -dn $i; done'
+alias LXC-stopall='for i in $(lxc-ls -1 --running); do echo "Stopping $i"; lxc-stop -n $i; done'
+alias LXC-startall='for i in $(lxc-ls -1 --stopped); do echo  "Starting $i"; lxc-start -dn $i; done'
