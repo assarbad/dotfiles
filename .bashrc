@@ -47,8 +47,7 @@ export HISTCONTROL=erasedups:ignorespace
 export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:pushf:ducks:psaux"
 export HISTFILESIZE=3000
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
+shopt -s autocd
 shopt -s checkwinsize
 shopt -s cdspell
 shopt -s dotglob
