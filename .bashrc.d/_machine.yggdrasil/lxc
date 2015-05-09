@@ -9,4 +9,5 @@ unset _SUDO
 alias LXC-ls='lxc-ls -fF name,state,ipv4,memory,ram,swap,autostart'
 alias LXC-info='for i in $(lxc-ls -1); do lxc-info -n $i; echo "===================="; done'
 alias LXC-stopall='for i in $(lxc-ls -1 --running); do echo "Stopping $i"; lxc-stop -n $i; done'
-alias LXC-startall='for i in $(lxc-ls -1 --stopped); do echo  "Starting $i"; lxc-start -dn $i; done'
+alias LXC-startall='for i in $(lxc-ls -1 --stopped); do echo "Starting $i"; lxc-start -dn $i; done'
+alias LXC-autostart='for i in $(lxc-ls -fF name,autostart|awk "NR > 2 && \$2 ~ /^YES/ {print \$1}"); do echo "Starting $i"; lxc-start -dn $i; done'
