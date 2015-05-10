@@ -49,22 +49,22 @@ if type lxc-ls 2>&1 > /dev/null; then
 			\*|all|--all)
 				for i in $(lxc-ls -1); do
 					echo "Stopping (all) $i"
-					lxc-stop -dn $i
+					lxc-stop -n $i
 				done;;
 			running|--running)
 				for i in $(lxc-ls -1 --running); do
 					echo "Stopping (running) $i"
-					lxc-stop -dn $i
+					lxc-stop -n $i
 				done;;
 			auto|--auto)
 				for i in $(lxc-ls -fF name,autostart|awk "NR > 2 && \$2 ~ /^YES/ {print \$1}"); do
 					echo "Stopping (auto) $i"
-					lxc-stop -dn $i
+					lxc-stop -n $i
 				done;;
 			*)
 				for i in "$@"; do
 					echo "Stopping $i"
-					lxc-stop -dn $i
+					lxc-stop -n $i
 				done;;
 		esac
 	}
