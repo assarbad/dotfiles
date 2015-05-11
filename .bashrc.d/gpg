@@ -1,0 +1,12 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+# Populate the public trusted keys from the config in the key DB
+if [[ -e "$HOME/.gnupg/gpg.conf" ]]; then
+	if type gpg 2>&1 > /dev/null; then
+		for i in $(awk '$1 ~ /^trusted-key$/ {print $2}' $HOME/.gnupg/gpg.conf); do
+			if ! grep -q ${i^^} <(gpg -k --with-colons 2> /dev/null|awk -F : '$1 ~ /^pub$/ {print $5}'); then
+				gpg --recv-keys $i
+			fi
+		done
+	fi
+fi
