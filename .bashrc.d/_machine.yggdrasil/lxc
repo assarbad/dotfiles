@@ -14,7 +14,7 @@ function define-LXC-aliases
 	alias LXC-autostart='LXC-start auto'
 }
 
-if type lxc-ls 2>&1 > /dev/null; then
+if type lxc-ls > /dev/null 2>&1; then
 	define-LXC-aliases
 	function LXC-start
 	{
