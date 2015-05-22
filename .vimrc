@@ -61,12 +61,12 @@ if version >= 700
 	nmap <F12> :tabnext     <CR>
 	imap <F11> :tabprevious <CR>
 	imap <F12> :tabnext     <CR>
-	nmap <F10> :call <SID>ToggleMouse()<CR>
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
 	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
 	set numberwidth=4 " width for line number gutter
+	set pastetoggle=<F5>
 	autocmd FileType python inoremap :: <End>:
 	" now set it up to change the status line based on mode
 	autocmd InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
