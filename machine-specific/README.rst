@@ -25,6 +25,6 @@ settings will be considered from the ``append`` and ``override`` folders.
 Inside of ``custom`` there will be scripts (must be executable!) named after
 the (short) hostname of the target machine that will be run after the other
 processing has finished. The special script ``ALL`` will be called right before
-the machine-specific script, if it exists.
+the machine-specific script, if it exists an is excutable.
 The custom scripts should use the environment variable ``TGTDIR`` and fall back
 to using ``HOME`` if the former isn't set.
