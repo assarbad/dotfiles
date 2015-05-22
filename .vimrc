@@ -26,7 +26,17 @@ set noerrorbells " don't beep
 
 " status line and layout of the work space
 set laststatus=2
-set statusline=%F%m%r%h%w\ (%{&ff}){%Y}\ [%l,%v][%p%%]
+" actual status line
+"set statusline=%F%m%r%h%w\ (%{&ff}){%Y}\ [%l,%v][%p%%]
+set statusline=\ \(%n\)\ 
+set statusline+=%f  " file name (as typed or relative)
+set statusline+=%m  " modified flag: [+] or [-]
+set statusline+=%r  " readonly flag: [RO]
+set statusline+=%h  " help buffer flag
+set statusline+=%w  " preview window flag: [Preview]
+set statusline+=\ %=%({%{&fileformat}\|%{(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",BOM\":\"\")}%k\|%{&filetype}}%)
+set statusline+=\ %([%l,%v][%p%%]\ %)
+
 set showmatch
 set list
 set number
@@ -66,6 +76,7 @@ if version >= 700
 	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
 	set numberwidth=4 " width for line number gutter
+	" Allow to toggle paste mode
 	set pastetoggle=<F5>
 	autocmd FileType python inoremap :: <End>:
 	" now set it up to change the status line based on mode
