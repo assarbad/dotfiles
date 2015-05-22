@@ -61,7 +61,7 @@ if version >= 700
 	nmap <F12> :tabnext     <CR>
 	imap <F11> :tabprevious <CR>
 	imap <F12> :tabnext     <CR>
-	"nmap <F12> :call <SID>ToggleMouse()<CR>
+	nmap <F10> :call <SID>ToggleMouse()<CR>
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
 	set spelllang=en  " use English for spellchecking
