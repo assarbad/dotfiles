@@ -126,11 +126,9 @@ if version >= 700
 		" Toggle highlighting cursor line and column
 		function! ToggleCurline ()
 			if &cursorline && &cursorcolumn
-				set nocursorline
-				set nocursorcolumn
+				set nocursorline nocursorcolumn
 			else
-				set cursorline
-				set cursorcolumn
+				set cursorline cursorcolumn
 			endif
 		endfunction
 		nmap <silent><C-c> :call ToggleCurline()<CR>
@@ -166,4 +164,10 @@ endif
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
+endif
+
+if exists('+diff') && &diff
+	set diffopt=filler,iwhite,context:3
+	nmap <leader>[ [c
+	nmap <leader>] ]c
 endif
