@@ -6,39 +6,39 @@ set backspace=indent,eol,start " make backspace more convenient
 
 " Indentation/tab related settings
 set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab autoindent
-if exists('+smartindent')
+if has('smartindent')
 	set smartindent
 endif
 
 " General settings
 set nrformats=   " No octal numbers if leading 0
-if exists('+cmdline_hist')
+if has('cmdline_hist')
 	set history=1000 " store lots of :cmdline history
 endif
 set undolevels=1000 " use many muchos levels of undo
 set showmode     " show current mode down the bottom
 set nowrap       " dont wrap lines
-if exists('+linebreak')
+if has('linebreak')
 	set linebreak    " wrap lines at convenient points
 	set numberwidth=4 " width for line number gutter
 endif
 set wildmode=list:longest,full " make cmdline tab completion similar to bash
-if exists('+wildignore')
+if has('wildignore')
 	set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dbg
 endif
-if exists('+wildmenu')
+if has('wildmenu')
 	set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
 endif
 set scrolloff=3  " keep 3 lines when scrolling
 set nobackup     " do not keep a backup file
 "set noswapfile   " create no swap file
-if exists('+title')
+if has('title')
 	set title        " change the terminal's title
 endif
 set visualbell   " don't beep visually
 set noerrorbells " don't beep
 
-if exists('+statusline')
+if has('statusline')
 	" status line and layout of the work space
 	set laststatus=2
 	" actual status line
@@ -51,7 +51,7 @@ if exists('+statusline')
 	set statusline+=%#StatusLinePaste#%(\ %{&paste?'\[P\]':'\ '}\ %)%*  " paste flag: P 
 	set statusline+=\ %=  " remainder is right-aligned
 	set statusline+=%#StatusLineChar#%b/0x%02B\ %*
-	set statusline+=%#StatusLineFormat#%({%{&fileformat}\|%{(&fenc==''?&enc:&fenc).((exists('+bomb')\ &&\ &bomb)?',BOM':'')}%k\|%{&filetype}}%)\ %*
+	set statusline+=%#StatusLineFormat#%({%{&fileformat}\|%{(&fenc==''?&enc:&fenc).((has('bomb')\ &&\ &bomb)?',BOM':'')}%k\|%{&filetype}}%)\ %*
 	set statusline+=%#StatusLinePosition#%([%l,%v]\ [%p%%\ \@%o]\ %)%*
 	" default status line setting
 	highlight StatusLine         term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkGreen
@@ -67,15 +67,13 @@ endif
 set showmatch    " briefly jump to matching paren/bracket
 set list
 set number
-if exists('+cmdline_info')
+if has('cmdline_info')
 	set ruler        " show the cursor position all the time
 endif
 
 " search-related
-if exists('+extra_search')
-	set incsearch    " find the next match as we type the search
-	set hlsearch     " highlight searches by default
-endif
+set incsearch    " find the next match as we type the search
+set hlsearch     " highlight searches by default
 set ignorecase   " ignore case when searching
 set smartcase    " ... but only when typing all lowercase, otherwise case-sensitive
 " ... and how to get rid of the highlighted search matches? Like so:
@@ -90,7 +88,7 @@ nnoremap <F5> :set invpaste paste?<CR>
 set pastetoggle=<F5>
 
 filetype on | filetype plugin on | filetype indent on
-if exists('+syntax')
+if has('syntax')
 	syntax on
 	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
@@ -98,11 +96,11 @@ endif
 if version >= 700
 	" https://github.com/tpope/vim-sensible
 	runtime! bundle/vim-sensible/plugin/sensible.vim
-	" Check for the undo persistence and if it exists, disable it
-	if exists('+undofile')
+	" Check for the undo persistence and if it has, disable it
+	if has('undofile')
 		set noundofile
 	endif
-	if exists('+windows')
+	if has('windows')
 		map  <F11> :tabprevious <CR>
 		map  <F12> :tabnext     <CR>
 		nmap <F11> :tabprevious <CR>
@@ -112,9 +110,9 @@ if version >= 700
 	endif
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
-	if exists('+autocmd')
+	if has('autocmd')
 		autocmd FileType python inoremap :: <End>:
-		if exists('+statusline')
+		if has('statusline')
 			" now set it up to change the status line based on mode
 			autocmd InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGreen ctermbg=NONE
 			autocmd InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey  ctermbg=NONE
@@ -122,7 +120,7 @@ if version >= 700
 	endif
 	" Toggle NERDTree
 	map <leader>t :NERDTreeToggle<CR>
-	if exists('+syntax')
+	if has('syntax')
 		" Toggle highlighting cursor line and column
 		function! ToggleCurline ()
 			if &cursorline && &cursorcolumn
@@ -157,7 +155,7 @@ cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 nnoremap / /\v
 " Make very magic mode the default for subst
 cnoremap s/ s/\v
-if exists('+folding')
+if has('folding')
 	set nofoldenable    " disable folding
 endif
 
@@ -166,7 +164,7 @@ if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
 endif
 
-if exists('+diff') && &diff
+if has('diff') && &diff
 	set diffopt=filler,iwhite,context:3
 	nmap <leader>[ [c
 	nmap <leader>] ]c

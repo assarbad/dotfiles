@@ -2,8 +2,9 @@
 
 function refresh-dotfiles
 {
-	local MYBRCD="${BASHRCDIR:-$HOME}/.dotfiles"
-	[[ -d "$HOME/.ssh" ]] || mkdir "$HOME/.ssh"
+	local TGTDIR="${BASHRCDIR:-$HOME}"
+	local MYBRCD="$TGTDIR/.dotfiles"
+	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
@@ -12,9 +13,13 @@ function refresh-dotfiles
 		grep -q "^$SEARCH" "$MYBRCD/.hg/hgrc" && SRCREPO=$SEARCH
 		type hg 2> /dev/null && hg pull -R "$MYBRCD" -u $SRCREPO || hg up -R "$MYBRCD"
 	fi
+	local LOCSETUP=$TGTDIR/.local/dotfiles/refresh-dotfiles
+	if [[ -x "$LOCSETUP" ]]; then
+		source "$LOCSETUP"
+	fi
 	local GMAKE=make
 	type gmake 2> /dev/null && GMAKE=gmake
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
-		( TGTDIR="${BASHRCDIR:-$HOME}" $GMAKE --no-print-directory -C "$MYBRCD" install ) && \
-		source "${BASHRCDIR:-$HOME}/.bashrc"
+		( $GMAKE --no-print-directory -C "$MYBRCD" TGTDIR="$TGTDIR" install ) && \
+		source "$TGTDIR/.bashrc"
 }
