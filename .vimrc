@@ -101,12 +101,12 @@ if version >= 700
 		set noundofile
 	endif
 	if has('windows')
-		map  <F11> :tabprevious <CR>
-		map  <F12> :tabnext     <CR>
-		nmap <F11> :tabprevious <CR>
-		nmap <F12> :tabnext     <CR>
-		imap <F11> :tabprevious <CR>
-		imap <F12> :tabnext     <CR>
+		map  <F11>      :tabprevious <CR>
+		map  <F12>      :tabnext     <CR>
+		nmap <F11>      :tabprevious <CR>
+		nmap <F12>      :tabnext     <CR>
+		imap <F11> <C-o>:tabprevious <CR>
+		imap <F12> <C-o>:tabnext     <CR>
 	endif
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
