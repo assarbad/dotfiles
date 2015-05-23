@@ -6,8 +6,8 @@
 About
 -----
 This folder contains my dotfiles, i.e. all kinds of customized settings for
-programs I use regularly, starting with the shell (Bash: .bashrc) and not
-ending with my favorite editor (Vim: .vimrc).
+programs I use regularly, starting with the shell (Bash: ``.bashrc``) and not
+ending with my favorite editor (Vim: ``.vimrc``).
 
 Pick whatever you like. I have borrowed stuff here and there myself.
 
