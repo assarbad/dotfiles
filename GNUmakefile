@@ -130,10 +130,10 @@ help:
 
 install: remove-obsolete
 	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
-	if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
-	if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
-	if [ -x "$(LOCAL_CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"; fi
-	if [ -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"; fi
+	@if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
+	@if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
+	@if [ -x "$(LOCAL_CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"; fi
+	@if [ -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"; fi
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
