@@ -5,48 +5,77 @@ set backspace=indent,eol,start " make backspace more convenient
 
 
 " Indentation/tab related settings
-set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab autoindent smartindent
+set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab autoindent
+if exists('+smartindent')
+	set smartindent
+endif
 
 " General settings
 set nrformats=   " No octal numbers if leading 0
-set history=1000 " store lots of :cmdline history
+if exists('+cmdline_hist')
+	set history=1000 " store lots of :cmdline history
+endif
 set undolevels=1000 " use many muchos levels of undo
 set showmode     " show current mode down the bottom
 set nowrap       " dont wrap lines
-set linebreak    " wrap lines at convenient points
+if exists('+linebreak')
+	set linebreak    " wrap lines at convenient points
+	set numberwidth=4 " width for line number gutter
+endif
 set wildmode=list:longest,full " make cmdline tab completion similar to bash
-set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dbg
-set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
+if exists('+wildignore')
+	set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dbg
+endif
+if exists('+wildmenu')
+	set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
+endif
 set scrolloff=3  " keep 3 lines when scrolling
 set nobackup     " do not keep a backup file
 "set noswapfile   " create no swap file
-set title        " change the terminal's title
-set visualbell   " don't beep
+if exists('+title')
+	set title        " change the terminal's title
+endif
+set visualbell   " don't beep visually
 set noerrorbells " don't beep
 
-" status line and layout of the work space
-set laststatus=2
-" actual status line
-"set statusline=%F%m%r%h%w\ (%{&ff}){%Y}\ [%l,%v][%p%%]
-set statusline=\ \(%n\)\ 
-set statusline+=%f  " file name (as typed or relative)
-set statusline+=%m  " modified flag: [+] or [-]
-set statusline+=%r  " readonly flag: [RO]
-set statusline+=%h  " help buffer flag
-set statusline+=%w  " preview window flag: [Preview]
-set statusline+=\ %=%({%{&fileformat}\|%{(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",BOM\":\"\")}%k\|%{&filetype}}%)
-set statusline+=\ %([%l,%v][%p%%]\ %)
+if exists('+statusline')
+	" status line and layout of the work space
+	set laststatus=2
+	" actual status line
+	set statusline=\ %#StatusLineBufNum#\ %n\ %*\ 
+	set statusline+=%f    " file name (as typed or relative)
+	set statusline+=%#StatusLineModified#%m%* " modified flag: [+] or [-]
+	set statusline+=%#StatusLineRdOnly#\ %r%* " readonly flag: [RO]
+	set statusline+=%h    " help buffer flag
+	set statusline+=%w    " preview window flag: [Preview]
+	set statusline+=%#StatusLinePaste#%(\ %{&paste?'\[P\]':'\ '}\ %)%*  " paste flag: P 
+	set statusline+=\ %=  " remainder is right-aligned
+	set statusline+=%#StatusLineChar#%b/0x%02B\ %*
+	set statusline+=%#StatusLineFormat#%({%{&fileformat}\|%{(&fenc==''?&enc:&fenc).((exists('+bomb')\ &&\ &bomb)?',BOM':'')}%k\|%{&filetype}}%)\ %*
+	set statusline+=%#StatusLinePosition#%([%l,%v]\ [%p%%\ \@%o]\ %)%*
+	" default status line setting
+	highlight StatusLine         term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkGreen
+	highlight StatusLineBufNum   term=reverse cterm=NONE ctermbg=NONE ctermfg=Black     ctermbg=White
+	highlight StatusLineModified term=reverse cterm=NONE ctermbg=NONE ctermfg=White     ctermbg=NONE
+	highlight StatusLineRdOnly   term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkRed   ctermbg=NONE
+	highlight StatusLinePaste    term=reverse cterm=NONE ctermbg=NONE ctermfg=Yellow    ctermbg=NONE
+	highlight StatusLineChar     term=reverse cterm=NONE ctermbg=NONE ctermfg=White     ctermbg=NONE
+	highlight StatusLineFormat   term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkGray  ctermbg=NONE
+	highlight StatusLinePosition term=reverse cterm=NONE ctermbg=NONE ctermfg=Gray      ctermbg=NONE
+endif
 
-set showmatch
+set showmatch    " briefly jump to matching paren/bracket
 set list
 set number
-set ruler        " show the cursor position all the time
-" default status line setting
-highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
+if exists('+cmdline_info')
+	set ruler        " show the cursor position all the time
+endif
 
 " search-related
-set incsearch    " find the next match as we type the search
-set hlsearch     " highlight searches by default
+if exists('+extra_search')
+	set incsearch    " find the next match as we type the search
+	set hlsearch     " highlight searches by default
+endif
 set ignorecase   " ignore case when searching
 set smartcase    " ... but only when typing all lowercase, otherwise case-sensitive
 " ... and how to get rid of the highlighted search matches? Like so:
@@ -56,8 +85,16 @@ nmap <leader>h :nohlsearch<CR>
 nmap <buffer> <CR> <C-]>
 nmap <buffer> <BS> <C-T>
 
+" Allow to toggle paste mode
+nnoremap <F5> :set invpaste paste?<CR>
+set pastetoggle=<F5>
+
 filetype on | filetype plugin on | filetype indent on
-syntax on
+if exists('+syntax')
+	syntax on
+	set spelllang=en  " use English for spellchecking
+	set nospell       " but don't spellcheck by default
+endif
 if version >= 700
 	" https://github.com/tpope/vim-sensible
 	runtime! bundle/vim-sensible/plugin/sensible.vim
@@ -65,36 +102,39 @@ if version >= 700
 	if exists('+undofile')
 		set noundofile
 	endif
-	map  <F11> :tabprevious <CR>
-	map  <F12> :tabnext     <CR>
-	nmap <F11> :tabprevious <CR>
-	nmap <F12> :tabnext     <CR>
-	imap <F11> :tabprevious <CR>
-	imap <F12> :tabnext     <CR>
+	if exists('+windows')
+		map  <F11> :tabprevious <CR>
+		map  <F12> :tabnext     <CR>
+		nmap <F11> :tabprevious <CR>
+		nmap <F12> :tabnext     <CR>
+		imap <F11> :tabprevious <CR>
+		imap <F12> :tabnext     <CR>
+	endif
 	" Only use pathogen on Vim 7.0 and up
 	execute pathogen#infect()
-	set spelllang=en  " use English for spellchecking
-	set nospell       " but don't spellcheck by default
-	set numberwidth=4 " width for line number gutter
-	" Allow to toggle paste mode
-	set pastetoggle=<F5>
-	autocmd FileType python inoremap :: <End>:
-	" now set it up to change the status line based on mode
-	autocmd InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=2 ctermbg=NONE
-	autocmd InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
+	if exists('+autocmd')
+		autocmd FileType python inoremap :: <End>:
+		if exists('+statusline')
+			" now set it up to change the status line based on mode
+			autocmd InsertLeave * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGreen ctermbg=NONE
+			autocmd InsertEnter * highlight StatusLine term=reverse cterm=NONE ctermfg=DarkGrey  ctermbg=NONE
+		endif
+	endif
 	" Toggle NERDTree
 	map <leader>t :NERDTreeToggle<CR>
-	" Toggle highlighting cursor line and column
-	function! ToggleCurline ()
-		if &cursorline && &cursorcolumn
-			set nocursorline
-			set nocursorcolumn
-		else
-			set cursorline
-			set cursorcolumn
-		endif
-	endfunction
-	nmap <silent><C-c> :call ToggleCurline()<CR>
+	if exists('+syntax')
+		" Toggle highlighting cursor line and column
+		function! ToggleCurline ()
+			if &cursorline && &cursorcolumn
+				set nocursorline
+				set nocursorcolumn
+			else
+				set cursorline
+				set cursorcolumn
+			endif
+		endfunction
+		nmap <silent><C-c> :call ToggleCurline()<CR>
+	endif
 endif
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 " http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
@@ -119,7 +159,9 @@ cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 nnoremap / /\v
 " Make very magic mode the default for subst
 cnoremap s/ s/\v
-set nofoldenable    " disable folding
+if exists('+folding')
+	set nofoldenable    " disable folding
+endif
 
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
