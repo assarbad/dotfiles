@@ -152,9 +152,9 @@ match errorMsg /[^\t]\zs\t\+/
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " Use the leader for very magic search
-nnoremap / /\v
+" nnoremap / /\v
 " Make very magic mode the default for subst
-cnoremap s/ s/\v
+" cnoremap s/ s/\v
 if has('folding')
 	set nofoldenable    " disable folding
 endif
