@@ -15,6 +15,7 @@ set nrformats=   " No octal numbers if leading 0
 if has('cmdline_hist')
 	set history=1000 " store lots of :cmdline history
 endif
+set modeline modelines=100
 set undolevels=1000 " use many muchos levels of undo
 set showmode     " show current mode down the bottom
 set nowrap       " dont wrap lines
