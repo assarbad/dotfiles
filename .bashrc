@@ -4,9 +4,6 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-# The prompt command will only show the current directory and username if the terminal type is "correct"
-[ "$TERM" == "xterm" -o "$TERM" == "rvxt" ] && export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
-
 # Because UID is readonly we cannot use the real thing, so let's fake it below ;)
 MYUID=$UID
 
@@ -187,6 +184,13 @@ unset BASHZONE
 unset BASHHOST
 unset BASHSRCDIR
 unset MYUID
+
+# The prompt command will only show the current directory and username if the terminal type is "correct"
+case "$TERM" in
+	xterm|rvxt|screen-*|putty-*)
+		export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
+		;;
+esac
 
 [[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 if type lsb_release > /dev/null 2>&1; then
