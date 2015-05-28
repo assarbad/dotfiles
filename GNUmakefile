@@ -129,11 +129,12 @@ help:
 .INTERMEDIATE: $(PAYLOAD)
 
 install: remove-obsolete
-	@if [ -d .hg ]; then cp hgrc.dotfiles .hg/hgrc; fi
-	@if [ -x "$(CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"; fi
-	@if [ -x "$(CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"; fi
-	@if [ -x "$(LOCAL_CUSTOMSCR)/ALL" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"; fi
-	@if [ -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" ]; then TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"; fi
+	@test -d .hg && cp hgrc.dotfiles .hg/hgrc
+	@test -x "$(CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"
+	@test -x "$(CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"
+	@test -x "$(LOCAL_CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"
+	@test -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"
+	@test -d "$(TGTDIR)/.gnupg" && chmod g=rX,o= "$(TGTDIR)/.gnupg"
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
