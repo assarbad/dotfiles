@@ -5,6 +5,8 @@ if [[ -L "/sbin/firewall" ]]; then
 	alias fwshow="$([[ $UID -eq 0 ]] || echo "sudo ")$(readlink -nf "/sbin/firewall") show"
 	function fwdelist
 	{
+		local ip
+		local ipset
 		local fwsudo=$([[ $UID -eq 0 ]] || echo "sudo ")
 		[[ -n "$1" ]] ||  { echo -e "SYNTAX:\n\tfwdelist <IP> [IP ...]"; return; }
 		for ip in "$@"; do

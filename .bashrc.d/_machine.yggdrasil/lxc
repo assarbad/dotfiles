@@ -2,6 +2,7 @@
 
 function define-LXC-aliases
 {
+	local i
 	local _SUDO
 	[[ $UID -eq 0 ]] || _SUDO="sudo "
 	for i in /usr/bin/lxc-*; do
@@ -18,6 +19,7 @@ if type lxc-ls > /dev/null 2>&1; then
 	define-LXC-aliases
 	function LXC-start
 	{
+		local i
 		local NM=${1--all}
 		case "$NM" in
 			\*|all|-all)
@@ -44,6 +46,7 @@ if type lxc-ls > /dev/null 2>&1; then
 	}
 	function LXC-stop
 	{
+		local i
 		local NM=${1-all}
 		case "$NM" in
 			\*|all|--all)

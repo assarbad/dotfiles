@@ -87,6 +87,7 @@ if [[ -e "/etc/redhat-release" ]]; then
   fi
 fi
 unset __create_abs_alias
+unset i
 
 # http://unix.stackexchange.com/a/4220
 function make_completion_wrapper () {
@@ -104,14 +105,14 @@ function make_completion_wrapper () {
 	eval "$function"
 }
 
-make_completion_wrapper _apt_get    _apt_get_apti    apt-get --no-install-recommends install
-make_completion_wrapper _apt_get   _apt_get_setup    apt-get install
-make_completion_wrapper _apt_get   _apt_get_purge    apt-get --purge remove
-make_completion_wrapper _apt_cache _apt_cache_search apt-cache search
-make_completion_wrapper _apt_cache _apt_cache_show   apt-cache show
-complete -F _apt_get_apti  apti
-complete -F _apt_get_setup setup
-complete -F _apt_get_purge purge
-complete -F _apt_cache_search search
-complete -F _apt_cache_show show
-unset make_completion_wrapper
+# make_completion_wrapper _apt_get    _apt_get_apti    apt-get --no-install-recommends install
+# make_completion_wrapper _apt_get   _apt_get_setup    apt-get install
+# make_completion_wrapper _apt_get   _apt_get_purge    apt-get --purge remove
+# make_completion_wrapper _apt_cache _apt_cache_search apt-cache search
+# make_completion_wrapper _apt_cache _apt_cache_show   apt-cache show
+# complete -F _apt_get_apti  apti
+# complete -F _apt_get_setup setup
+# complete -F _apt_get_purge purge
+# complete -F _apt_cache_search search
+# complete -F _apt_cache_show show
+# unset make_completion_wrapper
