@@ -2,7 +2,7 @@
 
 # Populate the public trusted keys from the config in the key DB
 if [[ -e "$HOME/.gnupg/gpg.conf" ]]; then
-	chmod go=rX "$HOME/.gnupg" > /dev/null 2>&1 || true
+	chmod -c go= "$HOME/.gnupg" "$HOME/.gnupg/gpg.conf" 2> /dev/null || true
 	if type gpg 2>&1 > /dev/null; then
 		for i in $(awk '$1 ~ /^trusted-key$/ {print $2}' $HOME/.gnupg/gpg.conf); do
 			if ! grep -q ${i^^} <(gpg -k --with-colons 2> /dev/null|awk -F : '$1 ~ /^pub$/ {print $5}'); then

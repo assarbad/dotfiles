@@ -134,7 +134,7 @@ install: remove-obsolete
 	@test -x "$(CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)" || true
 	@test -x "$(LOCAL_CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL" || true
 	@test -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" || true
-	@test -d "$(TGTDIR)/.gnupg" && chmod g=rX,o= "$(TGTDIR)/.gnupg" || true
+	@-test -d "$(TGTDIR)/.gnupg" && chmod go= "$(TGTDIR)/.gnupg" "$(TGTDIR)/.gnupg/gpg.conf"
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
