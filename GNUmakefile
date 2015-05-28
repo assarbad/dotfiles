@@ -130,11 +130,11 @@ help:
 
 install: remove-obsolete
 	@test -d .hg && cp hgrc.dotfiles .hg/hgrc
-	@test -x "$(CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL"
-	@test -x "$(CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)"
-	@test -x "$(LOCAL_CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL"
-	@test -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)"
-	@test -d "$(TGTDIR)/.gnupg" && chmod g=rX,o= "$(TGTDIR)/.gnupg"
+	@test -x "$(CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/ALL" || true
+	@test -x "$(CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(CUSTOMSCR)/$(HOSTNAME)" || true
+	@test -x "$(LOCAL_CUSTOMSCR)/ALL" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/ALL" || true
+	@test -x "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" && TGTDIR="$(TGTDIR)" "$(LOCAL_CUSTOMSCR)/$(HOSTNAME)" || true
+	@test -d "$(TGTDIR)/.gnupg" && chmod g=rX,o= "$(TGTDIR)/.gnupg" || true
 
 $(foreach goal,$(sort $(SRCFILES)),$(eval $(call make_single_rule,$(goal))))
 
