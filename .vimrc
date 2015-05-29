@@ -121,6 +121,9 @@ if version >= 700
 	endif
 	" Toggle NERDTree
 	map <leader>t :NERDTreeToggle<CR>
+	" Template support, taken from Hacking Vim 7.2
+	autocmd BufNewFile * silent! 0r $VIMHOME/templates/%:e.tpl
+	" Shortcut for toggling line/column to show current cursor location
 	if has('syntax')
 		" Toggle highlighting cursor line and column
 		function! ToggleCurline ()
