@@ -16,11 +16,16 @@ function copy_newer
 	local SRCNAME="$SRCBASEDIR/$RELNAME"
 	# For relative names pointing to a subdirectory
 	if [[ "$RELNAME" =~ "/" ]]; then
-		mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
+		if [[ ! -d "${TGTNAME%/*}" ]]; then
+			[[ -n "$FORCE_COPY" ]] && echo -en "  (force)"
+			echo -e "  ${cW}${RELNAME%/*}${cZ} ${cG}[directory]${cZ}"
+			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
+		fi
 	fi
 	# Copy if newer than target
 	if [[ -n "$FORCE_COPY" ]] || [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-		echo -en " ${cW}$RELNAME${cZ}"
+		[[ -n "$FORCE_COPY" ]] && echo -en "  (force)"
+		echo -en "  ${cW}$RELNAME${cZ}"
 		if cp "$SRCNAME" "$TGTNAME"; then
 			echo -en " ${cW_}... copied${cZ}"
 			if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
@@ -69,8 +74,10 @@ done
 handle_specific machine-specific "global"
 handle_specific ~/.local/dotfiles "local"
 
-# Fix the .gnupg file/folder permissions
-if [[ -d "$TGTDIR/.gnupg" ]]; then
-	chmod go= "$TGTDIR/.gnupg" "$TGTDIR/.gnupg/gpg.conf"
-fi
+# Fix the .gnupg/.ssh file/folder permissions
+for i in .ssh/authorized_keys .gnupg/gpg.conf; do
+	if [[ -d "$TGTDIR/${i%/*}" ]]; then
+		chmod go= "$TGTDIR/${i%/*}" "$TGTDIR/$i"
+	fi
+done
 exit 0
