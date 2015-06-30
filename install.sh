@@ -2,11 +2,12 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 # This script now drives the 'install' goal for the GNUmakefile
 [[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
-DOTFIROOT="$(pwd)"
+DOTFIROOT="${DOTFIROOT:-$(pwd)}"
 MSPECROOT="$DOTFIROOT/machine-specific"
 LOCALROOT="$HOME/.local/dotfiles"
 TGTDIR=${TGTDIR:-$HOME}
 
+# Simply copies newer files from source to target (non-existing target means source is newer)
 function copy_newer
 {
 	local RELNAME="$1"
@@ -17,14 +18,12 @@ function copy_newer
 	# For relative names pointing to a subdirectory
 	if [[ "$RELNAME" =~ "/" ]]; then
 		if [[ ! -d "${TGTNAME%/*}" ]]; then
-			[[ -n "$FORCE_COPY" ]] && echo -en "  (force)"
-			echo -e "  ${cW}${RELNAME%/*}${cZ} ${cG}[directory]${cZ}"
+			echo -e "  ${cZ}${RELNAME%/*}${cZ}${cG}/${cZ}"
 			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
 		fi
 	fi
 	# Copy if newer than target
-	if [[ -n "$FORCE_COPY" ]] || [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-		[[ -n "$FORCE_COPY" ]] && echo -en "  (force)"
+	if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
 		echo -en "  ${cW}$RELNAME${cZ}"
 		if cp "$SRCNAME" "$TGTNAME"; then
 			echo -en " ${cW_}... copied${cZ}"
@@ -38,31 +37,56 @@ function copy_newer
 			exit 1
 		fi
 	fi
+	if [[ "." == "$SRCBASEDIR" ]]; then
+		# Overwrite
+		if [[ -f "$MSPECROOT/override/$RELNAME" ]] && [[ ! -f "$LOCALROOT/override/$RELNAME" ]]; then
+			if cp "$MSPECROOT/override/$RELNAME" "$TGTNAME"; then
+				echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
+				touch "$TGTNAME"
+			fi
+		fi
+		if [[ -f "$LOCALROOT/override/$RELNAME" ]]; then
+			if cp "$LOCALROOT/override/$RELNAME" "$TGTNAME"; then
+				echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
+				touch "$TGTNAME"
+			fi
+		fi
+		# Append
+		if [[ -f "$MSPECROOT/append/$RELNAME" ]]; then
+			if ( echo -e "###\n### ${MSPECROOT#$HOME/}/append/$RELNAME\n###" ; \
+				cat "$MSPECROOT/append/$RELNAME" ) >> "$TGTNAME"; then
+				echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
+			fi
+		fi
+		if [[ -f "$LOCALROOT/append/$RELNAME" ]]; then
+			if ( echo -e "###\n### ${LOCALROOT#$HOME/}/append/$RELNAME\n###" ; \
+				cat "$LOCALROOT/append/$RELNAME" ) >> "$TGTNAME"; then
+				echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
+			fi
+		fi
+	fi
 }
 
-function handle_specific
+function handle_specific_overrides
 {
 	local SRCBASEDIR="$1"
-	local KIND="$2"
+	[[ -d "$SRCBASEDIR" ]] || return
+	# Unconditional overrides
 	if [[ -d "$SRCBASEDIR/override" ]]; then
-		echo -e "Copying ${cW}$KIND machine-specific${cZ} files ($SRCBASEDIR)"
+		echo -e "Copying ${cW}machine-specific${cZ} files (${cW}${SRCBASEDIR#$HOME/}${cZ})"
 		find "$SRCBASEDIR/override" -type f | sed 's/\.\///' | while read fname; do
 			fname="${fname#$SRCBASEDIR/override/}"
-			case "$fname" in
-				GNUmakefile|README.rst)
-					;;
-				*)
-					( FORCE_COPY=1 copy_newer "$fname" "$TGTDIR" "$SRCBASEDIR/override" )
-					;;
-			esac
+			# Skip any of the files that are base files ...
+			# We handle overrides in copy_newer() for those
+			if [[ ! -f "$TGTDIR/$fname" ]]; then
+				copy_newer "${fname#$SRCBASEDIR/override/}" "$TGTDIR" "$SRCBASEDIR/override"
+			fi
 		done
-	else
-		echo -e "No ${cW}$KIND machine-specific${cZ} files to process"
 	fi
 }
 
 echo -e "Copying ${cW}base${cZ} files"
-find . -type f | sed 's/\.\///;/^\.hg/d;/^machine-specific/d' | while read fname; do
+find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort | while read fname; do
 	case "$fname" in
 		GNUmakefile|README.rst|termclr256|append_payload|install.sh|hgrc.dotfiles|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
 			;;
@@ -71,8 +95,9 @@ find . -type f | sed 's/\.\///;/^\.hg/d;/^machine-specific/d' | while read fname
 			;;
 	esac
 done
-handle_specific machine-specific "global"
-handle_specific ~/.local/dotfiles "local"
+# Overrides
+handle_specific_overrides machine-specific
+handle_specific_overrides ~/.local/dotfiles
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do

@@ -13,7 +13,7 @@ else
 endif
 
 .DEFAULT: install
-.PHONY: all install info test setup clean rebuild help $(APAYLOAD)
+.PHONY: all install info test nodel-test setup clean rebuild help $(APAYLOAD)
 
 ifeq ($(strip $(DBG)),)
 endif
@@ -52,10 +52,13 @@ $(APAYLOAD):
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
-test: TGTDIR:=$(HOME)/dotfile-test
+nodel-test test: TGTDIR:=$(HOME)/dotfile-test
 test:
 	$(DBG)test -d "$(TGTDIR)" && rm -rf "$(TGTDIR)" || true
 	$(DBG)test -d "$(TGTDIR)" || mkdir -p "$(TGTDIR)"
+	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" nodel-test
+
+nodel-test:
 	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" install
 
 clean:
@@ -79,6 +82,11 @@ help:
 	-@echo "  Install into $$HOME/dotfile-test instead of $$HOME:"
 	-@echo "    make test"
 	-@echo ""
+	-@echo "  Install into $$HOME/dotfile-test instead of $$HOME:"
+	-@echo "    make nodel-test"
+	-@echo ""
+	-@echo "    This will not remove $$HOME/dotfile-test prior to 'make install'"
+	-@echo ""
 	-@echo "* ALSO NOTE: you may override the hostname using the HOSTNAME variable"
 	-@echo "* TO DEBUG: set the variable DBG to a non-empty value"
 	-@echo ""
@@ -90,8 +98,9 @@ info:
 	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR HOSTNAME DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
 
 install:
+	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.dotfiles "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && ./install.sh "$(TGTDIR)"
 
-.NOTPARALLEL: install
+.NOTPARALLEL: install test nodel-test
 .INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
 .ONESHELL: help
