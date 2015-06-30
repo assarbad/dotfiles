@@ -131,6 +131,7 @@ help:
 	-@echo "    Ways to override:"
 	-@echo "      make TGTDIR=/target/dir install"
 	-@echo "      TGTDIR=/target/dir make install"
+	-@echo ""
 	-@echo "  Install into $(HOME)/dotfile-test:"
 	-@echo "    make test"
 	-@echo ""
