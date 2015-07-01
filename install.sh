@@ -7,6 +7,41 @@ MSPECROOT="$DOTFIROOT/machine-specific"
 LOCALROOT="$HOME/.local/dotfiles"
 TGTDIR=${TGTDIR:-$HOME}
 
+function override_and_append
+{
+	local RELNAME="$1"
+	local TGTBASEDIR="$2"
+	local SRCBASEDIR="$3"
+	local TGTNAME="$4"
+	local SRCNAME="$5"
+	# Overwrite
+	if [[ -f "$MSPECROOT/override/$RELNAME" ]] && [[ ! -f "$LOCALROOT/override/$RELNAME" ]]; then
+		if cp "$MSPECROOT/override/$RELNAME" "$TGTNAME"; then
+			echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
+			touch "$TGTNAME"
+		fi
+	fi
+	if [[ -f "$LOCALROOT/override/$RELNAME" ]]; then
+		if cp "$LOCALROOT/override/$RELNAME" "$TGTNAME"; then
+			echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
+			touch "$TGTNAME"
+		fi
+	fi
+	# Append
+	if [[ -f "$MSPECROOT/append/$RELNAME" ]]; then
+		if ( echo -e "###\n### ${MSPECROOT#$HOME/}/append/$RELNAME\n###" ; \
+			cat "$MSPECROOT/append/$RELNAME" ) >> "$TGTNAME"; then
+			echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
+		fi
+	fi
+	if [[ -f "$LOCALROOT/append/$RELNAME" ]]; then
+		if ( echo -e "###\n### ${LOCALROOT#$HOME/}/append/$RELNAME\n###" ; \
+			cat "$LOCALROOT/append/$RELNAME" ) >> "$TGTNAME"; then
+			echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
+		fi
+	fi
+}
+
 # Simply copies newer files from source to target (non-existing target means source is newer)
 function copy_newer
 {
@@ -18,15 +53,17 @@ function copy_newer
 	# For relative names pointing to a subdirectory
 	if [[ "$RELNAME" =~ "/" ]]; then
 		if [[ ! -d "${TGTNAME%/*}" ]]; then
-			echo -e "  ${cZ}${RELNAME%/*}${cZ}${cG}/${cZ}"
+			echo -e "  ${cW}${RELNAME%/*}${cZ}${cG}/${cZ}"
 			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
 		fi
 	fi
+	local COPIED=0
 	# Copy if newer than target
 	if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-		echo -en "  ${cW}$RELNAME${cZ}"
+		echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
 		if cp "$SRCNAME" "$TGTNAME"; then
 			echo -en " ${cW_}... copied${cZ}"
+			let COPIED=COPIED+1
 			if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
 				echo -e "${cW_}, set timestamp ${cG}[OK]${cZ}"
 			else
@@ -37,34 +74,7 @@ function copy_newer
 			exit 1
 		fi
 	fi
-	if [[ "." == "$SRCBASEDIR" ]]; then
-		# Overwrite
-		if [[ -f "$MSPECROOT/override/$RELNAME" ]] && [[ ! -f "$LOCALROOT/override/$RELNAME" ]]; then
-			if cp "$MSPECROOT/override/$RELNAME" "$TGTNAME"; then
-				echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
-				touch "$TGTNAME"
-			fi
-		fi
-		if [[ -f "$LOCALROOT/override/$RELNAME" ]]; then
-			if cp "$LOCALROOT/override/$RELNAME" "$TGTNAME"; then
-				echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
-				touch "$TGTNAME"
-			fi
-		fi
-		# Append
-		if [[ -f "$MSPECROOT/append/$RELNAME" ]]; then
-			if ( echo -e "###\n### ${MSPECROOT#$HOME/}/append/$RELNAME\n###" ; \
-				cat "$MSPECROOT/append/$RELNAME" ) >> "$TGTNAME"; then
-				echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
-			fi
-		fi
-		if [[ -f "$LOCALROOT/append/$RELNAME" ]]; then
-			if ( echo -e "###\n### ${LOCALROOT#$HOME/}/append/$RELNAME\n###" ; \
-				cat "$LOCALROOT/append/$RELNAME" ) >> "$TGTNAME"; then
-				echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
-			fi
-		fi
-	fi
+#	override_and_append "$RELNAME" "$TGTBASEDIR" "$SRCBASEDIR" "$TGTNAME" "$SRCNAME"
 }
 
 function handle_specific_overrides
@@ -96,8 +106,8 @@ find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' |
 	esac
 done
 # Overrides
-handle_specific_overrides machine-specific
-handle_specific_overrides ~/.local/dotfiles
+# handle_specific_overrides "$MSPECROOT"
+# handle_specific_overrides "$LOCALROOT"
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do
