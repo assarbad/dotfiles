@@ -99,7 +99,7 @@ info:
 
 install:
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.dotfiles "$(DOTFILES)/.hg/hgrc"
-	$(DBG)cd $(DOTFILES) && ./install.sh "$(TGTDIR)"
+	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
 
 .NOTPARALLEL: install test nodel-test
 .INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
