@@ -22,10 +22,10 @@ The mysterious ``GNUmakefile``
 
 You'll also find a ``GNUmakefile`` that can be used for two things.
 
-- ``make`` (default and alias for ``make setup``)
-- ``make install``
+- ``make`` (default and alias for ``make install``)
+- ``make setup``
 
-The default behavior is to create a self-contained installer named
+The ``setup`` behavior is to create a self-contained installer named
 ``dotfile_installer.sh`` (``uuencode``-d), based on the script of
 the same basename with the suffix ``.sh.in``. In addition a second
 version named ``dotfile_installer.bin`` gets created as well. This

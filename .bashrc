@@ -153,7 +153,7 @@ fi
 # Load additional settings
 # NB: Worst-case scenario iff HOST is empty is that we source all files twice ...
 BASHHOST="$(cat $BASHRCDIR/.machine.alias 2>/dev/null || echo $(hostname -s 2>/dev/null))"
-# hostname -s anf -f are standard, -d is GNU only, it seems ... not on MacOS
+# hostname -s and -f are standard, -d is GNU only, it seems ... not on MacOS
 BASHZONE="$(cat $BASHRCDIR/.domain.alias 2>/dev/null || echo $(hostname -f 2>/dev/null))"; BASHZONE="${BASHZONE##$BASHHOST.}"
 [[ -n "$BASHZONE" ]] || BASHZONE="$BASHHOST"
 BASHSRCDIR="$BASHRCDIR/.bashrc.d"
@@ -161,14 +161,13 @@ if [[ -d "$BASHSRCDIR" ]]; then
 	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
 		source "$f"
 	done
-	[[ -f "$BASHSRCDIR/_machine.$BASHHOST" ]] && source 
-	if [[ -d "$BASHSRCDIR/_machine.$BASHHOST" ]]; then
-		for f in $(find "$BASHSRCDIR/_machine.$BASHHOST" -maxdepth 1 -type f); do
+	if [[ -d "$BASHSRCDIR/${BASHHOST}._" ]]; then
+		for f in $(find "$BASHSRCDIR/${BASHHOST}._" -maxdepth 1 -type f); do
 			source "$f"
 		done
 	fi
-	if [[ -d "$BASHSRCDIR/_domain.$BASHZONE" ]]; then
-		for f in $(find "$BASHSRCDIR/_domain.$BASHZONE" -maxdepth 1 -type f); do
+	if [[ -d "$BASHSRCDIR/_.$BASHZONE" ]]; then
+		for f in $(find "$BASHSRCDIR/_.$BASHZONE" -maxdepth 1 -type f); do
 			source "$f"
 		done
 	fi

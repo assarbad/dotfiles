@@ -6,6 +6,7 @@ DOTFIROOT="${DOTFIROOT:-$(pwd)}"
 MSPECROOT="$DOTFIROOT/machine-specific"
 LOCALROOT="$HOME/.local/dotfiles"
 TGTDIR=${TGTDIR:-$HOME}
+HOSTNAME=$(hostname -s)
 
 function override_and_append
 {
@@ -98,7 +99,7 @@ function handle_specific_overrides
 echo -e "Copying ${cW}base${cZ} files"
 find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort | while read fname; do
 	case "$fname" in
-		GNUmakefile|README.rst|termclr256|append_payload|install.sh|hgrc.dotfiles|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
+		GNUmakefile|README.rst|termclr256|append_payload|install-dotfiles|hgrc.dotfiles|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
 			;;
 		*)
 			copy_newer "$fname" "$TGTDIR"
