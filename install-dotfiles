@@ -136,8 +136,12 @@ while read fname; do
 			;;
 	esac
 done < <(find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
-# Overrides
+# Overrides, appends and custom scripts
 handle_specific_overrides "$LOCALROOT"
+# Install local hgrc for the repo
+if [[ -d "$LOCALROOT/.hg" ]]; then
+	make -C "$LOCALROOT"
+fi
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do
