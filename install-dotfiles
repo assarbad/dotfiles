@@ -131,7 +131,7 @@ function handle_specific_overrides
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|README.rst|termclr256|append_payload|install-dotfiles|hgrc.dotfiles|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
+		GNUmakefile|README.rst|termclr256|append_payload|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
 			;;
 		*)
 			copy_file newer "$fname" "$TGTDIR"
