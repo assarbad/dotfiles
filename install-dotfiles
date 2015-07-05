@@ -75,7 +75,7 @@ function handle_specific_overrides
 	local SRCBASEDIR="$1"
 	[[ -d "$SRCBASEDIR" ]] || return
 	# Unconditional overrides
-	if [[ -d "$SRCBASEDIR/override" ]]; then
+	if [[ -d "$SRCBASEDIR/override/." ]]; then
 		local D=""
 		[[ -d "$SRCBASEDIR/override/$HOST/." ]] && D="$SRCBASEDIR/override/$HOST"
 		[[ -z "$D" ]] && D="$SRCBASEDIR/override/$DOMAIN"
@@ -83,10 +83,10 @@ function handle_specific_overrides
 			echo -e "Overriding from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
 			while read fname; do
 				copy_file always "${fname##$D/}" "$TGTDIR" "$D"
-			done < <(find "$D" -type f | sort)
+			done < <(find "$D/" -type f | sort)
 		fi
 	fi
-	if [[ -d "$SRCBASEDIR/append" ]]; then
+	if [[ -d "$SRCBASEDIR/append/." ]]; then
 		local D=""
 		[[ -d "$SRCBASEDIR/append/$HOST/." ]] && D="$SRCBASEDIR/append/$HOST"
 		[[ -z "$D" ]] && D="$SRCBASEDIR/append/$DOMAIN"
@@ -111,10 +111,10 @@ function handle_specific_overrides
 						echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (already appended previously)"
 					fi
 				fi
-			done < <(find "$D" -type f | sort)
+			done < <(find "$D/" -type f | sort)
 		fi
 	fi
-	if [[ -d "$SRCBASEDIR/custom" ]]; then
+	if [[ -d "$SRCBASEDIR/custom/." ]]; then
 		if [[ -x "$SRCBASEDIR/custom/ALL" ]]; then
 			echo -e "Executing customization script: ${cW}ALL${cZ}"
 			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/ALL" || echo -e "\t${cR}something failed?!${cZ}"
