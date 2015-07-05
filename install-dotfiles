@@ -116,11 +116,13 @@ function handle_specific_overrides
 	fi
 	if [[ -d "$SRCBASEDIR/custom" ]]; then
 		if [[ -x "$SRCBASEDIR/custom/ALL" ]]; then
+			echo -e "Executing customization script: ALL"
 			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/ALL"
 		fi
 		[[ -x "$SRCBASEDIR/custom/$HOST" ]] && SCR="$SRCBASEDIR/custom/$HOST"
 		[[ -z "$SCR" ]] && SCR="$SRCBASEDIR/custom/$DOMAIN"
 		if [[ -x "$SCR" ]]; then
+			echo -e "Executing customization script: ${SCR##*/}"
 			env TGTDIR="$TGTDIR" $SCR
 		fi
 	fi
