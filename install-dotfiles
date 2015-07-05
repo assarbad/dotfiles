@@ -145,6 +145,9 @@ handle_specific_overrides "$LOCALROOT"
 if [[ -d "$LOCALROOT/.hg" ]]; then
 	make -C "$LOCALROOT" > /dev/null 2>&1
 fi
+if [[ -x "$DOTFIROOT/.vim/.remove-obsolete.sh" ]]; then
+	env TGTDIR="$TGTDIR" "$DOTFIROOT/.vim/.remove-obsolete.sh"
+fi
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do
