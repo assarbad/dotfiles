@@ -140,7 +140,7 @@ done < <(find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-spec
 handle_specific_overrides "$LOCALROOT"
 # Install local hgrc for the repo
 if [[ -d "$LOCALROOT/.hg" ]]; then
-	make -C "$LOCALROOT"
+	make -C "$LOCALROOT" > /dev/null 2>&1
 fi
 
 # Fix the .gnupg/.ssh file/folder permissions
