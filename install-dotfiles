@@ -99,7 +99,7 @@ function handle_specific_overrides
 						echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
 						if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
 							echo -ne "${cG}[OK]${cZ}"
-							if echo "# Appended ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
+							if echo "# Appended: ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
 								echo -e "${cG} + [marked]${cZ}"
 							else
 								echo ""
