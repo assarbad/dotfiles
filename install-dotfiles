@@ -3,52 +3,33 @@
 # This script now drives the 'install' goal for the GNUmakefile
 [[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 DOTFIROOT="${DOTFIROOT:-$(pwd)}"
-MSPECROOT="$DOTFIROOT/machine-specific"
 LOCALROOT="$HOME/.local/dotfiles"
 TGTDIR=${TGTDIR:-$HOME}
-HOSTNAME=$(hostname -s)
+HOSTNAME=$(hostname -f)
+HOST=$(hostname -s)
+DOMAIN=${HOSTNAME//$HOST/_}
+###############################################################################
+###############################################################################
+### Logic:
+### ~/.dotfiles contains the base files
+###   -> copied only when newer than target files (directories created)
+### ~/.local/dotfiles/{append,custom/override}/$moniker
+###   -> override copied unconditionally
+###   -> append added to target files that exist
+###   -> custom scripts get executed
+###############################################################################
+###############################################################################
 
-function override_and_append
+# Simply copies files from source to target. This observes the given mode, i.e.
+# whether only newer or all files should be copied.
+# (non-existing target means source is newer)
+# NOTE: target directories are created on the fly
+function copy_file
 {
-	local RELNAME="$1"
-	local TGTBASEDIR="$2"
-	local SRCBASEDIR="$3"
-	local TGTNAME="$4"
-	local SRCNAME="$5"
-	# Overwrite
-	if [[ -f "$MSPECROOT/override/$RELNAME" ]] && [[ ! -f "$LOCALROOT/override/$RELNAME" ]]; then
-		if cp "$MSPECROOT/override/$RELNAME" "$TGTNAME"; then
-			echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
-			touch "$TGTNAME"
-		fi
-	fi
-	if [[ -f "$LOCALROOT/override/$RELNAME" ]]; then
-		if cp "$LOCALROOT/override/$RELNAME" "$TGTNAME"; then
-			echo -e "\t${cG}overwrite${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
-			touch "$TGTNAME"
-		fi
-	fi
-	# Append
-	if [[ -f "$MSPECROOT/append/$RELNAME" ]]; then
-		if ( echo -e "###\n### ${MSPECROOT#$HOME/}/append/$RELNAME\n###" ; \
-			cat "$MSPECROOT/append/$RELNAME" ) >> "$TGTNAME"; then
-			echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${MSPECROOT#$HOME/}${cZ}"
-		fi
-	fi
-	if [[ -f "$LOCALROOT/append/$RELNAME" ]]; then
-		if ( echo -e "###\n### ${LOCALROOT#$HOME/}/append/$RELNAME\n###" ; \
-			cat "$LOCALROOT/append/$RELNAME" ) >> "$TGTNAME"; then
-			echo -e "\t${cG}appending${cZ} ${cW}$RELNAME${cZ} from ${cW}${LOCALROOT#$HOME/}${cZ}"
-		fi
-	fi
-}
-
-# Simply copies newer files from source to target (non-existing target means source is newer)
-function copy_newer
-{
-	local RELNAME="$1"
-	local TGTBASEDIR="$2"
-	local SRCBASEDIR="${3:-.}"
+	local MODE="${1:-always}"
+	local RELNAME="$2"
+	local TGTBASEDIR="$3"
+	local SRCBASEDIR="${4:-.}"
 	local TGTNAME="$TGTBASEDIR/$RELNAME"
 	local SRCNAME="$SRCBASEDIR/$RELNAME"
 	# For relative names pointing to a subdirectory
@@ -58,24 +39,35 @@ function copy_newer
 			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
 		fi
 	fi
-	local COPIED=0
-	# Copy if newer than target
-	if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-		echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
-		if cp "$SRCNAME" "$TGTNAME"; then
-			echo -en " ${cW_}... copied${cZ}"
-			let COPIED=COPIED+1
-			if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
-				echo -e "${cW_}, set timestamp ${cG}[OK]${cZ}"
+	local COPY=1
+	case $MODE in
+		always|all) # fall through
+			;;
+		newer)
+			if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
+				let COPY=1
 			else
-				echo -e "${cW_}, ${cY}failed to set timestamp ${cG}[OK]${cZ}"
+				let COPY=0
 			fi
-		else
-			echo -e "  ${cR}copy failed${cZ}"
+			;;
+		*)
+			echo -e "${cR}ERROR:${cZ} logic error."
 			exit 1
+			;;
+	esac
+	((COPY)) || return
+	echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
+	if cp "$SRCNAME" "$TGTNAME"; then
+		echo -en " ${cW_}... copied${cZ}"
+		if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
+			echo -e "${cW_}, set timestamp ${cG}[OK]${cZ}"
+		else
+			echo -e "${cW_}, ${cY}failed to set timestamp ${cG}[OK]${cZ}"
 		fi
+	else
+		echo -e "  ${cR}copy failed${cZ}"
+		exit 1
 	fi
-#	override_and_append "$RELNAME" "$TGTBASEDIR" "$SRCBASEDIR" "$TGTNAME" "$SRCNAME"
 }
 
 function handle_specific_overrides
@@ -84,31 +76,68 @@ function handle_specific_overrides
 	[[ -d "$SRCBASEDIR" ]] || return
 	# Unconditional overrides
 	if [[ -d "$SRCBASEDIR/override" ]]; then
-		echo -e "Copying ${cW}machine-specific${cZ} files (${cW}${SRCBASEDIR#$HOME/}${cZ})"
-		find "$SRCBASEDIR/override" -type f | sed 's/\.\///' | while read fname; do
-			fname="${fname#$SRCBASEDIR/override/}"
-			# Skip any of the files that are base files ...
-			# We handle overrides in copy_newer() for those
-			if [[ ! -f "$TGTDIR/$fname" ]]; then
-				copy_newer "${fname#$SRCBASEDIR/override/}" "$TGTDIR" "$SRCBASEDIR/override"
-			fi
-		done
+		local D=""
+		[[ -d "$SRCBASEDIR/override/$HOST/." ]] && D="$SRCBASEDIR/override/$HOST"
+		[[ -z "$D" ]] && D="$SRCBASEDIR/override/$DOMAIN"
+		if [[ -d "$D/." ]]; then
+			echo -e "Overriding from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
+			while read fname; do
+				copy_file always "${fname##$D/}" "$TGTDIR" "$D"
+			done < <(find "$D" -type f | sort)
+		fi
+	fi
+	if [[ -d "$SRCBASEDIR/append" ]]; then
+		local D=""
+		[[ -d "$SRCBASEDIR/append/$HOST/." ]] && D="$SRCBASEDIR/append/$HOST"
+		[[ -z "$D" ]] && D="$SRCBASEDIR/append/$DOMAIN"
+		if [[ -d "$D/." ]]; then
+			echo -e "Appending from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
+			while read fname; do
+				X="${fname##$D/}"
+				if [[ -e "$TGTDIR/$X" ]]; then
+					if ! grep -q "Appended: ${D#$HOME/}:$X" "$TGTDIR/$X"; then
+						echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
+						if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
+							echo -ne "${cG}[OK]${cZ}"
+							if echo "# Appended ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
+								echo -e "${cG} + [marked]${cZ}"
+							else
+								echo ""
+							fi
+						else
+							echo -e "  ${cR}appending failed: $?${cZ}"
+						fi
+					else
+						echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (already appended previously)"
+					fi
+				fi
+			done < <(find "$D" -type f | sort)
+		fi
+	fi
+	if [[ -d "$SRCBASEDIR/custom" ]]; then
+		if [[ -x "$SRCBASEDIR/custom/ALL" ]]; then
+			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/ALL"
+		fi
+		[[ -x "$SRCBASEDIR/custom/$HOST" ]] && SCR="$SRCBASEDIR/custom/$HOST"
+		[[ -z "$SCR" ]] && SCR="$SRCBASEDIR/custom/$DOMAIN"
+		if [[ -x "$SCR" ]]; then
+			env TGTDIR="$TGTDIR" $SCR
+		fi
 	fi
 }
 
 echo -e "Copying ${cW}base${cZ} files"
-find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort | while read fname; do
+while read fname; do
 	case "$fname" in
 		GNUmakefile|README.rst|termclr256|append_payload|install-dotfiles|hgrc.dotfiles|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh)
 			;;
 		*)
-			copy_newer "$fname" "$TGTDIR"
+			copy_file newer "$fname" "$TGTDIR"
 			;;
 	esac
-done
+done < <(find . -type f | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
 # Overrides
-# handle_specific_overrides "$MSPECROOT"
-# handle_specific_overrides "$LOCALROOT"
+handle_specific_overrides "$LOCALROOT"
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do

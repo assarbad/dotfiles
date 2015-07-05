@@ -46,30 +46,62 @@ the ``TGTDIR`` variable in one of two ways when invoking ``make``:
 - ``TGTDIR=/my/custom/target/directory make install``
 - ``make TGTDIR=/my/custom/target/directory install``
 
-You can also set the variable ``HARDLINK`` to some non-empty value in order to
-have ``cp`` attempt to hardlink source and destination. If this fails it will
-automatically fall back to default copy.
+Local customizations
+~~~~~~~~~~~~~~~~~~~~
 
-Another thing you can override is the variable ``HOSTNAME`` which can be used
-to pretend that you are installing this on a particular host. Of course this is
-mainly useful in conjunction with the ``machine-specific`` settings or those
-that may reside in ``~/.local/dotfiles``. Machine-specific settings reside in
-one of two places as far as ``make install`` is concerned:
+To keep local customizations of the dotfiles you have ``~/.local/dotfiles``
+at your disposal.
 
-- ``$DOTFILES/machine-specific`` (see the respective ``README.rst`` in that
-  folder.
-- ``$HOME/.local/dotfiles`` with a layout that mirrors the above one.
+This folder contains the settings which override the global ones or get
+appended (on a per-file basis) to the respective global settings.
 
-The intention of the latter is to allow for machine-specific settings that
-will not accidentally end up in the public repository for my dotfiles.
+The structure of this folder is that there are three top-level subfolders:
 
-For example a really harmless way to test what would get installed is to
-designate a target directory, set a host name and then use the install target::
+* ``append``
+* ``custom``
+* ``override``
 
-  #!/usr/bin/env bash
-  make HOSTNAME=themachine test
+Underneath ``append`` and ``override`` there will be a moniker for each
+respective machine in the form of a directory or a symlink to a directory.
 
-This will default to ``$HOME/dotfile-test`` as ``TGTDIR``.
+The moniker is either ``_.domain.tld``, i.e. leading underscore followed by
+the domain part that would be returned by ``hostname -f`` or the short name
+of the host, i.e. without any dots.
+
+If the moniker exists as short name, it will take precedence.
+
+Files in ``~/.local/dotfiles/override`` will *always* be written to ``TGTDIR``.
+Files in ``~/.local/dotfiles/append`` will only be written if they already
+exist in ``TGTDIR``.
+
+Files that have already been appended will carry a marker as their last line.
+
+**NOTE** this is a limitation. The marker will be a line starting with a hash
+mark. That is ``#``. This creates a single-line comment in most configuration
+files. However, where this is not true you *have* to use one of the other two
+mechanisms for customization.
+
+The ``~/.local/dotfiles/custom`` *differs* in that it contains any or none of
+the following items:
+
+* a file marked executable and named ``ALL`` that will always be executed and
+  will get passed ``TGTDIR`` as environment variable.
+* a file marked executable and named after the short host name that will be
+  executed *after* the ``ALL`` file (assuming the latter exists and isi
+  executable).
+
+Testing without overwriting ``$HOME``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you simply want to test out what would be written, there are two special
+targets in the make file: ``test`` and ``nodel-test``. Where ``nodel-test``
+will more closely reproduce what would happen on subsequent runs of the ``install``
+target, ``test`` will remove the target dir up front and create a fresh one.
+
+Both targets will default to ``$HOME/dotfile-test`` for ``TGTDIR``.
+
+Epilogue
+--------
 
 Hope this is useful for someone else. Write me an email if it is :)
 

@@ -56,7 +56,7 @@ nodel-test test: TGTDIR:=$(HOME)/dotfile-test
 test:
 	$(DBG)test -d "$(TGTDIR)" && rm -rf "$(TGTDIR)" || true
 	$(DBG)test -d "$(TGTDIR)" || mkdir -p "$(TGTDIR)"
-	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" nodel-test
+	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" install
 
 nodel-test:
 	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" install
@@ -87,15 +87,14 @@ help:
 	-@echo ""
 	-@echo "    This will not remove $$HOME/dotfile-test prior to 'make install'"
 	-@echo ""
-	-@echo "* ALSO NOTE: you may override the hostname using the HOSTNAME variable"
-	-@echo "* TO DEBUG: set the variable DBG to a non-empty value"
+	-@echo "* TO DEBUG: set the variable DEBUG to a non-empty value"
 	-@echo ""
 	-@echo "Alternative one method to install:"
 	-@echo ""
 	-@echo "hg clone https://bitbucket.org/assarbad/dotfiles ~/.dotfiles && make -C ~/.dotfiles install"
 
 info:
-	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR HOSTNAME DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
+	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
 
 install:
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.dotfiles "$(DOTFILES)/.hg/hgrc"
