@@ -8,11 +8,15 @@ users = root, oliver, jobber
 diff = diff --git
 
 [extensions]
-hgext.convert=
-hgext.fetch=
-hgext.purge=
 color=
+fetch=
+mq=
+purge=
+rebase=
+record=
+schemes=
 shelve=
+transplant=
 #commitsigs=
 #
 #[gpg]
