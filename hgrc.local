@@ -3,11 +3,9 @@ username = Oliver Schneider <oliver@assarbad.net>
 
 [paths]
 default   = https://bitbucket.org/assarbad/dotfiles
-assarbad  = https://vcs.assarbad.net/mercurial/dotfiles
 bitbucket = ssh://hg@bitbucket.org/assarbad/dotfiles
 default-push = ssh://hg@bitbucket.org/assarbad/dotfiles
 yggdrasil = ssh://oliver@yggdrasil.assarbad.net//data/oliver/dotfiles
-bb_https  = https://bitbucket.org/assarbad/dotfiles
 
 [hostfingerprints]
 vcs.assarbad.net = 2A:D6:5F:AE:64:2B:BB:96:48:8F:89:DE:67:B6:E3:2B:39:0D:DE:1E

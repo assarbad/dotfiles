@@ -97,7 +97,7 @@ info:
 	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
 
 install:
-	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.dotfiles "$(DOTFILES)/.hg/hgrc"
+	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
 
 .NOTPARALLEL: install test nodel-test
