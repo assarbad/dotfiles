@@ -1,4 +1,3 @@
-# $Id$
 # vim: set autoindent smartindent tabstop=2 shiftwidth=2 expandtab filetype=sh:
 alias sb="source ~/.bashrc"
 type sort > /dev/null 2>&1 && { alias e="env|sort -i"; } || { alias e="env"; }
@@ -25,6 +24,7 @@ if [[ -e "/etc/debian_version" ]]; then
   alias apti='apt-get --no-install-recommends install'
   alias setup='apt-get install'
   alias purge='apt-get --purge remove'
+  alias autopurge='apt-get --purge autoremove'
   alias lp='command dpkg -l'
   alias lpi='command dpkg -l|grep ^ii'
   alias lpg='command dpkg -l|grep -iE'
