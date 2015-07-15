@@ -95,20 +95,25 @@ function handle_specific_overrides
 			while read fname; do
 				X="${fname##$D/}"
 				if [[ -e "$TGTDIR/$X" ]]; then
-					if ! grep -q "Appended: ${D#$HOME/}:$X" "$TGTDIR/$X"; then
-						echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
-						if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
-							echo -ne "${cG}[OK]${cZ}"
-							if echo "# Appended: ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
-								echo -e "${cG} + [marked]${cZ}"
-							else
-								echo ""
-							fi
+					if grep -q "Appended: ${D#$HOME/}:$X" "$TGTDIR/$X"; then
+						# Was already appended, so check whether the combined file is older than any of its sources
+						if [[ "$TGTDIR/$X" -ot "$fname" ]] || [[ "$TGTDIR/$X" -ot "$X" ]]; then
+							copy_file always "$X" "$TGTDIR"
 						else
-							echo -e "  ${cR}appending failed: $?${cZ}"
+							echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (up-to-date)"
+							continue
+						fi
+					fi
+					echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
+					if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
+						echo -ne "${cG}[OK]${cZ}"
+						if echo "# Appended: ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
+							echo -e "${cG} + [marked]${cZ}"
+						else
+							echo ""
 						fi
 					else
-						echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (already appended previously)"
+						echo -e "  ${cR}appending failed: $?${cZ}"
 					fi
 				fi
 			done < <(find "$D/" -type f | sort)
