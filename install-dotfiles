@@ -160,4 +160,5 @@ for i in .ssh/authorized_keys .gnupg/gpg.conf; do
 		chmod go= "$TGTDIR/${i%/*}" "$TGTDIR/$i"
 	fi
 done
+[[ -e "$TGTDIR/.ssh/config" ]] && chmod u=rw,g=r,o= "$TGTDIR/.ssh/config"
 exit 0
