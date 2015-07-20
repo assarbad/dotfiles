@@ -7,7 +7,6 @@ if [[ -n "$TERM" ]]; then
 	_TMUX_="_TMUXTERM=$TERM tmux"
 	if (type toe) > /dev/null 2>&1; then
 		TOELIST=$( toe -a > /dev/null 2>&1 && { echo "toe -a"; } || { echo "toe -h"; } )
-		echo "'$TOELIST'"
 		if type tput > /dev/null 2>&1; then
 			COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
 			if ((COLORCNT >= 256)); then
