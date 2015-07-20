@@ -5,13 +5,15 @@ _TMUX_="tmux"
 # Establish a default
 if [[ -n "$TERM" ]]; then
 	_TMUX_="_TMUXTERM=$TERM tmux"
-	if (type toe && toe -a) > /dev/null 2>&1; then
+	if (type toe) > /dev/null 2>&1; then
+		TOELIST=$( toe -a > /dev/null 2>&1 && { echo "toe -a"; } || { echo "toe -h"; } )
+		echo "'$TOELIST'"
 		if type tput > /dev/null 2>&1; then
-			COLORCNT=$(tput Co 2> /dev/null || tput colors)
+			COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
 			if ((COLORCNT >= 256)); then
 				case "$TERM" in
 					*-256color|*-256-color*)
-						if toe -a|grep -q ^$TERM; then
+						if $TOELIST|grep -q ^$TERM; then
 							_TMUX_="_TMUXTERM=$TERM tmux -2"
 						else
 							case "$TERM" in
@@ -23,12 +25,25 @@ if [[ -n "$TERM" ]]; then
 						fi
 						;;
 				esac
+			else
+				case "$TERM" in
+					*-256color|*-256-color*)
+						TERM=${TERM//-256-color}
+						TERM=${TERM//-256color}
+						if $TOELIST|grep -q ^$TERM; then
+							_TMUX_="_TMUXTERM=$TERM tmux"
+						else # fallback
+							_TMUX_="_TMUXTERM=screen tmux"
+						fi
+						;;
+				esac
 			fi
 		fi
 	fi
 fi
 alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else $_TMUX_ attach-session -t $(hostname -s) || $_TMUX_ new-session -s $(hostname -s) -n shell; fi"
 unset _TMUX_
+unset TOELIST
 if [[ -n "$_TMUXTERM" ]]; then
 	TERM=$_TMUXTERM
 	unset _TMUXTERM

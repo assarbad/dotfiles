@@ -1,0 +1,16 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+# Establish a default
+if [[ -n "$TERM" ]]; then
+	if (type toe) > /dev/null 2>&1; then
+		TOELIST=$( toe -a /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
+		case "$TERM" in
+			*-256color|*-256-color*)
+				if ! $TOELIST|grep -q ^$TERM; then
+					export TERM=screen
+				fi
+				;;
+		esac
+		unset TOELIST
+	fi
+fi
