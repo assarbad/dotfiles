@@ -44,7 +44,7 @@ export HISTCONTROL=erasedups:ignorespace
 export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:pushf:ducks:psaux"
 export HISTFILESIZE=3000
 
-shopt -s autocd
+shopt -s autocd 2> /dev/null
 shopt -s checkwinsize
 shopt -s cdspell
 shopt -s dotglob

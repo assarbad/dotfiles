@@ -33,7 +33,7 @@ function copy_file
 	local TGTNAME="$TGTBASEDIR/$RELNAME"
 	local SRCNAME="$SRCBASEDIR/$RELNAME"
 	# For relative names pointing to a subdirectory
-	if [[ "$RELNAME" =~ "/" ]]; then
+	if [[ "$RELNAME" != "${RELNAME//\/}" ]]; then
 		if [[ ! -d "${TGTNAME%/*}" ]]; then
 			echo -e "  ${cW}${RELNAME%/*}${cZ}${cG}/${cZ}"
 			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
