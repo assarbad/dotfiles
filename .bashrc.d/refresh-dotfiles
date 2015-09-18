@@ -7,12 +7,12 @@ function refresh-dotfiles
 	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
 	if [[ -d "$HOME/.local/dotfiles/.hg" ]] && [[ -x "$HOME/.local/dotfiles/refresh-dotfiles" ]]; then
-		(cd "$HOME/.local/dotfiles" && ./refresh-dotfiles)
+		[[ "$1" == "--nopull" ]] || (cd "$HOME/.local/dotfiles" && ./refresh-dotfiles)
 	fi
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
 		[[ "$MYBRCD/hgrc.local" -nt "$MYBRCD/.hg/hgrc" ]] && cp -a "$MYBRCD/hgrc.local" "$MYBRCD/.hg/hgrc"
-		type hg 2> /dev/null && hg pull -R "$MYBRCD" -u || hg up -R "$MYBRCD"
+		[[ "$1" == "--nopull" ]] || type hg 2> /dev/null && hg pull -R "$MYBRCD" -u || hg up -R "$MYBRCD"
 	fi
 	local GMAKE=make
 	type gmake 2> /dev/null && GMAKE=gmake
