@@ -22,7 +22,6 @@ if [[ -e "/etc/debian_version" ]]; then
   alias show='apt-cache show'
   alias upgrade='apt-get update && apt-get dist-upgrade'
   alias apti='apt-get --no-install-recommends install'
-  alias setup='apt-get install'
   alias purge='apt-get --purge remove'
   alias autopurge='apt-get --purge autoremove'
   alias lp='command dpkg -l'
@@ -75,6 +74,10 @@ if [[ -e "/etc/redhat-release" ]]; then
     for i in ifconfig:/sbin/ifconfig \
               service:/sbin/service \
               htop:/usr/bin/htop \
+              lsof:/usr/sbin/lsof \
+              reboot:/sbin/reboot \
+              tcpdump:/usr/sbin/tcpdump \
+              yum:/usr/bin/yum \
               iptables:/sbin/iptables
     do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
@@ -90,20 +93,20 @@ unset __create_abs_alias
 unset i
 
 # http://unix.stackexchange.com/a/4220
-function make_completion_wrapper () {
-	local function_name="$2"
-	local arg_count=$(($#-3))
-	local comp_function_name="$1"
-	shift 2
-	local function="
-		function $function_name {
-			((COMP_CWORD+=$arg_count))
-			COMP_WORDS=( "$@" \${COMP_WORDS[@]:1} )
-			"$comp_function_name"
-			return 0
-		}"
-	eval "$function"
-}
+# function make_completion_wrapper () {
+# 	local function_name="$2"
+# 	local arg_count=$(($#-3))
+# 	local comp_function_name="$1"
+# 	shift 2
+# 	local function="
+# 		function $function_name {
+# 			((COMP_CWORD+=$arg_count))
+# 			COMP_WORDS=( "$@" \${COMP_WORDS[@]:1} )
+# 			"$comp_function_name"
+# 			return 0
+# 		}"
+# 	eval "$function"
+# }
 
 # make_completion_wrapper _apt_get    _apt_get_apti    apt-get --no-install-recommends install
 # make_completion_wrapper _apt_get   _apt_get_setup    apt-get install
