@@ -24,7 +24,7 @@ if type localepurge 2>&1 > /dev/null; then
 	echo -e "${cW}INFO:${cZ} running ${cG}localepurge${cZ}"
 	localepurge
 fi
-for i in /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/* /var/cache/debconf/*.dat-old; do
+for i in /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/partial/* /var/cache/debconf/*.dat-old; do
 	if [[ -e "$i" ]]; then
 		echo -e "${cW}INFO:${cZ} removing ${cW}$i${cZ}"
 		rm -f "$i"
