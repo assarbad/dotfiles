@@ -30,6 +30,7 @@ for i in /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/partial/
 		rm -f "$i"
 	fi
 done
+find /etc -type f -name '*.dpkg-old' -delete
 ZEROFILE="/zerofile"
 trap 'rm -f "$ZEROFILE"; trap - INT TERM EXIT; exit $?' INT TERM EXIT
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
