@@ -14,6 +14,8 @@ echo -e "${cW}INFO:${cZ} asking apt-get to purge previously removed packages"
 apt-get --purge remove $(dpkg -l|awk '$1 ~ /^rc/ && $2 ~ /^linux-(headers|image)/ {print $2}')
 echo -e "${cW}INFO:${cZ} asking apt-get to purge and autoremove any no longer needed packages"
 apt-get --purge autoremove
+echo -e "${cW}INFO:${cZ} asking apt-get to purge ${cW}popularity-contest${cZ} and/or ${cW}unattended-upgrades${cZ} if installed"
+apt-get --purge autoremove $(dpkg -l|grep -E '(popularity-contest|unattended-upgrades)'|awk '{print $2}')
 echo -e "${cW}INFO:${cZ} running ${cG}apt-get -y autoclean${cZ}"
 apt-get -y autoclean
 echo -e "${cW}INFO:${cZ} running ${cG}apt-get -y clean${cZ}"
@@ -24,7 +26,7 @@ if type localepurge 2>&1 > /dev/null; then
 	echo -e "${cW}INFO:${cZ} running ${cG}localepurge${cZ}"
 	localepurge
 fi
-for i in /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/partial/* /var/cache/debconf/*.dat-old; do
+for i in /etc/.pwd.lock /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/partial/* /var/cache/debconf/*.dat-old; do
 	if [[ -e "$i" ]]; then
 		echo -e "${cW}INFO:${cZ} removing ${cW}$i${cZ}"
 		rm -f "$i"
