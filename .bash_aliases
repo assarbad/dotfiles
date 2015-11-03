@@ -34,6 +34,8 @@ if [[ -e "/etc/debian_version" ]]; then
     alias diff="command colordiff -u"
     if type "svn" > /dev/null 2>&1; then
       alias svndiff="command svn diff --diff-cmd colordiff"
+    else
+      alias svndiff="command svn diff"
     fi
   else
     alias diff="command diff -u"
