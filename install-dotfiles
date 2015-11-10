@@ -77,7 +77,11 @@ function handle_specific_overrides
 	# Unconditional overrides
 	if [[ -d "$SRCBASEDIR/override/." ]]; then
 		local D=""
-		[[ -d "$SRCBASEDIR/override/$HOST/." ]] && D="$SRCBASEDIR/override/$HOST"
+		if [[ -d "$SRCBASEDIR/override/$(whoami)@$HOST/." ]]; then
+			D="$SRCBASEDIR/override/$(whoami)@$HOST"
+		elif [[ -d "$SRCBASEDIR/override/$HOST/." ]]; then
+			D="$SRCBASEDIR/override/$HOST"
+		fi
 		[[ -z "$D" ]] && D="$SRCBASEDIR/override/$DOMAIN"
 		if [[ -d "$D/." ]]; then
 			echo -e "Overriding from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
@@ -88,7 +92,11 @@ function handle_specific_overrides
 	fi
 	if [[ -d "$SRCBASEDIR/append/." ]]; then
 		local D=""
-		[[ -d "$SRCBASEDIR/append/$HOST/." ]] && D="$SRCBASEDIR/append/$HOST"
+		if [[ -d "$SRCBASEDIR/append/$(whoami)@$HOST/." ]]; then
+			D="$SRCBASEDIR/append/$(whoami)@$HOST"
+		elif [[ -d "$SRCBASEDIR/append/$HOST/." ]]; then
+			D="$SRCBASEDIR/append/$HOST"
+		fi
 		[[ -z "$D" ]] && D="$SRCBASEDIR/append/$DOMAIN"
 		if [[ -d "$D/." ]]; then
 			echo -e "Appending from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
@@ -124,7 +132,11 @@ function handle_specific_overrides
 			echo -e "Executing customization script: ${cW}ALL${cZ}"
 			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/ALL" || echo -e "\t${cR}something failed?!${cZ}"
 		fi
-		[[ -x "$SRCBASEDIR/custom/$HOST" ]] && SCR="$SRCBASEDIR/custom/$HOST"
+		if [[ -x "$SRCBASEDIR/custom/$(whoami)@$HOST" ]]; then
+			SCR="$SRCBASEDIR/custom/$(whoami)@$HOST"
+		elif [[ -x "$SRCBASEDIR/custom/$HOST" ]]; then
+			SCR="$SRCBASEDIR/custom/$HOST"
+		fi
 		[[ -z "$SCR" ]] && SCR="$SRCBASEDIR/custom/$DOMAIN"
 		if [[ -x "$SCR" ]]; then
 			echo -e "Executing customization script: ${cW}${SCR##*/}${cZ}"
