@@ -69,7 +69,7 @@ for sw in $SWAP; do
 			if [[ -e "/dev/disk/by-uuid/${sw#UUID=}" ]]; then
 				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
 				dd if=/dev/zero of=/dev/disk/by-uuid/${sw#UUID=} bs=10M
-				[[ "Linux" == "$(uname -s)" ]] mkswap "/dev/disk/by-uuid/${sw#UUID=}"
+				[[ "Linux" == "$(uname -s)" ]] && mkswap "/dev/disk/by-uuid/${sw#UUID=}"
 			fi
 			;;
 		/dev/*)
