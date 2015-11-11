@@ -77,13 +77,9 @@ for sw in $SWAP; do
 			fi
 			;;
 		/dev/*)
-			if [[ -b "$sw" ]]; then
-				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-				dd if=/dev/zero of=$sw bs=10M
-				[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
-			else
-				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
-			fi
+			echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
+			dd if=/dev/zero of=$sw bs=10M
+			[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
 			;;
 		*)
 			echo -e "${cY}WARNING:${cZ} don't know how to handle '$sw' swap space. Skipping."
