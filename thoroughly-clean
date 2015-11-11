@@ -72,6 +72,8 @@ for sw in $SWAP; do
 				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw == $UUID)"
 				dd if=/dev/zero of=$sw bs=10M
 				[[ "Linux" == "$(uname -s)" ]] && mkswap -U $UUID "$sw"
+			else
+				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
 			fi
 			;;
 		/dev/*)
@@ -79,6 +81,8 @@ for sw in $SWAP; do
 				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
 				dd if=/dev/zero of=$sw bs=10M
 				[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
+			else
+				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
 			fi
 			;;
 		*)
