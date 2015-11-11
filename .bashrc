@@ -79,7 +79,8 @@ if [[ "Linux" == "$(uname -s)" ]]; then
 	alias l='ls $LS_OPTIONS -all'
 	unset MYLS_OPTIONS
 else
-	[[ "$(uname -s)" == "Darwin" ]] && export CLICOLOR=
+	[[ "$(uname -s)" == "Darwin"  ]] && export CLICOLOR=
+	[[ "$(uname -s)" == "FreeBSD" ]] && export CLICOLOR=
 	alias ll='ls -l'
 	alias l='ls -ahl'
 fi
