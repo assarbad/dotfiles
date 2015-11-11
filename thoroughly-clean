@@ -60,22 +60,26 @@ if [[ -r /etc/fstab ]]; then
 	SWAP=$(awk '$3 ~ /^swap/ {print $1}' /etc/fstab)
 fi
 
-echo "${cW}INFO:${cZ} turning swap off"
+echo -e "${cW}INFO:${cZ} turning swap off"
 swapoff -a
 
 for sw in $SWAP; do
 	case $sw in
 		UUID=*)
-			if [[ -e "/dev/disk/by-uuid/${sw#UUID=}" ]]; then
-				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-				dd if=/dev/zero of=/dev/disk/by-uuid/${sw#UUID=} bs=10M
-				[[ "Linux" == "$(uname -s)" ]] && mkswap "/dev/disk/by-uuid/${sw#UUID=}"
+			UUID=${sw#UUID=}
+			sw=$(readlink -f /dev/disk/by-uuid/$UUID)
+			if [[ -b "$sw" ]]; then
+				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw == $UUID)"
+				dd if=/dev/zero of=$sw bs=10M
+				[[ "Linux" == "$(uname -s)" ]] && mkswap -U $UUID "$sw"
 			fi
 			;;
 		/dev/*)
-			echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-			dd if=/dev/zero of=$sw bs=10M
-			[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
+			if [[ -b "$sw" ]]; then
+				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
+				dd if=/dev/zero of=$sw bs=10M
+				[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
+			fi
 			;;
 		*)
 			echo -e "${cY}WARNING:${cZ} don't know how to handle '$sw' swap space. Skipping."
