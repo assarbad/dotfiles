@@ -89,8 +89,7 @@ done
 
 trap 'rm -f "$ZEROFILE"; trap - INT TERM EXIT; exit $?' INT TERM EXIT
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
-# TODO: remove echo
-echo dd if=/dev/zero of=$ZEROFILE bs=10M
+dd if=/dev/zero of=$ZEROFILE bs=10M
 echo -e "${cW}INFO:${cZ} synchronizing disks"
 sync
 echo -e "${cW}PLEASE${cZ} reboot now."
