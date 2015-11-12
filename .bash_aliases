@@ -94,6 +94,19 @@ if [[ -e "/etc/redhat-release" ]]; then
     alias upgrade='yum update'
   fi
 fi
+if [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
+  alias search='pkg search'
+  alias show='pkg info'
+  if [[ $UID -ne 0 ]]; then
+    for i in pkg:/usr/sbin/pkg
+    do
+      __create_abs_alias ${i%%:*} "${i#*:}" sudo
+    done
+    alias upgrade='sudo pkg update && sudo pkg upgrade'
+  else
+    alias upgrade='pkg update && package upgrade'
+  fi
+fi
 unset __create_abs_alias
 unset i
 
