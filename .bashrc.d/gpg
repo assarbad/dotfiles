@@ -4,10 +4,10 @@
 if [[ -e "$HOME/.gnupg/gpg.conf" ]]; then
 	chmod -c go= "$HOME/.gnupg" "$HOME/.gnupg/gpg.conf" 2> /dev/null || true
 	if [[ ! -e "$HOME/.gnupg/.no-pubkey-fetch" ]]; then
-		if type gpg > /dev/null 2>&1; then
+		if type gpg > /dev/null 2>&1 && type tr > /dev/null 2>&1 ; then
 			MISSING_KEYS=$(\
 				for i in $(awk '$1 ~ /^trusted-key$/ {print $2}' $HOME/.gnupg/gpg.conf); do
-					if ! grep -q ${i^^} <(gpg -k --with-colons 2> /dev/null|awk -F : '$1 ~ /^pub$/ {print $5}'); then
+					if ! grep -q "$(echo "${i}"|tr a-z A-Z)" <(gpg -k --with-colons 2> /dev/null|awk -F : '$1 ~ /^pub$/ {print $5}'); then
 						echo $i
 					fi
 				done)
