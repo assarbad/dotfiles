@@ -2,7 +2,7 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 [[ $UID -eq 0 ]] || { echo "ERROR: must be run as root."; exit 1; }
 pushd $(dirname $0) 2>&1 > /dev/null && BASEDIR=$(pwd) && popd 2>&1 > /dev/null
-[[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
+[[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 
 function clean_debian_derived
 {
