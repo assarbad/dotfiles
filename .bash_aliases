@@ -104,7 +104,7 @@ if [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
     done
     alias upgrade='sudo pkg update && sudo pkg upgrade'
   else
-    alias upgrade='pkg update && package upgrade'
+    alias upgrade='pkg update && pkg upgrade'
   fi
 fi
 unset __create_abs_alias
