@@ -44,7 +44,11 @@ function clean_freebsd
 		pkg clean
 	fi
 	mount -t ufs|awk '$3 !~ /^\/$/ {print $3}'|while read mountpt; do
-		dd if=/dev/zero of=$mountpt$ZEROFILE bs=10M
+		( \
+			set -x; \
+			trap 'rm -f "'$mountpt$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; \
+			dd if=/dev/zero of=$mountpt$ZEROFILE bs=10M; \
+		)
 	done
 }
 
@@ -97,9 +101,8 @@ for sw in $SWAP; do
 	esac
 done
 
-trap 'rm -f "$ZEROFILE"; trap - INT TERM EXIT; exit $?' INT TERM EXIT
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
-dd if=/dev/zero of=$ZEROFILE bs=10M
+( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=10M; )
 echo -e "${cW}INFO:${cZ} synchronizing disks"
 sync
 echo -e "${cW}PLEASE${cZ} reboot now."
