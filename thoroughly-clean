@@ -42,6 +42,9 @@ function clean_freebsd
 	if type pkg > /dev/null 2>&1; then
 		pkg clean
 	fi
+	mount -t ufs|awk '$3 !~ /^\/$/ {print $3}'|while read mountpt; do
+		dd if=/dev/zero of=$mountpt$ZEROFILE bs=10M
+	done
 }
 
 function unsupported
