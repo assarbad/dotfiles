@@ -37,6 +37,11 @@ if [[ -e "/etc/debian_version" ]]; then
     else
       alias svndiff="command svn diff"
     fi
+    if type "cvs" > /dev/null 2>&1; then
+      alias cvsdiff="command cvs diff 2> /dev/null|grep -v '^\\? '|colordiff -u"
+    else
+      alias cvsdiff="command cvs diff 2> /dev/null|grep -v '^\\? '"
+    fi
   else
     alias diff="command diff -u"
   fi
