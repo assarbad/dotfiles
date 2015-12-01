@@ -43,7 +43,7 @@ function clean_freebsd
 	if type pkg > /dev/null 2>&1; then
 		pkg clean
 	fi
-	rm -rf /boot/kernel.old /var/db/freebsd-update/install.*
+	rm -drf /boot/kernel.old /var/db/freebsd-update/install.* /usr/ports/*
 	rm -f /var/db/freebsd-update/*-rollback /var/db/portsnap/INDEX /usr/ports/INDEX-* /usr/ports/MOVED /var/db/pkg/*.sqlite /var/log/bsdinstall_log /var/log/messages.*.bz2 /var/log/sendmail.st.*
 	find /var/db/portsnap/files -type f -delete
 	find /var/db/freebsd-update/files -type f -delete
