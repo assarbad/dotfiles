@@ -52,7 +52,7 @@ function clean_freebsd
 		( \
 			set -x; \
 			trap 'rm -f "'$mountpt$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; \
-			dd if=/dev/zero of=$mountpt$ZEROFILE bs=10M; \
+			dd if=/dev/zero of=$mountpt$ZEROFILE; \
 		)
 	done
 }
@@ -89,7 +89,7 @@ for sw in $SWAP; do
 			sw=$(readlink -f /dev/disk/by-uuid/$UUID)
 			if [[ -b "$sw" ]]; then
 				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw == $UUID)"
-				dd if=/dev/zero of=$sw bs=10M
+				dd if=/dev/zero of=$sw
 				[[ "Linux" == "$(uname -s)" ]] && mkswap -U $UUID "$sw"
 			else
 				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
@@ -97,7 +97,7 @@ for sw in $SWAP; do
 			;;
 		/dev/*)
 			echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-			dd if=/dev/zero of=$sw bs=10M
+			dd if=/dev/zero of=$sw
 			[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
 			;;
 		*)
@@ -107,7 +107,7 @@ for sw in $SWAP; do
 done
 
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
-( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=10M; )
+( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE; )
 echo -e "${cW}INFO:${cZ} synchronizing disks"
 sync
 echo -e "${cW}PLEASE${cZ} reboot now."
