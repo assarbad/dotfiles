@@ -44,7 +44,12 @@ function clean_freebsd
 		pkg clean
 	fi
 	rm -drf /boot/kernel.old /var/db/freebsd-update/install.* /usr/ports/*
-	rm -f /var/db/freebsd-update/*-rollback /var/db/portsnap/INDEX /usr/ports/INDEX-* /usr/ports/MOVED /var/db/pkg/*.sqlite /var/log/bsdinstall_log /var/log/messages.*.bz2 /var/log/sendmail.st.*
+	rm -f /var/db/freebsd-update/*-rollback
+	rm -f /var/db/portsnap/INDEX
+	rm -f /usr/ports/INDEX-* /usr/ports/MOVED
+	rm -f /var/db/pkg/*.sqlite
+	rm -f /var/log/bsdinstall_log /var/log/messages.*.bz2 /var/log/sendmail.st.*
+	rm -f /var/cache/pkg/*
 	find /var/db/portsnap/files -type f -delete
 	find /var/db/freebsd-update/files -type f -delete
 	find /var/cache/pkg -type f -name '*.txz' -delete
