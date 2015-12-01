@@ -43,6 +43,11 @@ function clean_freebsd
 	if type pkg > /dev/null 2>&1; then
 		pkg clean
 	fi
+	rm -rf /boot/kernel.old /var/db/freebsd-update/install.*
+	rm -f /var/db/freebsd-update/*-rollback /var/db/portsnap/INDEX
+	find /var/db/portsnap/files -type f -delete
+	find /var/db/freebsd-update/files -type f -delete
+	find /var/cache/pkg -type f -name '*.txz' -delete
 	mount -t ufs|awk '$3 !~ /^\/$/ {print $3}'|while read mountpt; do
 		( \
 			set -x; \
