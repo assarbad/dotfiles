@@ -45,7 +45,7 @@ function clean_freebsd
 	fi
 	rm -drf /boot/kernel.old /var/db/freebsd-update/install.* /usr/ports/*
 	rm -f /var/db/freebsd-update/*-rollback
-	rm -f /var/db/portsnap/INDEX
+	rm -f /var/db/portsnap/INDEX /usr/ports/.portsnap.INDEX
 	rm -f /usr/ports/INDEX-* /usr/ports/MOVED
 	rm -f /var/db/pkg/*.sqlite
 	rm -f /var/log/bsdinstall_log /var/log/messages.*.bz2 /var/log/sendmail.st.*
@@ -57,7 +57,7 @@ function clean_freebsd
 		( \
 			set -x; \
 			trap 'rm -f "'$mountpt$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; \
-			dd if=/dev/zero of=$mountpt$ZEROFILE; \
+			dd if=/dev/zero of=$mountpt$ZEROFILE bs=1M; \
 		)
 	done
 }
@@ -95,7 +95,7 @@ for sw in $SWAP; do
 			sw=$(readlink -f /dev/disk/by-uuid/$UUID)
 			if [[ -b "$sw" ]]; then
 				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw == $UUID)"
-				dd if=/dev/zero of=$sw
+				dd if=/dev/zero of=$sw bs=1M
 				[[ "Linux" == "$(uname -s)" ]] && mkswap -U $UUID "$sw"
 			else
 				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
@@ -103,7 +103,7 @@ for sw in $SWAP; do
 			;;
 		/dev/*)
 			echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-			dd if=/dev/zero of=$sw
+			dd if=/dev/zero of=$sw bs=1M
 			[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
 			;;
 		*)
@@ -113,7 +113,7 @@ for sw in $SWAP; do
 done
 
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
-( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE; )
+( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=1M; )
 echo -e "${cW}INFO:${cZ} synchronizing disks"
 sync
 echo -e "${cW}PLEASE${cZ} reboot now."
