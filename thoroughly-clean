@@ -43,6 +43,7 @@ function clean_freebsd
 	if type pkg > /dev/null 2>&1; then
 		pkg clean
 	fi
+	echo -e "${cW}INFO:${cZ} removing portsnap, freebsd-update and pkg caches"
 	rm -drf /boot/kernel.old /var/db/freebsd-update/install.* /usr/ports/*
 	rm -f /var/db/freebsd-update/*-rollback
 	rm -f /var/db/portsnap/INDEX /usr/ports/.portsnap.INDEX
@@ -60,6 +61,16 @@ function clean_freebsd
 			dd if=/dev/zero of=$mountpt$ZEROFILE bs=1M; \
 		)
 	done
+	if mount -t zfs | grep -q zfs; then
+		echo -e "${cW}INFO:${cZ} checking for ZFS pools"
+		mount -t zfs|awk '$1 ~ /^'$(zpool list -pH|cut -f 1)'$/ {print $3}'|while read mountpt; do
+			( \
+				set -x; \
+				trap 'rm -f "'$mountpt$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; \
+				dd if=/dev/zero of=$mountpt$ZEROFILE bs=1M; \
+			)
+		done
+	fi
 }
 
 function unsupported
