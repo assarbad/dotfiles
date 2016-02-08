@@ -1,0 +1,3 @@
+test -f "$HOME/.local/bin/ansible" && \
+	test -x "$HOME/.local/bin/ansible" && \
+		export PATH="$HOME/.local/bin:$PATH"

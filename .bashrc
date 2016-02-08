@@ -177,9 +177,8 @@ fi
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo NOP'
 else
-	alias beroot="sudo su -"
+	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\" || sudo su -l root; }"
 fi
-# alias beroot="sudo su -l root -c \"BASHRCDIR='$HOME' $(which bash) --rcfile $HOME/.bashrc\""
 unset BASHZONE
 unset BASHHOST
 unset BASHSRCDIR
