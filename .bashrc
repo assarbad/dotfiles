@@ -197,6 +197,7 @@ if type lsb_release > /dev/null 2>&1; then
 else
 	echo -e "${cG_}$(uname -s) $(uname -r)${cZ}"
 fi
+cd
 
 function ducks
 {
