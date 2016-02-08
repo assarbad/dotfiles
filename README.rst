@@ -84,11 +84,16 @@ mechanisms for customization.
 The ``~/.local/dotfiles/custom`` *differs* in that it contains any or none of
 the following items:
 
-* a file marked executable and named ``ALL`` that will always be executed and
-  will get passed ``TGTDIR`` as environment variable.
-* a file marked executable and named after the short host name that will be
-  executed *after* the ``ALL`` file (assuming the latter exists and isi
-  executable).
+* an executable file named ``ALL`` that will always be executed if it exists
+  and passed the appropriate ``TGTDIR`` environment variable.
+* an executable file named ``$(whoami)@$(hostname -s)`` (``user@hostname``)
+  takes precedence over an executable file named ``$(hostname -f)`` (just the
+  ``hostname``).
+    - **NB:** the ``ALL`` script gets executed unconditionally and before all
+      other scripts, if it exists.
+    - If neither ``$(whoami)@$(hostname -s)`` nor ``$(hostname -f)`` existed
+      (or if neither was executable), a script named after the domain (see
+      above; example ``_.domain.tld``) would also be taken into account.
 
 Testing without overwriting ``$HOME``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
