@@ -4,20 +4,19 @@ function refresh-dotfiles
 {
 	local TGTDIR="${BASHRCDIR:-$HOME}"
 	local MYBRCD="$TGTDIR/.dotfiles"
-	if [[ -n "$SUDO_USER" ]]; then
-		UPSTREAM_BASE=$(eval echo ~${SUDO_USER})
-		UPSTREAM_LOCDOTFI="$UPSTREAM_REPO/.local/dotfiles"
-		UPSTREAM_DOTFILES="$UPSTREAM_REPO/.dotfiles"
-	fi
+	local UPSTREAM_BASE=/dev/null
+	[[ -n "$SUDO_USER" ]] && UPSTREAM_BASE=$(eval echo ~$SUDO_USER)
+	local UPSTREAM_LOCDOTFI="$UPSTREAM_REPO/.local/dotfiles"
+	local UPSTREAM_DOTFILES="$UPSTREAM_REPO/.dotfiles"
 	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
 	if [[ -d "$HOME/.local/dotfiles/.hg" ]] && [[ -x "$HOME/.local/dotfiles/refresh-dotfiles" ]]; then
-		[[ "$1" == "--nopull" ]] || (set -x; [[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; cd "$HOME/.local/dotfiles" && ./refresh-dotfiles)
+		[[ "$1" == "--nopull" ]] || ([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$HOME/.local/dotfiles" && ./refresh-dotfiles)
 	fi
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
 		[[ "$MYBRCD/hgrc.local" -nt "$MYBRCD/.hg/hgrc" ]] && cp -a "$MYBRCD/hgrc.local" "$MYBRCD/.hg/hgrc"
-		[[ "$1" == "--nopull" ]] || (set -x; [[ -d "$UPSTREAM_DOTFILES/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_DOTFILES"; type hg 2> /dev/null && hg -R "$MYBRCD" pull -u ${UPSTREAM_REPO:-} || hg up -R "$MYBRCD")
+		[[ "$1" == "--nopull" ]] || ([[ -d "$UPSTREAM_DOTFILES/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_DOTFILES"; set -x; type hg 2> /dev/null && hg -R "$MYBRCD" pull -u ${UPSTREAM_REPO:-} || hg up -R "$MYBRCD")
 	fi
 	local GMAKE=make
 	type gmake 2> /dev/null && GMAKE=gmake
