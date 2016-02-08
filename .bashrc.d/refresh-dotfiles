@@ -6,8 +6,8 @@ function refresh-dotfiles
 	local MYBRCD="$TGTDIR/.dotfiles"
 	local UPSTREAM_BASE=/dev/null
 	[[ -n "$SUDO_USER" ]] && UPSTREAM_BASE=$(eval echo ~$SUDO_USER)
-	local UPSTREAM_LOCDOTFI="$UPSTREAM_REPO/.local/dotfiles"
-	local UPSTREAM_DOTFILES="$UPSTREAM_REPO/.dotfiles"
+	local UPSTREAM_LOCDOTFI="$UPSTREAM_BASE/.local/dotfiles"
+	local UPSTREAM_DOTFILES="$UPSTREAM_BASE/.dotfiles"
 	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
 	if [[ -d "$HOME/.local/dotfiles/.hg" ]] && [[ -x "$HOME/.local/dotfiles/refresh-dotfiles" ]]; then
