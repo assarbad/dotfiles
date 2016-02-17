@@ -3,7 +3,7 @@
 # Establish a default
 if [[ -n "$TERM" ]]; then
 	if (type toe) > /dev/null 2>&1; then
-		TOELIST=$( toe -a /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
+		TOELIST=$( toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
 		case "$TERM" in
 			*-256color|*-256-color*)
 				if ! $TOELIST|grep -q ^$TERM; then
