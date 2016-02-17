@@ -79,8 +79,12 @@ function handle_specific_overrides
 		local D=""
 		if [[ -d "$SRCBASEDIR/override/$(whoami)@$HOST/." ]]; then
 			D="$SRCBASEDIR/override/$(whoami)@$HOST"
+		elif [[ -d "$SRCBASEDIR/override/$(whoami)@$HOSTNAME/." ]]; then
+			D="$SRCBASEDIR/override/$(whoami)@$HOSTNAME"
 		elif [[ -d "$SRCBASEDIR/override/$HOST/." ]]; then
 			D="$SRCBASEDIR/override/$HOST"
+		elif [[ -d "$SRCBASEDIR/override/$HOSTNAME/." ]]; then
+			D="$SRCBASEDIR/override/$HOSTNAME"
 		fi
 		[[ -z "$D" ]] && D="$SRCBASEDIR/override/$DOMAIN"
 		if [[ -d "$D/." ]]; then
@@ -94,8 +98,12 @@ function handle_specific_overrides
 		local D=""
 		if [[ -d "$SRCBASEDIR/append/$(whoami)@$HOST/." ]]; then
 			D="$SRCBASEDIR/append/$(whoami)@$HOST"
+		elif [[ -d "$SRCBASEDIR/append/$(whoami)@$HOSTNAME/." ]]; then
+			D="$SRCBASEDIR/append/$(whoami)@$HOSTNAME"
 		elif [[ -d "$SRCBASEDIR/append/$HOST/." ]]; then
 			D="$SRCBASEDIR/append/$HOST"
+		elif [[ -d "$SRCBASEDIR/append/$HOSTNAME/." ]]; then
+			D="$SRCBASEDIR/append/$HOSTNAME"
 		fi
 		[[ -z "$D" ]] && D="$SRCBASEDIR/append/$DOMAIN"
 		if [[ -d "$D/." ]]; then
@@ -134,8 +142,12 @@ function handle_specific_overrides
 		fi
 		if [[ -x "$SRCBASEDIR/custom/$(whoami)@$HOST" ]]; then
 			SCR="$SRCBASEDIR/custom/$(whoami)@$HOST"
+		elif [[ -x "$SRCBASEDIR/custom/$(whoami)@$HOSTNAME" ]]; then
+			SCR="$SRCBASEDIR/custom/$(whoami)@$HOSTNAME"
 		elif [[ -x "$SRCBASEDIR/custom/$HOST" ]]; then
 			SCR="$SRCBASEDIR/custom/$HOST"
+		elif [[ -x "$SRCBASEDIR/custom/$HOSTNAME" ]]; then
+			SCR="$SRCBASEDIR/custom/$HOSTNAME"
 		fi
 		[[ -z "$SCR" ]] && SCR="$SRCBASEDIR/custom/$DOMAIN"
 		if [[ -x "$SCR" ]]; then
