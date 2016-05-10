@@ -8,5 +8,5 @@ default-push = ssh://hg@bitbucket.org/assarbad/dotfiles
 yggdrasil = ssh://oliver@yggdrasil.assarbad.net//data/oliver/dotfiles
 
 [hostfingerprints]
-vcs.assarbad.net = 2A:D6:5F:AE:64:2B:BB:96:48:8F:89:DE:67:B6:E3:2B:39:0D:DE:1E
-bitbucket.org    = 46:DE:34:E7:9B:18:CD:7F:AE:FD:8B:E3:BC:F4:1A:5E:38:D7:AC:24
+#bitbucket.org    = 46:DE:34:E7:9B:18:CD:7F:AE:FD:8B:E3:BC:F4:1A:5E:38:D7:AC:24
+bitbucket.org    = 3F:D3:C5:17:23:3C:CD:F5:2D:17:76:06:93:7E:EE:97:42:21:14:AA
