@@ -137,8 +137,15 @@ if version >= 700
 	endif
 endif
 " Allow saving of files as sudo when I forgot to start vim using sudo.
-" http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
-cmap w!! %!sudo tee > /dev/null %
+" http://stackoverflow.com/q/2600783
+" cmap w!! %!sudo tee > /dev/null %
+" http://unix.stackexchange.com/q/249221
+cnoremap w!! call SudoSaveFile()
+
+function! SudoSaveFile() abort
+	execute (has('gui_running') ? '' : 'silent') 'write !env SUDO_EDITOR=tee sudo -e % >/dev/null'
+	let &modified = v:shell_error
+endfunction
 
 " Shortcut to rapidly toggle `set list`
 nmap <leader>l :set list!<CR>:set number!<CR>
