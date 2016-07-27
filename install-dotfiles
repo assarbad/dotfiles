@@ -91,7 +91,7 @@ function handle_specific_overrides
 			echo -e "Overriding from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
 			while read fname; do
 				copy_file always "${fname##$D/}" "$TGTDIR" "$D"
-			done < <(find "$D/" \( -type f ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
+			done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
 		fi
 	fi
 	if [[ -d "$SRCBASEDIR/append/." ]]; then
@@ -132,7 +132,7 @@ function handle_specific_overrides
 						echo -e "  ${cR}appending failed: $?${cZ}"
 					fi
 				fi
-			done < <(find "$D/" \( -type f ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
+			done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
 		fi
 	fi
 	if [[ -d "$SRCBASEDIR/custom/." ]]; then
@@ -166,7 +166,7 @@ while read fname; do
 			copy_file newer "$fname" "$TGTDIR"
 			;;
 	esac
-done < <(find . \( -type f ! -path '*/.git/*' ! -path '*/.hg/*' \) | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
+done < <(find . -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
 # Overrides, appends and custom scripts
 handle_specific_overrides "$LOCALROOT"
 
