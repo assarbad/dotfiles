@@ -1,2 +1,1 @@
-autocmd BufNewFile,BufRead {.,}tmux.conf{.*,} setlocal filetype=tmux
-autocmd BufNewFile,BufRead {.,}tmux.conf{.*,} setlocal commentstring=#\ %s
+autocmd BufNewFile,BufRead {.,}tmux*.conf set ft=tmux | compiler tmux
