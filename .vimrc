@@ -94,6 +94,9 @@ if has('syntax')
 	set spelllang=en  " use English for spellchecking
 	set nospell       " but don't spellcheck by default
 endif
+if has("patch-7.4-399")
+	set cryptmethod=blowfish2
+endif
 if version >= 700
 	" https://github.com/tpope/vim-sensible
 	runtime! bundle/vim-sensible/plugin/sensible.vim
@@ -149,6 +152,7 @@ endfunction
 
 " Shortcut to rapidly toggle `set list`
 nmap <leader>l :set list!<CR>:set number!<CR>
+nmap <leader>w :set wrap!<CR>
 
 set listchars=tab:>\ 
 highlight NonText ctermfg=DarkGrey guifg=#4a4a59
