@@ -40,7 +40,7 @@ if [[ -n "$TERM" ]]; then
 		fi
 	fi
 fi
-alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else $_TMUX_ attach-session -t $(hostname -s) || $_TMUX_ new-session -s $(hostname -s) -n shell; fi"
+alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else if tmux ls|grep -q ^$(hostname -s):; then $_TMUX_ attach-session -t $(hostname -s); else $_TMUX_ new-session -s $(hostname -s) -n shell; fi; fi"
 unset _TMUX_
 unset TOELIST
 if [[ -n "$_TMUXTERM" ]]; then
