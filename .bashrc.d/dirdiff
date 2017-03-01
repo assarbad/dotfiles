@@ -1,0 +1,14 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type vimdiff > /dev/null 2>&1 && type tree > /dev/null 2>&1; then
+	function dirdiff
+	{
+		local DIR1="$1"
+		local DIR2="$2"
+		[[ -n "$DIR1" ]] || { echo -e "ERROR: first directory not given."; return; }
+		[[ -n "$DIR2" ]] || { echo -e "ERROR: second directory not given."; return; }
+		[[ -d "$DIR1" ]] || { echo -e "ERROR: first directory does not exist."; return; }
+		[[ -d "$DIR2" ]] || { echo -e "ERROR: second directory does not exist."; return; }
+		vimdiff -R <(tree -d "$DIR1") <(tree -d "$DIR2")
+	}
+fi
