@@ -1,0 +1,6 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+export SYSTEMD_PAGER=''
+
+if type systemctl > /dev/null 2>&1; then
+	alias systemctl='systemctl --no-pager'
+fi
