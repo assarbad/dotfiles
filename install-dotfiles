@@ -56,7 +56,11 @@ function copy_file
 			;;
 	esac
 	((COPY)) || return
-	echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
+	if [[ "${RELNAME%/*}" == "${RELNAME##*/}" ]]; then
+		echo -en "  ${cZ}${cW}${RELNAME}${cZ}"
+	else
+		echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
+	fi
 	if cp "$SRCNAME" "$TGTNAME"; then
 		echo -en " ${cW_}... copied${cZ}"
 		if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
