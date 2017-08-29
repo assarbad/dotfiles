@@ -1,0 +1,15 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type sha1sum > /dev/null 2>&1 && type sed > /dev/null 2>&1; then
+	function GetMAC()
+	{
+		if [[ -n "$1" ]]; then
+			OID="00:16:3e"
+			RAND=$(echo $1 | sha1sum | sed 's/\(..\)\(..\)\(..\).*/\1:\2:\3/')
+			echo "$OID:$RAND"
+		else
+			echo "ERROR: please supply hostname to create MAC address from, e.g.:"
+			echo "       $FUNCNAME myhost"
+	  fi
+	}
+fi
