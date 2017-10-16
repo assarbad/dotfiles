@@ -1,0 +1,41 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=0 noet filetype=sh:
+
+function SHA_sum
+{
+	local bitness=$1
+	local hashprog=$2
+	shift 2
+	local hashtype=${hashprog##*/}
+	test -x "$hashprog" || { echo "ERROR: $hashprog is not executable."; return; }
+	[[ $# -eq 0 ]] && { echo -e "Syntax:\n\tsha${bitness} <file ...>"; return; }
+	local OUTNAME=SHA${bitness}SUMS
+	if [[ $# -gt 1 ]]; then
+		if [[ -e "$OUTNAME" ]]; then
+			echo "ERROR: $OUTNAME file already exists. Not overwriting it."
+		else
+			(set -x; $hashprog "$@" > "$OUTNAME")
+		fi
+	else
+		OUTNAME="$1.SHA${bitness}SUM"
+		if [[ -e "$OUTNAME" ]]; then
+			echo "ERROR: $OUTNAME file already exists. Not overwriting it."
+		else
+			(set -x; $hashprog "$@" > "$OUTNAME")
+		fi
+	fi
+}
+
+function register_shasums
+{
+	for bitness in 1 224 256 384 512; do
+		if type "sha${bitness}sum" > /dev/null 2>&1; then
+			if grep -qF "is hashed ($(which "sha${bitness}sum"))" <(type "sha${bitness}sum" 2> /dev/null) || grep -q "is $(which "sha${bitness}sum")$" <(type "sha${bitness}sum" 2> /dev/null); then
+				alias sha${bitness}="SHA_sum $bitness $(which "sha${bitness}sum")"
+			fi
+		fi
+	done
+}
+
+register_shasums
+unset -f register_shasums
+
