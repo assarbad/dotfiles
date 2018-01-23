@@ -9,6 +9,7 @@ diff = diff --git
 
 [extensions]
 color=
+extdiff=
 fetch=
 mq=
 purge=
