@@ -1,3 +1,5 @@
 [user]
 	email = oliver@assarbad.net
 	name = Oliver Schneider
+[push]
+	default = simple
