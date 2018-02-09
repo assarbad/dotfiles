@@ -8,6 +8,7 @@
 [alias]
 	gconf = config --global
 	gconfig = config --global
+	fixup = commit --amend --no-edit
 	diffs = diff --staged
 	wdiff = diff --word-diff
 	wcdiff = diff --word-diff=color
