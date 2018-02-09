@@ -3,3 +3,21 @@
 	name = Oliver Schneider
 [push]
 	default = simple
+[color]
+	ui = auto
+[alias]
+	gconf = config --global
+	gconfig = config --global
+	diffs = diff --staged
+	wdiff = diff --word-diff
+	wcdiff = diff --word-diff=color
+	wdiffs = diff --staged --word-diff
+	wcdiffs = diff --staged --word-diff=color
+	log1 = log --oneline --abbrev=2
+	id = show -s --format=%H
+	idshort = show -s --format=%h
+	shortid = show -s --format=%h
+	tip = show -s --pretty=medium
+	ffm = merge --ff-only
+	nfm = merge --no-ff
+	tree = log --decorate --pretty=oneline --abbrev-commit --graph
