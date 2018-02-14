@@ -1,3 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-
-[[ -x "$HOME/bin/ninja/bin/ninja" ]] && export PATH="$HOME/bin/ninja/bin:$PATH"
+if [[ -x "$HOME/bin/ninja/bin/ninja" ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin/ninja/bin:"* ]]; then
+		export PATH="$HOME/bin/ninja/bin:$PATH"
+	fi
+fi

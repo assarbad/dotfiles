@@ -1,3 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-
-[[ -x "$HOME/bin/LLVM/bin/llvm-config" ]] && export PATH="$HOME/bin/LLVM/bin:$PATH"
+if [[ -x "$HOME/bin/LLVM/bin/llvm-config" ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin/LLVM/bin:"* ]]; then
+		export PATH="$HOME/bin/LLVM/bin:$PATH"
+	fi
+fi

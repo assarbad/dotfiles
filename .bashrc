@@ -14,7 +14,11 @@ MYUID=$UID
 [ -n "$SSH_TTY" ] && [ $MYUID -eq 0 ] && export TMOUT=1800
 
 export IGNOREEOF=2
-[ -d "~/bin" ] && export PATH=$PATH:~/bin
+if [[ -d "$HOME/bin" ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
+		export PATH=$PATH:$HOME/bin
+	fi
+fi
 # Remove empty entries
 export PATH=${PATH//::/:}
 
@@ -33,7 +37,6 @@ if [ $MYUID -eq 0 ]; then
 	done
 	# Remove the leading colon and export this as the path
 	export PATH=${NEWPATH:1:${#NEWPATH}}
-	unset LASTDIR
 	unset LASTDIR
 else
 	export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
