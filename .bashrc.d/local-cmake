@@ -1,3 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-
-[[ -x "$HOME/bin/cmake/bin/cmake" ]] && export PATH="$HOME/bin/cmake/bin:$PATH"
+if [[ -x "$HOME/bin/cmake/bin/cmake" ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin/cmake/bin:"* ]]; then
+		export PATH="$HOME/bin/cmake/bin:$PATH"
+	fi
+fi

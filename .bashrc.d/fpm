@@ -1,6 +1,7 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if [[ -f "$HOME/.gem/ruby/2.3.0/bin/fpm" && -x "$HOME/.gem/ruby/2.3.0/bin/fpm" ]]; then
-	PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"
-	export PATH
+if [[ -x "$HOME/.gem/ruby/2.3.0/bin/fpm" ]]; then
+	if [[ ":$PATH:" != *":$HOME/.gem/ruby/2.3.0/bin:"* ]]; then
+		export PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"
+	fi
 fi
