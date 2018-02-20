@@ -2,6 +2,6 @@
 
 if [[ -x "$HOME/.gem/ruby/2.3.0/bin/fpm" ]]; then
 	if [[ ":$PATH:" != *":$HOME/.gem/ruby/2.3.0/bin:"* ]]; then
-		export PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"
+		PATH="$HOME/.gem/ruby/2.3.0/bin:$PATH"
 	fi
 fi

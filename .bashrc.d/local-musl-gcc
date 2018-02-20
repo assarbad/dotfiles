@@ -2,6 +2,6 @@
 
 if [[ -x "$HOME/bin/musl/musl-gcc" ]]; then
 	if [[ ":$PATH:" != *":$HOME/bin/musl/musl-gcc:"* ]]; then
-		export PATH="$HOME/bin/musl:$PATH"
+		PATH="$HOME/bin/musl:$PATH"
 	fi
 fi
