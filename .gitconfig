@@ -15,6 +15,7 @@
 	wdiffs = diff --staged --word-diff
 	wcdiffs = diff --staged --word-diff=color
 	log1 = log --oneline --abbrev=2
+	glog = log --graph --decorate --oneline --abbrev=2
 	id = show -s --format=%H
 	idshort = show -s --format=%h
 	shortid = show -s --format=%h
