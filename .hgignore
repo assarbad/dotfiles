@@ -9,3 +9,5 @@ dotfile_installer.sh
 dotfile_installer.bin
 .vim/bundle/*/.git/**
 .vim/colors/*/.git/**
+machine-specific/append/local/**
+machine-specific/custom/local/**
