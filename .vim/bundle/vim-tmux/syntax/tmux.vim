@@ -79,6 +79,7 @@ syn keyword tmuxOptsSet set-titles-string lock-command lock-server
 syn keyword tmuxOptsSet mouse-select-pane message-limit quiet escape-time
 syn keyword tmuxOptsSet pane-active-border-bg pane-active-border-fg
 syn keyword tmuxOptsSet pane-border-bg pane-border-fg message-command-fg message-fg
+syn keyword tmuxOptsSet pane-border-status pane-border-format
 syn keyword tmuxOptsSet display-panes-active-colour alternate-screen
 syn keyword tmuxOptsSet detach-on-destroy word-separators
 syn keyword tmuxOptsSet destroy-unattached exit-unattached focus-events set-clipboard
@@ -154,21 +155,22 @@ syn match tmuxSpecialCmds /^\s*set\(-option\)\?/ display
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
 syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 
-syn region tmuxComment start=/#/ end=/$/ contains=tmuxTodo,tmuxURL display oneline
+syn region tmuxComment start=/#/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell display oneline
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 syn match tmuxURL `\v<(((https?|ftp|gopher)://|(mailto|file|news):)[^'  <>"]+|(www|web|w3)[a-z0-9_-]*\.[a-z0-9._-]+\.[^'  <>"]+)[a-zA-Z0-9/]` contained
 
 syn match tmuxKey               /\(C-\|M-\|\^\)\+\S\+/  display
-syn match tmuxNumber            /[+-]\?\d\+/            display
+syn match tmuxNumber            /\<[+-]\?\d\+/          display
 syn match tmuxSelWindowOption   /:[!+-]\?/              display
 syn match tmuxOptions           /\s-\a\+/               display
 syn match tmuxVariable          /\w\+=/                 display
 syn match tmuxVariableExpansion /\${\=\w\+}\=/          display
 syn match tmuxAdditionalCommand /\\;/ display
 
-" concatenating flag '-t' and table name is a valid syntax
+" concatenating flag '-t' or '-T' and table name is a valid syntax
 syn match tmuxKeyTable /\s\(-t\)\?\(vi-edit\|emacs-edit\|vi-choice\|emacs-choice\|vi-copy\|emacs-copy\)/ display
+syn match tmuxKeyTable /\s\(-T\)\?\(copy-mode\|copy-mode-vi\)/ display
 
 syn match tmuxColor /\(bright\)\?\(black\|red\|green\|yellow\|blue\|magenta\|cyan\|white\)/ display
 syn match tmuxColor /default/        display
@@ -203,8 +205,8 @@ syn match  tmuxAttrSeparator /,/     contained display
 " Shell command interpolation
 syn region tmuxShellInpol matchgroup=tmuxShellInpolDelimiter start=/#(/ skip=/#(.\{-})/ end=/)/ contained keepend
 
-syn region tmuxString matchgroup=tmuxStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol display keepend
-syn region tmuxString matchgroup=tmuxStringDelimiter start=/'/ end=/'/            contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol display keepend
+syn region tmuxString matchgroup=tmuxStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
+syn region tmuxString matchgroup=tmuxStringDelimiter start=/'/ end=/'/            contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
 
 hi def link tmuxAction              Boolean
 hi def link tmuxBoolean             Boolean

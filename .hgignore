@@ -8,3 +8,4 @@ dotfile_installer
 dotfile_installer.sh
 dotfile_installer.bin
 .vim/bundle/*/.git/**
+.vim/colors/*/.git/**

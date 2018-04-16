@@ -13,7 +13,7 @@ Allows a user-specified mapping in normal mode to search the ansible docs for th
 cursor position. See below for configuration.
 
 Ansible YAML files are detected based on the presence of a modeline or a
-[structure following Ansible's Playbook Best Practices](http://www.ansibleworks.com/docs/playbooks_best_practices.html#directory-layout).
+[structure following Ansible's Playbook Best Practices](http://docs.ansible.com/ansible/latest/playbooks_best_practices.html#directory-layout).
 For details, see the Detection section below.
 
 ## Install
@@ -62,7 +62,7 @@ You can tell vim to recognize a file as Ansible by adding a modeline near the to
 
 A file is recognized as an Ansible YAML file, and its filetype is set to `ansible`, if
 
-1. The extensions is `.yml`
+1. The file extension is `.yml` or `.yaml`
 2. AND one of the following conditions holds:
   1. The file is somewhere under a directory named `roles`.
   2. The file is in the same directory as a directory (or file) named `group_vars`, `host_vars`, or `roles`.
@@ -97,7 +97,7 @@ The documentation_mapping option enables setting a custom mapping to search the 
 It can be enabled as such: `let g:ansible_options = {'documentation_mapping': '<C-K>'}` - which would bind Control-K to perform the search.
 
 ## Thanks
-[Benji Fisher](https://github.com/bejifisher) helped out a great amount as a maintainer, thanks a ton!
+[Benji Fisher](https://github.com/benjifisher) helped out a great amount as a maintainer, thanks a ton!
 
 A huge thanks to [Igor Vergeichik](mailto:iverg@mail.ru) and [Nikolai Weibull](https://github.com/now) for their work on the YAML syntax that this bundle uses.
 

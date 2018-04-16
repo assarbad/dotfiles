@@ -5,6 +5,10 @@
 	default = simple
 [color]
 	ui = auto
+	grep = auto
+[log]
+	date = iso
+	decorate = short
 [alias]
 	gconf = config --global
 	gconfig = config --global
