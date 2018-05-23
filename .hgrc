@@ -1,5 +1,6 @@
 [ui]
 username = Oliver Schneider <oliver@assarbad.net>
+paginate = never
 
 [trusted]
 users = root, oliver, jobber
