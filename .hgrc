@@ -30,6 +30,3 @@ transplant=
 #scheme = gnupg
 #gnupg.path = gpg2
 #gnupg.flags = --local-user oliver@assarbad.net
-
-[color]
-mode=terminfo
