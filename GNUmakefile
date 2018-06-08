@@ -49,6 +49,11 @@ $(PAYLOAD): $(SENTINEL)
 $(APAYLOAD):
 	$(APAYLOAD) canrun
 
+install:
+	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
+	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
+	$(DBG)cd $(DOTFILES) && ./refresh-dotfiles "$(TGTDIR)"
+
 .NOTPARALLEL: rebuild
 rebuild: clean setup
 
@@ -95,10 +100,6 @@ help:
 
 info:
 	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
-
-install:
-	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
-	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
 
 .NOTPARALLEL: install test nodel-test
 .INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
