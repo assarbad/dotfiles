@@ -28,7 +28,6 @@ SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 install:
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
-	$(DBG)cd $(DOTFILES) && ./refresh-dotfiles "$(TGTDIR)"
 
 ifndef WEBDIR
 setup: $(APAYLOAD) $(SETUPS)
