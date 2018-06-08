@@ -84,6 +84,10 @@ mechanisms for customization.
 The ``~/.local/dotfiles/custom`` *differs* in that it contains any or none of
 the following items:
 
+* an executable file named ``PRE`` that will always be executed if it exists
+  and passed the appropriate ``TGTDIR`` environment variable.
+  It gets executed _prior_ to other customizations (such as ``append`` and
+  ``override``).
 * an executable file named ``ALL`` that will always be executed if it exists
   and passed the appropriate ``TGTDIR`` environment variable.
 * an executable file named ``$(whoami)@$(hostname -s)`` (``user@hostname``)
@@ -94,6 +98,10 @@ the following items:
     - If neither ``$(whoami)@$(hostname -s)`` nor ``$(hostname -f)`` existed
       (or if neither was executable), a script named after the domain (see
       above; example ``_.domain.tld``) would also be taken into account.
+* an executable file named ``POST`` that will always be executed if it exists
+  and passed the appropriate ``TGTDIR`` environment variable.
+  It gets executed _after_ all other customizations, including all the
+  customization.
 
 Testing without overwriting ``$HOME``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

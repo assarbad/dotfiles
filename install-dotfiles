@@ -78,6 +78,12 @@ function handle_specific_overrides
 {
 	local SRCBASEDIR="$1"
 	[[ -d "$SRCBASEDIR" ]] || return
+	if [[ -d "$SRCBASEDIR/custom/." ]]; then
+		if [[ -x "$SRCBASEDIR/custom/PRE" ]]; then
+			echo -e "Executing customization script: ${cW}PRE${cZ}"
+			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/PRE" || echo -e "\t${cR}something failed?!${cZ}"
+		fi
+	fi
 	# Unconditional overrides
 	if [[ -d "$SRCBASEDIR/override/." ]]; then
 		local D=""
@@ -157,6 +163,12 @@ function handle_specific_overrides
 		if [[ -x "$SCR" ]]; then
 			echo -e "Executing customization script: ${cW}${SCR##*/}${cZ}"
 			env TGTDIR="$TGTDIR" $SCR || echo -e "\t${cR}something failed?!${cZ}"
+		fi
+	fi
+	if [[ -d "$SRCBASEDIR/custom/." ]]; then
+		if [[ -x "$SRCBASEDIR/custom/POST" ]]; then
+			echo -e "Executing customization script: ${cW}POST${cZ}"
+			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/POST" || echo -e "\t${cR}something failed?!${cZ}"
 		fi
 	fi
 }
