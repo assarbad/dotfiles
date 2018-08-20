@@ -73,6 +73,56 @@ function clean_freebsd
 	fi
 }
 
+function zerofill_swap
+{
+	local DEVNAME="$1"
+	local UUID="$2"
+	local SWTYPE="space"
+	[[ -f "$DEVNAME" ]] && SWTYPE="file"
+	[[ -b "$DEVNAME" ]] && SWTYPE="partition"
+
+	# Do we need to determine the UUID first?
+	if [[ -z "$UUID" ]]; then
+		type blkid > /dev/null 2>&1 && local SWAPDETAILS=$(blkid -o export "$DEVNAME" 2> /dev/null|sed 's/^/local /')
+		[[ -n "$SWAPDETAILS" ]] && eval "$SWAPDETAILS"
+	fi
+
+	# Record the UUID in a form we can present to the user
+	if [[ -n "$UUID" ]]; then
+		SWUUID="$UUID"
+	else
+		SWUUID="<unknown>"
+	fi
+	echo -e "${cW}INFO:${cZ} zero-filling swap $SWTYPE ($DEVNAME == $SWUUID)"
+
+	if [[ "Linux" == "$(uname -s)" ]]; then
+		local SWAPSIZE=$(stat -c %s "$DEVNAME")
+		if [[ -b "$DEVNAME" ]]; then
+			(set -x; dd if=/dev/zero of=$DEVNAME bs=10M)
+		elif [[ -f "$DEVNAME" ]]; then
+			if ((SWAPSIZE > 0)); then
+				local SWZISEINMIB=$((SWAPSIZE / 1024 / 1024))
+				echo -e "\tDetermined old size as $SWAPSIZE Bytes == $SWZISEINMIB MiB." 
+				(set -x; dd if=/dev/zero of=$DEVNAME bs=1M count=$SWZISEINMIB)
+			else
+				echo -e "${cY}WARNING:${cZ} existing swap $SWTYPE has zero size. Cannot proceed."
+				return
+			fi
+			chmod 600 "$DEVNAME"
+		fi
+		if [[ -n "$UUID" ]]; then
+			(set -x; mkswap -L SWAP -U $UUID "$DEVNAME")
+		else
+			(set -x; mkswap -L SWAP "$DEVNAME")
+		fi
+	elif [[ "FreeBSD" == "$(uname -s)" ]]; then 
+		(set -x; dd if=/dev/zero of=$DEVNAME bs=10M)
+	else
+		echo -e "${cY}WARNING:${cZ} no support for zero-filling swap $SWTYPE on $(uname -s)."
+		return
+	fi
+}
+
 function unsupported
 {
 	echo -e "${cR}ERROR:${cZ} this script expects a Debian or Debian-derived Linux system or FreeBSD."
@@ -104,18 +154,10 @@ for sw in $SWAP; do
 		UUID=*)
 			UUID=${sw#UUID=}
 			sw=$(readlink -f /dev/disk/by-uuid/$UUID)
-			if [[ -b "$sw" ]]; then
-				echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw == $UUID)"
-				dd if=/dev/zero of=$sw bs=1M
-				[[ "Linux" == "$(uname -s)" ]] && mkswap -U $UUID "$sw"
-			else
-				echo -e "${cY}WARNING:${cZ} $sw is not a block device."
-			fi
+			zerofill_swap "$sw" "$UUID"
 			;;
-		/dev/*)
-			echo -e "${cW}INFO:${cZ} zeroing swap partition ($sw)"
-			dd if=/dev/zero of=$sw bs=1M
-			[[ "Linux" == "$(uname -s)" ]] && mkswap "$sw"
+		/*)
+			zerofill_swap "$sw" ""
 			;;
 		*)
 			echo -e "${cY}WARNING:${cZ} don't know how to handle '$sw' swap space. Skipping."
@@ -123,8 +165,10 @@ for sw in $SWAP; do
 	esac
 done
 
+exit 0
+
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
-( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=1M; )
+( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=10M; )
 echo -e "${cW}INFO:${cZ} synchronizing disks"
 sync
 echo -e "${cW}PLEASE${cZ} reboot now."
