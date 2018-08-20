@@ -1,4 +1,4 @@
-# Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied.
+# Oliver's .bashrc - author: oliver@assarbad.net - may be freely copied, taken apart, put together and what not ...
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 filetype=sh:
 
 # If not running interactively, don't do anything
@@ -203,27 +203,60 @@ else
 fi
 cd
 
+type ducks > /dev/null 2>&1 && unset ducks
 function ducks
 {
-	if [[ -n "$1" && -d "$1" ]]; then
-		du -cks "$1"/*|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
-	else
-		du -cks *|sort -rn|head -11|awk 'BEGIN { FS = " " } {printf "%-8.2f MiB\t", $1/1024; for(i=2; i<=NF; i++) {printf " %s", $i}; printf "\n"}'
-	fi
+	for tool in du sort head awk sed; do type $tool > /dev/null 2>&1 || { echo -e "${cR}ERROR:${cZ} couldn't find '$tool' which is required by this function."; return; }; done
+	local SCANDIR=.
+	[[ -n "$1" && -d "$1" ]] && SCANDIR=${1%/}
+	du -cks "$SCANDIR"/*|sort -rn|head -11|sed 's/\t/:/g'|awk -F : '\
+	{
+		OSZ=$1;
+		SZ=OSZ;
+		UNIT="KiB";
+		if(SZ > 1536) {
+			SZ=SZ/1024;
+			UNIT="MiB";
+		}
+		if(SZ > 1536) {
+			SZ=SZ/1024;
+			UNIT="GiB";
+		}
+		if(SZ > 1536) {
+			SZ=SZ/1024;
+			UNIT="TiB";
+		}
+		if(SZ > 1536) {
+			SZ=SZ/1024;
+			UNIT="PiB";
+		}
+		printf "%-5.3f %s", SZ, UNIT;
+		if ($2 ~ /^total$/) {
+			printf "\t'${cR}'%s'${cZ}'\n", $2
+		} else {
+			printf "\t'${cW}'%s'${cZ}'\n", $2
+		}
+	}'
 }
 
+type pushf > /dev/null 2>&1 && unset pushf
+# fuzzy pushd
 function pushf()
 {
 	local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
 	pushd "$FOLDER1"/
 }
 
+type cdf > /dev/null 2>&1 && unset cdf
+# fuzzy cd
 function cdf()
 {
 	local FOLDER1=$(for i in *"$1"*; do [[ -d "$i" ]] && { echo "$i"; break; }; done)
 	cd "$FOLDER1"/
 }
 
+type ccd > /dev/null 2>&1 && unset ccd
+# create and cd
 function ccd()
 {
 	mkdir -p "$1" && cd "$1"

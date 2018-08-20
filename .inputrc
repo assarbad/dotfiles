@@ -1,0 +1,5 @@
+set show-all-if-ambiguous on
+set page-completions off
+set colored-stats on
+set editing-mode vi
+set show-mode-in-prompt on

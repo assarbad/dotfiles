@@ -69,7 +69,9 @@ if [[ -e "/etc/debian_version" ]]; then
               netsniff-ng:/usr/sbin/netsniff-ng \
               firewall:/sbin/firewall \
               apt-file:/usr/bin/apt-file \
-              systemctl:/bin/systemctl
+              apt:/usr/bin/apt \
+              systemctl:/bin/systemctl \
+              journalctl:/bin/journalctl \
     do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
     done
