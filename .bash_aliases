@@ -71,7 +71,7 @@ if [[ -e "/etc/debian_version" ]]; then
               apt-file:/usr/bin/apt-file \
               apt:/usr/bin/apt \
               systemctl:/bin/systemctl \
-              journalctl:/bin/journalctl \
+              journalctl:/bin/journalctl
     do
       __create_abs_alias ${i%%:*} "${i#*:}" sudo
     done
