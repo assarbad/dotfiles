@@ -165,8 +165,6 @@ for sw in $SWAP; do
 	esac
 done
 
-exit 0
-
 echo -e "${cW}INFO:${cZ} zero-filling free space on root"
 ( set -x; trap 'rm -f "'$ZEROFILE'"; trap - INT TERM EXIT; exit $?' INT TERM EXIT; dd if=/dev/zero of=$ZEROFILE bs=10M; )
 echo -e "${cW}INFO:${cZ} synchronizing disks"
