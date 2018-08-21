@@ -108,7 +108,7 @@ function zerofill_swap
 				echo -e "${cY}WARNING:${cZ} existing swap $SWTYPE has zero size. Cannot proceed."
 				return
 			fi
-			chmod 600 "$DEVNAME"
+			chmod 0600 "$DEVNAME"
 		fi
 		if [[ -n "$UUID" ]]; then
 			(set -x; mkswap -L SWAP -U $UUID "$DEVNAME")
