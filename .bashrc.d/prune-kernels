@@ -1,49 +1,62 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # We depend on Debian/Ubuntu
-[[ -e "/etc/debian_version" ]] || return
+type dpkg-vendor > /dev/null 2>&1 || return
+dpkg-vendor --derives-from Debian || return
 
 function prune-kernels
 {
-	[[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
-	[[ -e "/vmlinuz" ]] || { echo -e "\033[01;32mERROR:\033[00m Expected /vmlinuz to exist."; return; }
+	dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
 	[[ "$UID" -eq "0" ]] || local SUDO=sudo
-	# Figure out the name of the newest and the previous kernel
-	local OLDKRNL=$(readlink -f /vmlinuz.old)
-	local NOWKRNL=$(readlink -f /vmlinuz)
-	# If vmlinuz doesn't exist, Also prune "/vmlinuz.old"?
-	[[ -e "/vmlinuz.old" ]] || OLDKRNL="$NOWKRNL"
-	# Also prune "/vmlinuz.old"? If so, pretend old and new have the same name to skip only the new one
-	[[ "$1" == "--old" ]] && local OLDKRNL="$NOWKRNL"
-	# Strip path
-	OLDKRNL="${OLDKRNL##*/vmlinuz-}"
-	NOWKRNL="${NOWKRNL##*/vmlinuz-}"
-	local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
-	echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
-	[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
-	echo -ne " (\033[0;32mcurrently running\033[00m)"
-	[[ "$OLDKRNL" == "$NOWKRNL" ]] || echo -ne ", $OLDKRNL (\033[0;33mold kernel\033[00m)"
-	echo ""
-	# Remove packages
-	local PACKAGES=$(for i in $VERSIONS; do echo -n "linux-image-$i linux-headers-$i "; done)
-	if [[ -n "$PACKAGES" ]]; then
-		echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
-		$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+	if command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep -q pve-kernel; then
+		echo -e "Assuming we run on Proxmox VE (PVE) based on presence of pve-kernel packages"
+		PACKAGES=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|sed '$ d')
+		if [[ -n "$PACKAGES" ]]; then
+			echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
+			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+		else
+			echo -e "\033[01;32mNo packages need to be removed.\033[00m"
+		fi
 	else
-		echo -e "\033[01;32mNo packages need to be removed.\033[00m"
+		[[ -e "/vmlinuz" ]] || { echo -e "\033[01;32mERROR:\033[00m Expected /vmlinuz to exist."; return; }
+
+		# Figure out the name of the newest and the previous kernel
+		local OLDKRNL=$(readlink -f /vmlinuz.old)
+		local NOWKRNL=$(readlink -f /vmlinuz)
+		# If vmlinuz doesn't exist, Also prune "/vmlinuz.old"?
+		[[ -e "/vmlinuz.old" ]] || OLDKRNL="$NOWKRNL"
+		# Also prune "/vmlinuz.old"? If so, pretend old and new have the same name to skip only the new one
+		[[ "$1" == "--old" ]] && local OLDKRNL="$NOWKRNL"
+		# Strip path
+		OLDKRNL="${OLDKRNL##*/vmlinuz-}"
+		NOWKRNL="${NOWKRNL##*/vmlinuz-}"
+		local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
+		echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
+		[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
+		echo -ne " (\033[0;32mcurrently running\033[00m)"
+		[[ "$OLDKRNL" == "$NOWKRNL" ]] || echo -ne ", $OLDKRNL (\033[0;33mold kernel\033[00m)"
+		echo ""
+		# Remove packages
+		local PACKAGES=$(for i in $VERSIONS; do echo -n "linux-image-$i linux-headers-$i "; done)
+		if [[ -n "$PACKAGES" ]]; then
+			echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
+			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+		else
+			echo -e "\033[01;32mNo packages need to be removed.\033[00m"
+		fi
+		# Remove any remaining kernel images etc from /boot
+		local FILES=$(for fname in $(for i in $VERSIONS; do echo -n "/boot/abi-$i /boot/initrd.img-$i config-$i System.map-$i vmcoreinfo-$i vmlinuz-$i "; done); do [[ -f "$fname" ]] && { echo -n "$fname "; }; done)
+		if [[ -n "$FILES" ]]; then
+			echo -e "\033[0;32m[STEP 2] \033[01;33mNow removing remaining files:\033[00m $FILES"
+			$SUDO rm -f $FILES
+		else
+			echo -e "\033[01;32mNothing else to clean up.\033[00m"
+		fi
+		if $SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'; then
+			local LINUXINCLUDES=$($SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'|awk '{print $2}')
+			echo -e "\033[01;32mRemove remaining packages with: ${SUDO} apt-get --purge autoremove $LINUXINCLUDES\033[00m"
+		fi
+		echo -e "If you want to purge the uninstalled packages as well, use:"
+		echo -e "\tapt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ && \$2 ~ /^linux-(headers|image)/ {print \$2}')"
 	fi
-	# Remove any remaining kernel images etc from /boot
-	local FILES=$(for fname in $(for i in $VERSIONS; do echo -n "/boot/abi-$i /boot/initrd.img-$i config-$i System.map-$i vmcoreinfo-$i vmlinuz-$i "; done); do [[ -f "$fname" ]] && { echo -n "$fname "; }; done)
-	if [[ -n "$FILES" ]]; then
-		echo -e "\033[0;32m[STEP 2] \033[01;33mNow removing remaining files:\033[00m $FILES"
-		$SUDO rm -f $FILES
-	else
-		echo -e "\033[01;32mNothing else to clean up.\033[00m"
-	fi
-	if $SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'; then
-		local LINUXINCLUDES=$($SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'|awk '{print $2}')
-		echo -e "\033[01;32mRemove remaining packages with: ${SUDO} apt-get --purge autoremove $LINUXINCLUDES\033[00m"
-	fi
-	echo -e "If you want to purge the uninstalled packages as well, use:"
-	echo -e "\tapt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ && \$2 ~ /^linux-(headers|image)/ {print \$2}')"
 }
