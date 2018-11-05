@@ -2,15 +2,20 @@
 
 # We depend on Debian/Ubuntu
 type dpkg-vendor > /dev/null 2>&1 || return
-dpkg-vendor --derives-from Debian || return
+command dpkg-vendor --derives-from Debian || return
 
 function prune-kernels
 {
-	dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+	command dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
 	[[ "$UID" -eq "0" ]] || local SUDO=sudo
 	if command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep -q pve-kernel; then
 		echo -e "Assuming we run on Proxmox VE (PVE) based on presence of pve-kernel packages"
-		PACKAGES=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|sed '$ d')
+		local PACKAGES=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|command sed '$ d')
+		local NOWKRNL=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|command tail -n 1)
+		NOWKRNL=${NOWKRNL#pve-kernel-}
+		echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
+		[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
+		echo -e " (\033[0;32mcurrently running\033[00m)"
 		if [[ -n "$PACKAGES" ]]; then
 			echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
 			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
@@ -19,7 +24,6 @@ function prune-kernels
 		fi
 	else
 		[[ -e "/vmlinuz" ]] || { echo -e "\033[01;32mERROR:\033[00m Expected /vmlinuz to exist."; return; }
-
 		# Figure out the name of the newest and the previous kernel
 		local OLDKRNL=$(readlink -f /vmlinuz.old)
 		local NOWKRNL=$(readlink -f /vmlinuz)
@@ -30,7 +34,7 @@ function prune-kernels
 		# Strip path
 		OLDKRNL="${OLDKRNL##*/vmlinuz-}"
 		NOWKRNL="${NOWKRNL##*/vmlinuz-}"
-		local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
+		local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(command dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
 		echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
 		[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
 		echo -ne " (\033[0;32mcurrently running\033[00m)"
