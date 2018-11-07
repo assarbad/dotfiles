@@ -1,12 +1,16 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # We depend on Debian/Ubuntu
-type dpkg-vendor > /dev/null 2>&1 || return
-command dpkg-vendor --derives-from Debian || return
+[[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
 
 function prune-kernels
 {
-	command dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+	local VENDOR=0
+	type dpkg-vendor > /dev/null 2>&1 && let VENDOR=1
+	if ((VENDOR)); then
+		command dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+	fi
+	[[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
 	[[ "$UID" -eq "0" ]] || local SUDO=sudo
 	if command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep -q pve-kernel; then
 		echo -e "Assuming we run on Proxmox VE (PVE) based on presence of pve-kernel packages"
