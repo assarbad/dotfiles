@@ -1,2 +1,2 @@
-test -d "$HOME/bin/KeePass && \
+test -d "$HOME/bin/KeePass" && \
 	export PATH="$PATH:$HOME/bin/KeePass"
