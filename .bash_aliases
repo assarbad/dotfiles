@@ -51,7 +51,12 @@ if [[ -e "/etc/debian_version" ]]; then
   if [[ $UID -ne 0 ]]; then
     for i in apt-get:/usr/bin/apt-get \
               aptitude:/usr/bin/aptitude \
+              apt-mark:/usr/bin/apt-mark \
+              apt-file:/usr/bin/apt-file \
+              apt:/usr/bin/apt \
+              snap:/usr/bin/snap \
               dpkg-reconfigure:/usr/sbin/dpkg-reconfigure \
+              dpkg:/usr/bin/dpkg \
               ifconfig:/sbin/ifconfig \
               service:/usr/sbin/service \
               htop:/usr/bin/htop \
@@ -68,8 +73,6 @@ if [[ -e "/etc/debian_version" ]]; then
               tcpdump:/usr/sbin/tcpdump \
               netsniff-ng:/usr/sbin/netsniff-ng \
               firewall:/sbin/firewall \
-              apt-file:/usr/bin/apt-file \
-              apt:/usr/bin/apt \
               systemctl:/bin/systemctl \
               journalctl:/bin/journalctl
     do
