@@ -22,5 +22,5 @@ function refresh-dotfiles
 	type gmake 2> /dev/null && GMAKE=gmake
 	[[ -e "$MYBRCD/GNUmakefile" ]] && \
 		( $GMAKE --no-print-directory -C "$MYBRCD" TGTDIR="$TGTDIR" install ) && \
-		source "$TGTDIR/.bashrc"
+		{ source "$TGTDIR/.bashrc"; cd -; }
 }
