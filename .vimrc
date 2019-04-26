@@ -3,7 +3,6 @@ set nocompatible    " this is Vim, not Vi
 set background=dark " using dark terminal make certain elements a little brighter ;)
 set backspace=indent,eol,start " make backspace more convenient
 
-
 " Indentation/tab related settings
 set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab autoindent
 if has('smartindent')
@@ -177,6 +176,11 @@ endif
 " Make an effort to tell Vim about capable terminals
 if $COLORTERM == 'gnome-terminal'
 	set t_Co=256
+endif
+
+" When detecting Tmux, ensure we can see highlighed lines in visual mode
+if $TMUX != "" || $TMUX_PANE != ""
+	highlight Visual cterm=reverse ctermbg=NONE
 endif
 
 if has('diff') && &diff

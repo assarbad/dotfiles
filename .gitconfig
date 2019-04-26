@@ -27,3 +27,4 @@
 	ffm = merge --ff-only
 	nfm = merge --no-ff
 	tree = log --decorate --pretty=oneline --abbrev-commit --graph
+	ls = log --stat --pretty=short --graph
