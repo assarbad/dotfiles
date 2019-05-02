@@ -10,6 +10,9 @@
 	date = iso
 	decorate = short
 [alias]
+	move = mv
+	rename = mv
+	stat = status
 	gconf = config --global
 	gconfig = config --global
 	fixup = commit --amend --no-edit
