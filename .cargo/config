@@ -1,0 +1,8 @@
+[cargo-new]
+name = "Oliver Schneider"
+email = "oliver@assarbad.net"
+vcs = "hg"
+
+[term]
+verbose = false
+color = "auto"
