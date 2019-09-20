@@ -177,11 +177,23 @@ if [[ -d "$BASHSRCDIR" ]]; then
 		done
 	fi
 fi
+if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # are we running inside Tmux already?
+	if [[ -n "$TERM" ]]; then
+		REPLACE_TERM=${TERM//xterm/screen}
+		if type toe > /dev/null 2>&1; then
+			TOELIST=$( toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
+			if ! $TOELIST|grep -q ^$REPLACE_TERM; then
+				REPLACE_TERM=
+			fi
+			unset TOELIST
+		fi
+	fi
+fi
 # beroot so we feel at home when assuming super-user rights
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo NOP'
 else
-	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo -s -u root /usr/bin/env BASHRCDIR='$HOME' $SHELL --rcfile $HOME/.bashrc || sudo -i -u root; }"
+	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo -s -u root TERM=${REPLACE_TERM:-$TERM} /usr/bin/env BASHRCDIR='$HOME' $SHELL --rcfile $HOME/.bashrc || sudo -i -u root TERM=${REPLACE_TERM:-$TERM}; }"
 fi
 unset BASHZONE
 unset BASHHOST
@@ -190,7 +202,7 @@ unset MYUID
 
 # The prompt command will only show the current directory and username if the terminal type is "correct"
 case "$TERM" in
-	xterm|rvxt|screen-*|putty-*)
+	xterm*|rvxt*|screen*|putty*)
 		export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
 		;;
 esac

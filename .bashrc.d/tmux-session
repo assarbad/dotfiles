@@ -5,7 +5,7 @@ _TMUX_="tmux"
 # Establish a default
 if [[ -n "$TERM" ]]; then
 	_TMUX_="_TMUXTERM=$TERM tmux"
-	if (type toe) > /dev/null 2>&1; then
+	if type toe > /dev/null 2>&1; then
 		TOELIST=$( toe -a > /dev/null 2>&1 && { echo "toe -a"; } || { echo "toe -h"; } )
 		if type tput > /dev/null 2>&1; then
 			COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
