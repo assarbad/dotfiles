@@ -11,16 +11,16 @@ if [[ -n "$TERM" ]]; then
 		case "$TERM" in
 			*-256color)
 				OLDTERM=$TERM
-				if ((COLORCNT >= 256)) && $TOELIST|grep -Pq "^$OLDTERM\\W"; then
+				if ((COLORCNT >= 256)) && $TOELIST|grep -q "^$OLDTERM[[:space:]]"; then
 					_TMUX_="env _TMUXTERM=$OLDTERM tmux -2"
 				elif [[ "putty" == "${OLDTERM%-256color}" ]]; then
-					if ((COLORCNT >= 256)) && $TOELIST|grep -Pq "^screen-256color\\W"; then
+					if ((COLORCNT >= 256)) && $TOELIST|grep -q "^screen-256color[[:space:]]"; then
 						_TMUX_="env _TMUXTERM=screen-256color tmux -2"
 					fi
 				fi
 				;;
 			screen)
-				if ((COLORCNT >= 256)) &&  $TOELIST|grep -Pq "^screen-256color\\W"; then
+				if ((COLORCNT >= 256)) &&  $TOELIST|grep -q "^screen-256color[[:space:]]"; then
 					_TMUX_="env _TMUXTERM=screen-256color tmux -2"
 				fi
 				;;

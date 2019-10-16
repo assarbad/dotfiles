@@ -7,16 +7,16 @@ if [[ -n "$TERM" ]]; then
 		TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
 		case "$TERM" in
 			*-256color|screen)
-				if $TOELIST|grep -Pvq "^$TERM\W" || [[ "$TERM" == "screen" ]]; then # currently set terminal not locally supported?
+				if $TOELIST|grep -vq "^$TERM[[:space:]]" || [[ "$TERM" == "screen" ]]; then # currently set terminal not locally supported?
 					NEWTERM=
 					if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # running in Tmux, though?
-						if $TOELIST|grep -Pq "^tmux-256color\\W"; then
+						if $TOELIST|grep -q "^tmux-256color[[:space:]]"; then
 							NEWTERM=tmux-256color
-						elif $TOELIST|grep -Pq "^screen-256color\\W"; then
+						elif $TOELIST|grep -q "^screen-256color[[:space:]]"; then
 							NEWTERM=screen-256color
 						fi
 					elif [[ -n "$GNOME_TERMINAL_SERVICE" ]] || [[ -n "$GNOME_TERMINAL_SCREEN" ]]; then # running in GNOME terminal, though?
-						if $TOELIST|grep -Pq "^gnome-256color\\W"; then
+						if $TOELIST|grep -q "^gnome-256color[[:space:]]"; then
 							NEWTERM=gnome-256color
 						fi
 					fi
