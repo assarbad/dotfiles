@@ -26,7 +26,7 @@ if [[ -n "$TERM" ]]; then
 								echo -e "${cW}INFO:${cZ} you appear to be on Debian, but have no ${cY}ncurses-term${cZ} package installed."
 							fi
 						fi
-						echo -e "${cY}WARNING:${cZ} defaulting to ${cW}TERM=${NEWTERM:-screen}${cZ} because currently set terminal ${cW}$TERM${cW} isn't supported."
+						echo -e "${cY}WARNING:${cZ} defaulting to ${cw}TERM=${NEWTERM:-screen}${cZ} because currently set terminal ${cW}$TERM${cZ} isn't supported."
 					fi
 					export TERM=${NEWTERM:-screen}
 				fi
