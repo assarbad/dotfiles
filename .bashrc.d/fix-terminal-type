@@ -2,12 +2,33 @@
 
 # Establish a default
 if [[ -n "$TERM" ]]; then
-	if type toe > /dev/null 2>&1; then
-		TOELIST=$( toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
+	if type toe > /dev/null 2>&1 && type grep > /dev/null 2>&1; then
+		# Figure out if we can use toe to get a list of supported terminal types, otherwise fall back to toe -h
+		TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
 		case "$TERM" in
-			*-256color|*-256-color*)
-				if ! $TOELIST|grep -q ^$TERM; then
-					export TERM=screen
+			*-256color|screen)
+				if $TOELIST|grep -Pvq "^$TERM\W" || [[ "$TERM" == "screen" ]]; then # currently set terminal not locally supported?
+					NEWTERM=
+					if [[ -n "$GNOME_TERMINAL_SERVICE" ]] || [[ -n "$GNOME_TERMINAL_SCREEN" ]]; then # running in GNOME terminal, though?
+						if $TOELIST|grep -Pq "^gnome-256color\\W"; then
+							NEWTERM=gnome-256color
+						fi
+					elif [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # running in Tmux, though?
+						if $TOELIST|grep -Pq "^tmux-256color\\W"; then
+							NEWTERM=tmux-256color
+						elif $TOELIST|grep -Pq "^screen-256color\\W"; then
+							NEWTERM=screen-256color
+						fi
+					fi
+					if [[ -z "$NEWTERM" ]]; then
+						if type dpkg > /dev/null 2>&1 && type awk > /dev/null 2>&1; then
+							if dpkg -l|awk '$1 ~ /^ii$/ && $2 ~ /^ncurses/ {print}'|grep -vq ncurses-term; then
+								echo -e "${cW}INFO:${cZ} you appear to be on Debian, but have no ${cY}ncurses-term${cZ} package installed."
+							fi
+						fi
+						echo -e "${cY}WARNING:${cZ} defaulting to ${cW}TERM=${NEWTERM:-screen}${cZ} because currently set terminal ${cW}$TERM${cW} isn't supported."
+					fi
+					export TERM=${NEWTERM:-screen}
 				fi
 				;;
 		esac
