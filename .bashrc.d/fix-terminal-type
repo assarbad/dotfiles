@@ -9,15 +9,15 @@ if [[ -n "$TERM" ]]; then
 			*-256color|screen)
 				if $TOELIST|grep -Pvq "^$TERM\W" || [[ "$TERM" == "screen" ]]; then # currently set terminal not locally supported?
 					NEWTERM=
-					if [[ -n "$GNOME_TERMINAL_SERVICE" ]] || [[ -n "$GNOME_TERMINAL_SCREEN" ]]; then # running in GNOME terminal, though?
-						if $TOELIST|grep -Pq "^gnome-256color\\W"; then
-							NEWTERM=gnome-256color
-						fi
-					elif [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # running in Tmux, though?
+					if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # running in Tmux, though?
 						if $TOELIST|grep -Pq "^tmux-256color\\W"; then
 							NEWTERM=tmux-256color
 						elif $TOELIST|grep -Pq "^screen-256color\\W"; then
 							NEWTERM=screen-256color
+						fi
+					elif [[ -n "$GNOME_TERMINAL_SERVICE" ]] || [[ -n "$GNOME_TERMINAL_SCREEN" ]]; then # running in GNOME terminal, though?
+						if $TOELIST|grep -Pq "^gnome-256color\\W"; then
+							NEWTERM=gnome-256color
 						fi
 					fi
 					if [[ -z "$NEWTERM" ]]; then
