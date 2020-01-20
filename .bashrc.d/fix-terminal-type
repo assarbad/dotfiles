@@ -22,7 +22,7 @@ if [[ -n "$TERM" ]]; then
 					fi
 					if [[ -z "$NEWTERM" ]]; then
 						if type dpkg > /dev/null 2>&1 && type awk > /dev/null 2>&1; then
-							if dpkg -l|awk '$1 ~ /^ii$/ && $2 ~ /^ncurses/ {print}'|grep -vq ncurses-term; then
+							if command dpkg -l|awk '$1 ~ /^ii$/ && $2 ~ /^ncurses/ {print}'|grep -vq ncurses-term; then
 								echo -e "${cW}INFO:${cZ} you appear to be on Debian, but have no ${cY}ncurses-term${cZ} package installed."
 							fi
 						fi
