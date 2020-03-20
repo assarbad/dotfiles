@@ -5,4 +5,4 @@ username = Oliver Schneider <oliver@assarbad.net>
 default   = https://bitbucket.org/assarbad/dotfiles
 bitbucket = ssh://hg@bitbucket.org/assarbad/dotfiles
 default-push = ssh://hg@bitbucket.org/assarbad/dotfiles
-yggdrasil = ssh://yggdrasil//data/oliver/dotfiles
+yggdrasil = ssh://yggdrasil//fastdata/oliver/dotfiles
