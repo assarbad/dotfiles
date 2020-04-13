@@ -1,0 +1,20 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type ffmpeg > /dev/null 2>&1; then
+	function fcut
+	{
+		local FROM="$1"
+		local TO="$2"
+		local FNAME="$3"
+		if [[ -z "$FROM" ]] || [[ -z "$TO" ]] || [[ -z "$FNAME" ]]; then
+			echo "Syntax: fcut <from> <to> <filename>"
+			return
+		fi
+		local DNAME="${FNAME%/*}"
+		[[ -z "$DNAME" ]] && DNAME="."
+		[[ "$DNAME" == "$FNAME" ]] && DNAME="."
+		DNAME="$DNAME/fcut"
+		( set -x; test -d "$DNAME" || mkdir -p "$DNAME" )
+		( set -x; ffmpeg -ss $FROM -i "$FNAME" -to $TO -c copy "$DNAME/${FNAME##*/}" && touch -r "$FNAME" "$DNAME/${FNAME##*/}" )
+	}
+fi
