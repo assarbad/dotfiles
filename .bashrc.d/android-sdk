@@ -1,0 +1,6 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+ADBPATH="$HOME/Android/Sdk/platform-tools/adb"
+if [[ -x "$ADBPATH" ]]; then
+	export PATH="$PATH:${ADBPATH%/*}"
+fi
