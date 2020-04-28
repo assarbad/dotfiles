@@ -1,0 +1,9 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type chown > /dev/null 2>&1; then
+	if [[ $UID -ne 0 ]]; then
+		alias chorme="sudo /bin/chown -hR $(whoami):"
+	else
+		alias chorme="chown -hR $(whoami):"
+	fi
+fi
