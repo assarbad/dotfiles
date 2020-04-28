@@ -1,5 +1,5 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 if type lsblk > /dev/null 2>&1; then
-	alias lsb="lsblk --exclude -o NAME,MAJ:MIN,SIZE,RO,TYPE,FSTYPE,LABEL,MOUNTPOINT"
+	alias lsb="lsblk --exclude 7 -o NAME,MAJ:MIN,SIZE,RO,TYPE,FSTYPE,LABEL,MOUNTPOINT"
 fi
