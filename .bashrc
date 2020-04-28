@@ -44,7 +44,7 @@ fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
 export HISTCONTROL=erasedups:ignorespace
-export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux"
+export HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux:lsb:chorme"
 export HISTFILESIZE=3000
 
 shopt -s autocd > /dev/null 2>&1
