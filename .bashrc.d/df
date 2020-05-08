@@ -1,5 +1,5 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 if type df > /dev/null 2>&1; then
-	alias df='df -x tmpfs -x squashfs -H'
+	alias df='df -x tmpfs -x squashfs -x overlayfs'
 fi
