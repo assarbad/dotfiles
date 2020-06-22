@@ -27,12 +27,19 @@ function prune-kernels
 			echo -e "\033[01;32mNo packages need to be removed.\033[00m"
 		fi
 	else
-		[[ -e "/vmlinuz" ]] || { echo -e "\033[01;32mERROR:\033[00m Expected /vmlinuz to exist."; return; }
+		VMLINUZ="/vmlinuz"
+		if [[ ! -L "$VMLINUZ" ]]; then
+			VMLINUZ="/boot/vmlinuz"
+			if [[ ! -L "$VMLINUZ" ]]; then
+				echo -e "\033[01;32mERROR:\033[00m Expected ${VMLINUZ##*/} to exist in / or /boot."
+				return
+			fi
+		fi
 		# Figure out the name of the newest and the previous kernel
-		local OLDKRNL=$(readlink -f /vmlinuz.old)
-		local NOWKRNL=$(readlink -f /vmlinuz)
+		local OLDKRNL=$(readlink -f "${VMLINUZ}.old")
+		local NOWKRNL=$(readlink -f "${VMLINUZ}")
 		# If vmlinuz doesn't exist, Also prune "/vmlinuz.old"?
-		[[ -e "/vmlinuz.old" ]] || OLDKRNL="$NOWKRNL"
+		[[ -L "${VMLINUZ}.old" ]] || OLDKRNL="$NOWKRNL"
 		# Also prune "/vmlinuz.old"? If so, pretend old and new have the same name to skip only the new one
 		[[ "$1" == "--old" ]] && local OLDKRNL="$NOWKRNL"
 		# Strip path
