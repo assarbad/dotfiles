@@ -2,4 +2,5 @@
 
 if type gpg > /dev/null 2>&1 && type tty > /dev/null 2>&1 && type git > /dev/null 2>&1; then
 	alias git='env GPG_TTY=$(tty) git'
+	alias Grecommit='env GPG_TTY=$(tty) GIT_COMMITTER_DATE="$(date)" git commit --amend --no-edit --date "$(date)"'
 fi
