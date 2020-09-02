@@ -11,6 +11,7 @@ NAME=${NAME:-Jane Doe}
 MAIL=${MAIL:-j.doe@example.com}
 let KEYLEN=${KEYLEN:-4096}
 let SUBKEYLEN=${SUBKEYLEN:-$KEYLEN}
+EXPIRY=${EXPIRY:-0}
 # GnuPG expects a particular format for the time ...
 TIME=${TIME:-$(date +"%Y%m%dT000000")} # today at midnight
 ###############################################################################
@@ -111,7 +112,7 @@ echo -e "${cW}INFO:${cZ} fetching auto-generated revocation certificate"
 	echo addkey
 	echo 4 # RSA (sign only)
 	echo $SUBKEYLEN
-	echo 0 # does not expire
+	echo $EXPIRY
 	echo save
 } | gpg --faked-system-time $TIME --passphrase "$PASSPHRASE" --command-fd=0 --status-fd=1 --pinentry-mode=loopback --edit-key "$KEYID" \
 	|| { echo -e "${cR}FATAL:${cZ} failed to generate signing subkey."; exit 1; }
@@ -119,7 +120,7 @@ echo -e "${cW}INFO:${cZ} fetching auto-generated revocation certificate"
 	echo addkey
 	echo 6 # RSA (encrypt only)
 	echo $SUBKEYLEN
-	echo 0 # does not expire
+	echo $EXPIRY
 	echo save
 } | gpg --faked-system-time $TIME --passphrase "$PASSPHRASE" --command-fd=0 --status-fd=1 --pinentry-mode=loopback --edit-key "$KEYID" \
 	|| { echo -e "${cR}FATAL:${cZ} failed to generate encryption subkey."; exit 1; }
@@ -131,7 +132,7 @@ echo -e "${cW}INFO:${cZ} fetching auto-generated revocation certificate"
 	echo s # toggle sign (off)
 	echo q # toggle sign (off)
 	echo $SUBKEYLEN
-	echo 0 # does not expire
+	echo $EXPIRY
 	echo save
 } | gpg --faked-system-time $TIME --passphrase "$PASSPHRASE" --command-fd=0 --status-fd=1 --pinentry-mode=loopback --expert --edit-key "$KEYID" \
 	|| { echo -e "${cR}FATAL:${cZ} failed to generate authentication subkey."; exit 1; }
