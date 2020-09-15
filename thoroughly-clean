@@ -14,7 +14,7 @@ function clean_debian_derived
 	echo -e "${cW}INFO:${cZ} running ${cG}prune-kernels${cZ}"
 	prune-kernels --old
 	echo -e "${cW}INFO:${cZ} asking apt-get to purge previously removed packages"
-	apt-get --purge remove $(dpkg -l|awk '$1 ~ /^rc/ && $2 ~ /^linux-(headers|image)/ {print $2}')
+	apt-get --purge remove $(dpkg -l|awk '$1 ~ /^rc/ && $2 ~ /^linux-(headers|image|modules|modules-extra)/ {print $2}')
 	echo -e "${cW}INFO:${cZ} asking apt-get to purge and autoremove any no longer needed packages"
 	apt-get --purge autoremove
 	echo -e "${cW}INFO:${cZ} asking apt-get to purge ${cW}popularity-contest${cZ} and/or ${cW}unattended-upgrades${cZ} if installed"
