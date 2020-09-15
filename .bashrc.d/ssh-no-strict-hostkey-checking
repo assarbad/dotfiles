@@ -3,3 +3,11 @@ alias SSH-insecure='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/n
 alias SCP-insecure='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 alias SSH-very-insecure='ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 alias SCP-very-insecure='scp -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+if type ssh1 > /dev/null 2>&1; then
+	alias SSH1-insecure='ssh1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	alias SSH1-very-insecure='ssh1 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+fi
+if type scp1 > /dev/null 2>&1; then
+	alias SCP1-insecure='scp1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	alias SCP1-very-insecure='scp1 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+fi
