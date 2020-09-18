@@ -4,3 +4,4 @@ username = Oliver Schneider <oliver@assarbad.net>
 [paths]
 default   = ssh://yggdrasil/hg/public/dotfiles
 upstream = ssh://yggdrasil/hg/public/dotfiles
+github = git+ssh://git@github.com/assarbad/dotfiles.git
