@@ -5,3 +5,9 @@ if [[ -x "$HOME/.cargo/bin/cargo" ]]; then
 		PATH="$HOME/.cargo/bin:$PATH"
 	fi
 fi
+if type rustup > /dev/null 2>&1; then
+	source <(command rustup completions bash)
+	if command rustup completions bash cargo > /dev/null 2>&1; then
+		source <(command rustup completions bash cargo)
+	fi
+fi
