@@ -23,10 +23,9 @@ if [[ -n "$TERM" ]]; then
 					if [[ -z "$NEWTERM" ]]; then
 						if type dpkg > /dev/null 2>&1 && type awk > /dev/null 2>&1; then
 							if command dpkg -l|awk '$1 ~ /^ii$/ && $2 ~ /^ncurses/ {print}'|grep -vq ncurses-term; then
-								echo -e "${cW}INFO:${cZ} you appear to be on Debian, but have no ${cY}ncurses-term${cZ} package installed."
+								echo -ne "${cR}!${cY}ncurses-term${cZ} "
 							fi
 						fi
-						echo -e "${cY}WARNING:${cZ} defaulting to ${cw}TERM=${NEWTERM:-screen}${cZ} because currently set terminal ${cW}$TERM${cZ} isn't supported."
 					fi
 					export TERM=${NEWTERM:-screen}
 				fi
