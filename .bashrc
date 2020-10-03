@@ -193,7 +193,7 @@ fi
 if [ $MYUID -eq 0 ]; then
 	alias beroot='echo NOP'
 else
-	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo -s -u root TERM=${REPLACE_TERM:-$TERM} /usr/bin/env BASHRCDIR='$HOME' $SHELL --rcfile $HOME/.bashrc || sudo -i -u root TERM=${REPLACE_TERM:-$TERM}; }"
+	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo -E -u root /usr/bin/env BASHRCDIR='$HOME' $SHELL --rcfile $HOME/.bashrc || sudo -E -u root $SHELL; }"
 fi
 unset BASHZONE
 unset BASHHOST
