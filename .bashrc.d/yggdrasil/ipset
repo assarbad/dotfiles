@@ -1,3 +1,0 @@
-# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-
-alias friends="$([[ $UID -eq 0 ]] || echo "sudo ")/etc/network/firewall/ipset-wrapper -s"
