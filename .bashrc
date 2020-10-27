@@ -150,6 +150,13 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 		fi
 	fi
 	export SSH_AUTH_SOCK="$USERSOCK"
+	LDR="$HOME/.ssh/.load"
+	if [[ -O "$LDR" ]] && [[ -G "$LDR" ]] && [[ -x "$LDR" ]]; then
+		if (( $(stat -c '%a' "$LDR") < 744 )); then
+			source "$LDR"
+		fi
+	fi
+	unset LDR
 	unset USERSOCK
 	unset SSHAGENT
 	unset SSHAGENTARGS
