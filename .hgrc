@@ -20,6 +20,9 @@ record=
 schemes=
 shelve=
 transplant=
+topic=
+hgext.bookmarks=
+hggit=
 #commitsigs=
 #
 #[gpg]
@@ -30,3 +33,10 @@ transplant=
 #scheme = gnupg
 #gnupg.path = gpg2
 #gnupg.flags = --local-user oliver@assarbad.net
+
+[tortoisehg]
+vdiff = meld
+
+[extdiff]
+cmd.meld = meld
+cmd.delta = delta

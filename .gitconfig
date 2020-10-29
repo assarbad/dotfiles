@@ -6,6 +6,15 @@
 [color]
 	ui = auto
 	grep = auto
+# [core]
+# 	pager = delta --dark
+# [interactive]
+# 	diffFilter = delta --dark --color-only
+[delta]
+	plus-color = "#012800"
+	minus-color = "#340001"
+	line-numbers = true
+	syntax-theme = Monokai Extended
 [log]
 	date = iso
 	decorate = short
