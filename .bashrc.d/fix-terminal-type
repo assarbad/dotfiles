@@ -6,7 +6,7 @@ if [[ -n "$TERM" ]]; then
 		# Figure out if we can use toe to get a list of supported terminal types, otherwise fall back to toe -h
 		TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
 		case "$TERM" in
-			*-256color|screen)
+			*-256color|screen*|alacritty*)
 				if $TOELIST 2> /dev/null|grep -q "^$TERM[[:space:]]"; then # currently set terminal not locally supported?
 					echo -n ""
 				else

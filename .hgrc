@@ -39,4 +39,3 @@ vdiff = meld
 
 [extdiff]
 cmd.meld = meld
-cmd.delta = delta
