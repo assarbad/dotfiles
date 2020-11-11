@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="b" x1="371.43" x2="500.71" y1="580.93" y2="710.22" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#2a53c6" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="279.99" x2="548.58" y1="526.64" y2="795.23" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#b8caff" offset="1"/>
+</linearGradient>
+</defs>
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<g transform="translate(-140.29 -560.08)">
+<path transform="matrix(.95313 0 0 .95313 -126.58 58.124)" d="m542.29 660.93a128 128 0 1 1-256 0 128 128 0 1 1 256 0z" fill="url(#a)" stroke="#000" stroke-width="12.59"/>
+<path transform="matrix(1.5702 0 0 1.5702 -416.42 -325.59)" d="m500.71 645.58a64.643 64.643 0 1 1-129.29 0 64.643 64.643 0 1 1 129.29 0z" fill="url(#b)"/>
+<g transform="translate(-146 29.128)">
+<rect x="351.79" y="709.15" width="125" height="16"/>
+<path d="m351.78 689.16v16h53v-16h-53zm72 0v16h53v-16h-53z"/>
+<path d="m351.78 669.16v16h53v-16h-53zm72 0v16h53v-16h-53z"/>
+<rect x="351.79" y="649.15" width="125" height="16"/>
+<path d="m414.28 572.75c-11.705 0-21.612 5.4901-28.688 12.688s-11.872 16.058-15.438 24.625c-7.1318 17.134-9.2812 33.844-9.2812 33.844l-0.15625 1.25h19.156c0.46666-2.9862 2.5907-15.267 7.8125-27.812 2.978-7.1544 6.9526-14 11.469-18.594s9.0058-7 15.125-7 10.64 2.4064 15.156 7 8.4595 11.439 11.438 18.594c5.2218 12.545 7.3458 24.826 7.8125 27.812h19.156l-0.15625-1.25s-2.1182-16.71-9.25-33.844c-3.5659-8.567-8.3928-17.428-15.469-24.625s-16.982-12.688-28.688-12.688z" color="#000000" style="block-progression:tb;text-indent:0;text-transform:none"/>
+</g>
+</g>
+</svg>
