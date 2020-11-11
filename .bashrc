@@ -73,19 +73,25 @@ umask 022
 BASHRCDIR=${BASHRCDIR:-$HOME}
 # Alias definitions for ls. Figure out the feature set ...
 if [[ "Linux" == "$(uname -s)" ]]; then
-	MYLS_OPTIONS='--color=auto --time-style=long-iso'
-	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
-	ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
-	[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
-	alias ls='ls $LS_OPTIONS'
-	alias ll='ls $LS_OPTIONS -l'
-	alias l='ls $LS_OPTIONS -all'
-	unset MYLS_OPTIONS
+	if type lsd > /dev/null 2>&1; then
+		alias ls='lsd --group-dirs=first'
+		alias ll='lsd --group-dirs=first -l'
+		alias l='lsd --group-dirs=first -lA'
+	else
+		MYLS_OPTIONS='--color=auto --time-style=long-iso'
+		ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
+		ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+		[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
+		alias ls='ls $LS_OPTIONS'
+		alias ll='ls $LS_OPTIONS -l'
+		alias l='ls $LS_OPTIONS -Al'
+		unset MYLS_OPTIONS
+	fi
 else
 	[[ "$(uname -s)" == "Darwin"  ]] && export CLICOLOR=
 	[[ "$(uname -s)" == "FreeBSD" ]] && export CLICOLOR=
 	alias ll='ls -l'
-	alias l='ls -ahl'
+	alias l='ls -Al'
 fi
 # color hard links in cyan, but a little darker than soft links
 if [[ -e "/etc/debian_version" ]] && type dircolors > /dev/null 2>&1; then
