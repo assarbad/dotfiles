@@ -1,0 +1,219 @@
+env:
+  TERM: xterm-256color
+
+window:
+  dynamic_padding: true
+  dynamic_title: true
+  # Values for `decorations`:
+  #     - full: Borders and title bar
+  #     - none: Neither borders nor title bar
+  decorations: full
+  title: Terminal
+  class:
+    instance: Alacritty
+    general: Alacritty
+scrolling:
+  history: 10000
+font:
+  size: 12.0
+  normal:
+    family: SauceCodePro Nerd Font Mono
+    style: Medium
+#draw_bold_text_with_bright_colors: true
+schemes:
+  base16_default_dark: # Base16 Default Dark
+    primary:
+      background: '#181818'
+      foreground: '#d8d8d8'
+    cursor:
+      text:       '#d8d8d8'
+      cursor:     '#d8d8d8'
+    normal:
+      black:      '#181818'
+      red:        '#ab4642'
+      green:      '#a1b56c'
+      yellow:     '#f7ca88'
+      blue:       '#7cafc2'
+      magenta:    '#ba8baf'
+      cyan:       '#86c1b9'
+      white:      '#d8d8d8'
+    bright:
+      black:      '#585858'
+      red:        '#ab4642'
+      green:      '#a1b56c'
+      yellow:     '#f7ca88'
+      blue:       '#7cafc2'
+      magenta:    '#ba8baf'
+      cyan:       '#86c1b9'
+      white:      '#f8f8f8'
+  campbell: # Campbell (Windows 10 default)
+    primary:
+      background: '#0c0c0c'
+      foreground: '#cccccc'
+    normal:
+      black:      '#0c0c0c'
+      red:        '#c50f1f'
+      green:      '#13a10e'
+      yellow:     '#c19c00'
+      blue:       '#0037da'
+      magenta:    '#881798'
+      cyan:       '#3a96dd'
+      white:      '#cccccc'
+    bright:
+      black:      '#767676'
+      red:        '#e74856'
+      green:      '#16c60c'
+      yellow:     '#f9f1a5'
+      blue:       '#3b78ff'
+      magenta:    '#b4009e'
+      cyan:       '#61d6d6'
+      white:      '#f2f2f2'
+  pencil_dark: # Pencil Dark
+    primary:
+      background: '#212121'
+      foreground: '#f1f1f1'
+    normal:
+      black:      '#212121'
+      red:        '#c30771'
+      green:      '#10a778'
+      yellow:     '#a89c14'
+      blue:       '#008ec4'
+      magenta:    '#523c79'
+      cyan:       '#20a5ba'
+      white:      '#e0e0e0'
+    bright:
+      black:      '#212121'
+      red:        '#fb007a'
+      green:      '#5fd7af'
+      yellow:     '#f3e430'
+      blue:       '#20bbfc'
+      magenta:    '#6855de'
+      cyan:       '#4fb8cc'
+      white:      '#f1f1f1'
+  taerminal: &default # Taerminal
+    primary:
+      background: '0x26282a'
+      foreground: '0xf0f0f0'
+    cursor:
+      background: '0xf0f0f0'
+      foreground: '0x26282a'
+    normal:
+      black:      '0x26282a'
+      red:        '0xff8878'
+      green:      '0xb4fb73'
+      yellow:     '0xfffcb7'
+      blue:       '0x8bbce5'
+      magenta:    '0xffb2fe'
+      cyan:       '0xa2e1f8'
+      white:      '0xf1f1f1'
+    bright:
+      black:      '0x6f6f6f'
+      red:        '0xfe978b'
+      green:      '0xd6fcba'
+      yellow:     '0xfffed5'
+      blue:       '0xc2e3ff'
+      magenta:    '0xffc6ff'
+      cyan:       '0xc0e9f8'
+      white:      '0xffffff'
+  terminal_app: # Terminal.app
+    primary:
+      background: '0x000000'
+      foreground: '0xb6b6b6'
+    normal:
+      black:      '0x000000'
+      red:        '0x990000'
+      green:      '0x00a600'
+      yellow:     '0x999900'
+      blue:       '0x0000b2'
+      magenta:    '0xb200b2'
+      cyan:       '0x00a6b2'
+      white:      '0xbfbfbf'
+    bright:
+      black:      '0x666666'
+      red:        '0xe50000'
+      green:      '0x00d900'
+      yellow:     '0xe5e500'
+      blue:       '0x0000ff'
+      magenta:    '0xe500e5'
+      cyan:       '0x00e5e5'
+      white:      '0xe5e5e5'
+  tomorrow_night: # Tomorrow Night
+    primary:
+      background: '#1d1f21'
+      foreground: '#c5c8c6'
+    cursor:
+      text:       '#1d1f21'
+      cursor:     '#ffffff'
+    normal:
+      black:      '#1d1f21'
+      red:        '#cc6666'
+      green:      '#b5bd68'
+      yellow:     '#e6c547'
+      blue:       '#81a2be'
+      magenta:    '#b294bb'
+      cyan:       '#70c0ba'
+      white:      '#373b41'
+    bright:
+      black:      '#666666'
+      red:        '#ff3334'
+      green:      '#9ec400'
+      yellow:     '#f0c674'
+      blue:       '#81a2be'
+      magenta:    '#b77ee0'
+      cyan:       '#54ced6'
+      white:      '#282a2e'
+  xterm: # XTerm's default colors
+    primary:
+      background: '0x000000'
+      foreground: '0xffffff'
+    normal:
+      black:      '0x000000'
+      red:        '0xcd0000'
+      green:      '0x00cd00'
+      yellow:     '0xcdcd00'
+      blue:       '0x0000ee'
+      magenta:    '0xcd00cd'
+      cyan:       '0x00cdcd'
+      white:      '0xe5e5e5'
+    bright:
+      black:      '0x7f7f7f'
+      red:        '0xff0000'
+      green:      '0x00ff00'
+      yellow:     '0xffff00'
+      blue:       '0x5c5cff'
+      magenta:    '0xff00ff'
+      cyan:       '0x00ffff'
+      white:      '0xffffff'
+colors: *default
+bell:
+  animation: EaseOutExpo
+  duration: 0
+  color: '0xcccccc'
+background_opacity: 1.0
+cursor:
+  # Values for `style`:
+  #   - ▇ Block
+  #   - _ Underline
+  #   - | Beam
+  style: Block
+  unfocused_hollow: true
+live_config_reload: true
+key_bindings:
+    # (Windows, Linux, and BSD only)
+  - { key: V,        mods: Control|Shift, action: Paste            }
+  - { key: C,        mods: Control|Shift, action: Copy             }
+  - { key: Insert,   mods: Shift,         action: PasteSelection   }
+  - { key: Key0,     mods: Control,       action: ResetFontSize    }
+  - { key: Equals,   mods: Control,       action: IncreaseFontSize }
+  - { key: Add,      mods: Control,       action: IncreaseFontSize }
+  - { key: Subtract, mods: Control,       action: DecreaseFontSize }
+  - { key: Minus,    mods: Control,       action: DecreaseFontSize }
+
+  - { key: Paste,                    action: Paste                            }
+  - { key: Copy,                     action: Copy                             }
+  - { key: L,         mods: Control, action: ClearLogNotice                   }
+  - { key: L,         mods: Control, chars: "\x0c"                            }
+  - { key: PageUp,    mods: Shift,   action: ScrollPageUp,   mode: ~Alt       }
+  - { key: PageDown,  mods: Shift,   action: ScrollPageDown, mode: ~Alt       }
+  - { key: Home,      mods: Shift,   action: ScrollToTop,    mode: ~Alt       }
+  - { key: End,       mods: Shift,   action: ScrollToBottom, mode: ~Alt       }
