@@ -75,8 +75,9 @@ BASHRCDIR=${BASHRCDIR:-$HOME}
 if [[ "Linux" == "$(uname -s)" ]]; then
 	if type lsd > /dev/null 2>&1; then
 		alias ls='lsd --group-dirs=first'
-		alias ll='lsd --group-dirs=first -l'
-		alias l='lsd --group-dirs=first -lA'
+		alias ll='lsd --group-dirs=first --date "+%F %T" -l'
+		alias l='lsd --group-dirs=first --date "+%F %T" -lA'
+		alias tree='lsd --tree -l --date="+%F %T" --group-dirs=first --blocks=permission,size,date,name'
 	else
 		MYLS_OPTIONS='--color=auto --time-style=long-iso'
 		ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
