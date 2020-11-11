@@ -1,0 +1,5 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type broot > /dev/null 2>&1; then
+	source <(broot --print-shell-function bash)
+fi
