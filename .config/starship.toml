@@ -146,7 +146,7 @@ symbol = '🦀'
 
 [shlvl]
 disabled = false
-threshold = 3
+threshold = 2
 format = '[$symbol$shlvl]($style) '
 symbol = ''
 style = 'blue'
