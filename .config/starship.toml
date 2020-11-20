@@ -1,0 +1,155 @@
+format = """
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$hg_branch\
+$docker_context\
+$cmake\
+$golang\
+$python\
+$ruby\
+$rust\
+$memory_usage\
+$env_var\
+$crystal\
+$cmd_duration\
+$custom\
+$line_break\
+$shlvl\
+$username\
+$hostname\
+$directory\
+$lua\
+$jobs\
+$battery\
+$time\
+$status\
+$character"""
+
+aws.disabled = true
+#cmd_duration.disabled = true
+conda.disabled = true
+crystal.disabled = true
+custom.disabled = true
+dart.disabled = true
+docker_context.disabled = true
+dotnet.disabled = true
+elixir.disabled = true
+elm.disabled = true
+env_var.disabled = true
+erlang.disabled = true
+gcloud.disabled = true
+helm.disabled = true
+java.disabled = true
+jobs.disabled = true
+julia.disabled = true
+kubernetes.disabled = true
+#memory_usage.disabled = true
+nim.disabled = true
+nix_shell.disabled = true
+nodejs.disabled = true
+ocaml.disabled = true
+openstack.disabled = true
+package.disabled = true
+perl.disabled = true
+php.disabled = true
+purescript.disabled = true
+singularity.disabled = true
+status.disabled = true
+swift.disabled = true
+terraform.disabled = true
+time.disabled = true
+zig.disabled = true
+
+[battery]
+full_symbol = ''
+charging_symbol = ''
+discharging_symbol = ''
+
+[[battery.display]]
+threshold = 10
+style = 'bold red'
+
+[character]
+success_symbol = '\$'
+error_symbol = '\$'
+vicmd_symbol = ''
+
+[cmake]
+format = '[$symbol$version]($style) '
+
+[cmd_duration]
+format = '[祥$duration]($style) '
+
+[directory]
+format = '[$path]($style)[$read_only]($read_only_style)'
+
+[line_break]
+disabled = true
+
+[git_branch]
+format = '[[$symbol](bold $style)$branch](dimmed $style) '
+symbol = ''
+style = 'purple'
+
+[git_state]
+rebase = 'ﲐ'
+merge = ''
+revert = ''
+cherry_pick = ''
+
+[git_status]
+conflicted = ''
+
+[golang]
+format = '[$symbol$version]($style) '
+symbol = ''
+
+[hg_branch]
+disabled = false
+format = '[[$symbol](bold $style)$branch](dimmed $style) '
+symbol = ''
+style = 'purple'
+
+[hostname]
+ssh_only = true
+format = '[@$hostname]($style)'
+style = 'bold dimmed blue'
+
+[lua]
+format = '[$symbol$version]($style) '
+symbol = ''
+
+[memory_usage]
+threshold = 80
+disabled = false
+format = '$symbol [${ram}( | ${swap})]($style) '
+symbol = ''
+
+[python]
+format = '[[${symbol}](green bold)${pyenv_prefix}${version}( \($virtualenv\))]($style) '
+style = 'yellow dimmed'
+symbol = ''
+
+[ruby]
+format = '[$symbol$version]($style) '
+symbol = ''
+
+[rust]
+format = '[$symbol$version]($style) '
+#symbol = ''
+symbol = '🦀'
+
+[shlvl]
+disabled = false
+threshold = 3
+format = '[$symbol$shlvl]($style) '
+symbol = ''
+style = 'blue'
+
+[username]
+#show_always = true
+format = '[$user]($style)'
+style_user = 'bold blue'
+style_root = 'bold red'
