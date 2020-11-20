@@ -6,6 +6,15 @@
 
 # Because UID is readonly we cannot use the real thing, so let's fake it below ;)
 MYUID=$UID
+if type starship > /dev/null 2>&1; then
+	eval "$(starship init bash)"
+else
+	if [ $MYUID -eq 0 ]; then
+		export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
+	else
+		export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
+	fi
+fi
 
 # On Windows the superuser has the UID (RID) 500, make it appear as root
 [ -n "$COMSPEC" ] && [ $MYUID -eq 500 ] && { let MYUID=0; }
@@ -23,7 +32,6 @@ fi
 PATH=${PATH//::/:}
 
 if [ $MYUID -eq 0 ]; then
-	export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
 	NEWPATH=''
 	LASTDIR=''
 	for dir in ${PATH//:/ }; do
@@ -38,8 +46,7 @@ if [ $MYUID -eq 0 ]; then
 	# Remove the leading colon and export this as the path
 	PATH=${NEWPATH:1:${#NEWPATH}}
 	unset LASTDIR
-else
-	export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
+	unset NEWPATH
 fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
@@ -143,7 +150,7 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 		[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
 		ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
 	elif [[ "$SSH_AUTH_SOCK" == "$USERSOCK" ]] && [[ -h "$SSH_AUTH_SOCK" ]]; then
-		echo "Not replacing existing symbolic link"
+		echo -n ""
 	elif [[ -S "$SSH_AUTH_SOCK" ]]; then
 		echo "Using existing socket: '$SSH_AUTH_SOCK'"
 		[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
@@ -214,12 +221,14 @@ unset BASHHOST
 unset BASHSRCDIR
 unset MYUID
 
-# The prompt command will only show the current directory and username if the terminal type is "correct"
-case "$TERM" in
-	xterm*|rvxt*|screen*|putty*)
-		export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
-		;;
-esac
+if [[ -z "$STARSHIP_SESSION_KEY" ]]; then
+	# The prompt command will only show the current directory and username if the terminal type is "correct"
+	case "$TERM" in
+		xterm*|rvxt*|screen*|putty*)
+			export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
+			;;
+	esac
+fi
 
 [[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 if type lsb_release > /dev/null 2>&1; then

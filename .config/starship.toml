@@ -1,3 +1,5 @@
+add_newline = false
+
 format = """
 $git_branch\
 $git_commit\
@@ -84,6 +86,7 @@ format = '[祥$duration]($style) '
 
 [directory]
 format = '[$path]($style)[$read_only]($read_only_style)'
+style = 'bold green'
 
 [line_break]
 disabled = true
