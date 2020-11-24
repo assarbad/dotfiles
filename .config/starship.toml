@@ -12,6 +12,7 @@ $golang\
 $python\
 $ruby\
 $rust\
+$lua\
 $memory_usage\
 $env_var\
 $crystal\
@@ -22,7 +23,6 @@ $shlvl\
 $username\
 $hostname\
 $directory\
-$lua\
 $jobs\
 $battery\
 $time\
