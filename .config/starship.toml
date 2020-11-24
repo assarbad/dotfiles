@@ -22,7 +22,7 @@ $line_break\
 $shlvl\
 $username\
 $hostname\
-$directory\
+:$directory\
 $jobs\
 $battery\
 $time\
@@ -118,7 +118,7 @@ style = 'purple'
 
 [hostname]
 ssh_only = true
-format = '[@$hostname:]($style)'
+format = '[@$hostname]($style)'
 style = 'bold dimmed blue'
 
 [lua]
