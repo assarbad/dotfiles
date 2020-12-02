@@ -1,6 +1,9 @@
 [user]
 	email = oliver@assarbad.net
 	name = Oliver Schneider
+# 	signingkey = C779D8290E88590F
+# [commit]
+# 	gpgsign = true
 [push]
 	default = simple
 [color]
