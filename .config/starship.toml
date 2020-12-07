@@ -104,6 +104,7 @@ revert = ''
 cherry_pick = ''
 
 [git_status]
+disabled = true
 conflicted = ''
 
 [golang]
