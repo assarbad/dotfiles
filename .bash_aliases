@@ -69,6 +69,13 @@ if [[ -e "/etc/redhat-release" ]]; then
     alias upgrade='yum update'
   fi
 fi
+if type "pacman" > /dev/null 2>&1; then
+  if [[ $UID -ne 0 ]]; then
+    alias upgrade='sudo pacman -Syu'
+  else
+    alias upgrade='pacman -Syu'
+  fi
+fi
 if [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
   alias search='pkg search'
   alias show='pkg info'

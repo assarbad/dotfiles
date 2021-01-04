@@ -233,7 +233,11 @@ fi
 [[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 if ((SHLVL < 2)); then
 	if type lsb_release > /dev/null 2>&1; then
-		echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ} ${cR_}($(lsb_release -sc))${cZ}"
+		if [[ -n $(lsb_release -sc) ]]; then
+			echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ} ${cR_}($(lsb_release -sc))${cZ}"
+		else
+			echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ}"
+		fi
 	else
 		echo -e "${cG_}$(uname -s) $(uname -r)${cZ}"
 	fi
