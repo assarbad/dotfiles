@@ -36,6 +36,8 @@ while getopts "$CMDLINE_OPTIONS" opt; do
 	esac
 done
 
+[[ -n "$APPNAME" ]] || { echo -e "${cR}ERROR:${cZ} application name must be set (${cW}-n <name>${cZ})"; exit 1; }
+[[ -n "$EXECUTABLE" ]] || { echo -e "${cR}ERROR:${cZ} executable path must be set (${cW}-x <path>${cZ})"; exit 1; }
 DESKTOP_FILE="$HOME/.local/share/applications/$APPNAME.desktop"
 set -o noclobber; cat > "$DESKTOP_FILE" <<EOF
 #!/usr/bin/env xdg-open
@@ -48,9 +50,9 @@ Exec=$EXECUTABLE
 Name=$APPNAME
 Icon=$ICON
 EOF
-( set -x; desktop-file-edit \
+( set -e; set -x; desktop-file-edit \
 	--set-generic-name="$APPNAME" \
 	--copy-generic-name-to-name \
 	${COMMENT:+--set-comment="$COMMENT"} ${VENDOR:+--set-vendor="$VENDOR"}  "$DESKTOP_FILE" )
 ( set -x; chmod +x "$DESKTOP_FILE" )
-( set -x; update-desktop-database "${DESKTOP_FILE%/*}" )
+( set -e; set -x; update-desktop-database "${DESKTOP_FILE%/*}" )
