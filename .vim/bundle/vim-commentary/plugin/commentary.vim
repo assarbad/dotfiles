@@ -3,22 +3,22 @@
 " Version:      1.3
 " GetLatestVimScripts: 3695 1 :AutoInstall: commentary.vim
 
-if exists("g:loaded_commentary") || &cp || v:version < 700
+if exists("g:loaded_commentary") || v:version < 700
   finish
 endif
 let g:loaded_commentary = 1
 
 function! s:surroundings() abort
-  return split(get(b:, 'commentary_format', substitute(substitute(
-        \ &commentstring, '\S\zs%s',' %s','') ,'%s\ze\S', '%s ', '')), '%s', 1)
+  return split(get(b:, 'commentary_format', substitute(substitute(substitute(
+        \ &commentstring, '^$', '%s', ''), '\S\zs%s',' %s', '') ,'%s\ze\S', '%s ', '')), '%s', 1)
 endfunction
 
 function! s:strip_white_space(l,r,line) abort
   let [l, r] = [a:l, a:r]
-  if l[-1:] == ' ' && stridx(a:line,l) == -1 && stridx(a:line,l[0:-2]) == 0
+  if l[-1:] ==# ' ' && stridx(a:line,l) == -1 && stridx(a:line,l[0:-2]) == 0
     let l = l[:-2]
   endif
-  if r[0] == ' ' && a:line[-strlen(r):] != r && a:line[1-strlen(r):] == r[1:]
+  if r[0] ==# ' ' && a:line[-strlen(r):] != r && a:line[1-strlen(r):] == r[1:]
     let r = r[1:]
   endif
   return [l, r]
@@ -26,7 +26,7 @@ endfunction
 
 function! s:go(...) abort
   if !a:0
-    let &opfunc = matchstr(expand('<sfile>'), '[^. ]*$')
+    let &operatorfunc = matchstr(expand('<sfile>'), '[^. ]*$')
     return 'g@'
   elseif a:0 > 1
     let [lnum1, lnum2] = [a:1, a:2]
@@ -39,25 +39,33 @@ function! s:go(...) abort
   for lnum in range(lnum1,lnum2)
     let line = matchstr(getline(lnum),'\S.*\s\@<!')
     let [l, r] = s:strip_white_space(l,r,line)
-    if line != '' && (stridx(line,l) || line[strlen(line)-strlen(r) : -1] != r)
+    if len(line) && (stridx(line,l) || line[strlen(line)-strlen(r) : -1] != r)
       let uncomment = 0
     endif
   endfor
 
+  if get(b:, 'commentary_startofline')
+    let indent = '^'
+  else
+    let indent = '^\s*'
+  endif
+
+  let lines = []
   for lnum in range(lnum1,lnum2)
     let line = getline(lnum)
     if strlen(r) > 2 && l.r !~# '\\'
       let line = substitute(line,
-            \'\M'.r[0:-2].'\zs\d\*\ze'.r[-1:-1].'\|'.l[0].'\zs\d\*\ze'.l[1:-1],
+            \'\M' . substitute(l, '\ze\S\s*$', '\\zs\\d\\*\\ze', '') . '\|' . substitute(r, '\S\zs', '\\zs\\d\\*\\ze', ''),
             \'\=substitute(submatch(0)+1-uncomment,"^0$\\|^-\\d*$","","")','g')
     endif
     if uncomment
       let line = substitute(line,'\S.*\s\@<!','\=submatch(0)[strlen(l):-strlen(r)-1]','')
     else
-      let line = substitute(line,'^\%('.matchstr(getline(lnum1),'^\s*').'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
+      let line = substitute(line,'^\%('.matchstr(getline(lnum1),indent).'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
     endif
-    call setline(lnum,line)
+    call add(lines, line)
   endfor
+  call setline(lnum1, lines)
   let modelines = &modelines
   try
     set modelines=0
@@ -90,19 +98,19 @@ function! s:textobject(inner) abort
 endfunction
 
 command! -range -bar Commentary call s:go(<line1>,<line2>)
-xnoremap <silent> <Plug>Commentary     :Commentary<CR>
+xnoremap <expr>   <Plug>Commentary     <SID>go()
 nnoremap <expr>   <Plug>Commentary     <SID>go()
 nnoremap <expr>   <Plug>CommentaryLine <SID>go() . '_'
-onoremap <silent> <Plug>Commentary        :<C-U>call <SID>textobject(0)<CR>
+onoremap <silent> <Plug>Commentary        :<C-U>call <SID>textobject(get(v:, 'operator', '') ==# 'c')<CR>
 nnoremap <silent> <Plug>ChangeCommentary c:<C-U>call <SID>textobject(1)<CR>
-nmap <silent> <Plug>CommentaryUndo <Plug>Commentary<Plug>Commentary
+nmap <silent> <Plug>CommentaryUndo :echoerr "Change your <Plug>CommentaryUndo map to <Plug>Commentary<Plug>Commentary"<CR>
 
 if !hasmapto('<Plug>Commentary') || maparg('gc','n') ==# ''
   xmap gc  <Plug>Commentary
   nmap gc  <Plug>Commentary
   omap gc  <Plug>Commentary
-  nmap gcc <Plug>Commentary_
-  if maparg('c','n') ==# ''
+  nmap gcc <Plug>CommentaryLine
+  if maparg('c','n') ==# '' && !exists('v:operator')
     nmap cgc <Plug>ChangeCommentary
   endif
   nmap gcu <Plug>Commentary<Plug>Commentary

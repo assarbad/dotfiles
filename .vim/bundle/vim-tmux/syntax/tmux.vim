@@ -84,7 +84,7 @@ syn keyword tmuxOptsSet display-panes-active-colour alternate-screen
 syn keyword tmuxOptsSet detach-on-destroy word-separators
 syn keyword tmuxOptsSet destroy-unattached exit-unattached focus-events set-clipboard
 syn keyword tmuxOptsSet bell-on-alert mouse-select-window mouse-utf8
-syn keyword tmuxOptsSet mouse-resize-pane
+syn keyword tmuxOptsSet mouse-resize-pane mouse
 syn keyword tmuxOptsSet renumber-windows visual-silence
 syn keyword tmuxOptsSet show[-options] showw show-window-options
 
@@ -93,7 +93,7 @@ syn match tmuxUserOptsSet /@[[:alnum:]_-]\+/ display
 syn keyword tmuxOptsSetw monitor-activity aggressive-resize force-width
 syn keyword tmuxOptsSetw force-height remain-on-exit mode-fg mode-bg
 syn keyword tmuxOptsSetw mode-keys clock-mode-colour clock-mode-style
-syn keyword tmuxOptsSetw xterm-keys mode-attr window-status-attr
+syn keyword tmuxOptsSetw xterm-keys mode-attr window-status-attr monitor-bell
 syn keyword tmuxOptsSetw window-status-bg window-status-fg automatic-rename
 syn keyword tmuxOptsSetw main-pane-width main-pane-height monitor-content
 syn keyword tmuxOptsSetw window-status-current-attr window-status-current-bg
