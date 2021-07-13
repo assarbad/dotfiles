@@ -8,7 +8,7 @@ ZEROFILE="/zerofile"
 function clean_debian_derived
 {
 	PRUNE="$BASEDIR/.bashrc.d/prune-kernels"
-	[[ -f "$PRUNE" ]] || { echo "ERROR: this script must sit inside the working copy of an bitbucket.org/assarbad/dotfiles clone."; exit 1; }
+	[[ -f "$PRUNE" ]] || { echo "ERROR: this script must sit inside the working copy of an https://sourceforge.net/projects/assarbad-dotfiles/ clone."; exit 1; }
 	source "$PRUNE" || { echo "ERROR: could not include (source) '$PRUNE'."; exit 1; }
 	type prune-kernels 2>&1 > /dev/null || { echo "ERROR: callable 'prune-kernels' does not exist."; exit 1; }
 	echo -e "${cW}INFO:${cZ} running ${cG}prune-kernels${cZ}"
