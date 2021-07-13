@@ -95,7 +95,7 @@ help:
 	-@echo ""
 	-@echo "Alternative one method to install:"
 	-@echo ""
-	-@echo "hg clone https://hg.code.sf.net/p/ddkwizard/code ~/.dotfiles && make -C ~/.dotfiles install"
+	-@echo "hg clone https://hg.code.sf.net/p/assarbad-dotfiles/code ~/.dotfiles && make -C ~/.dotfiles install"
 
 info:
 	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
