@@ -2,7 +2,7 @@
 [[ -n "$1" ]] && [[ -d "$1" ]] && TGTDIR="$1"
 [[ -n "$TGTDIR" ]] || { echo "TGTDIR environment variable not set."; exit 0; }
 # First: directories
-for i in .vim/after .vim/snippets .vim/bundle/nerdcommenter .vim/doc .vim/bundle/SimpylFold .vim/bundle/vim-watchdog .vim/bundle/vim-airline .vim/bundle/supertab .vim/bundle/vim-togglemouse .vim/bundle/vim-nerdtree-tabs .vim/bundle/colorscheme-molokai .vim/bundle/colorscheme-solarized .vim/ftplugin .vim/plugin .vim/templates; do
+for i in .vim/after .vim/snippets .vim/bundle/nerdcommenter .vim/doc .vim/bundle/SimpylFold .vim/bundle/vim-watchdog .vim/bundle/vim-airline .vim/bundle/supertab .vim/bundle/vim-togglemouse .vim/bundle/vim-nerdtree-tabs .vim/bundle/colorscheme-molokai .vim/bundle/colorscheme-solarized .vim/ftplugin .vim/plugin .vim/templates .vim/ftdetect .vim/indent .vim/bundle/vim-ansible-yaml; do
 	[[ -d "$TGTDIR/$i" ]] && { echo "Removing folder $i"; rm -rf "$TGTDIR/$i"; }
 done
 # Second: files
