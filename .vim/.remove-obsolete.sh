@@ -43,7 +43,7 @@ for i in \
 	.vim/autoload/snipMate.vim \
 	.vim/bundle/vim-tmux/README.markdown \
 	.vim/bundle/nerdtree/CHANGELOG \
-	.vim/bundle/nerdtree/ISSUE_TEMPLATE.md \
+	.vim/bundle/nerdtree/.github/ISSUE_TEMPLATE.md \
 	; do
 	[[ -f "$TGTDIR/$i" ]] && { echo "Removing file $i"; rm -f "$TGTDIR/$i"; }
 done
