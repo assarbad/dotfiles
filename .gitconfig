@@ -45,3 +45,5 @@
 	nfm = merge --no-ff
 	tree = log --decorate --pretty=oneline --abbrev-commit --graph
 	ls = log --stat --decorate --pretty=format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\" --graph
+[init]
+	defaultBranch = main
