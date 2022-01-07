@@ -1,0 +1,11 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if type sk > /dev/null 2>&1 && type rg > /dev/null 2>&1; then
+	export SKIM_DEFAULT_COMMAND="rg --files"
+	if type bat > /dev/null 2>&1 && type cut > /dev/null 2>&1 && type uniq > /dev/null 2>&1; then
+		alias skim="sk --ansi --multi --bind \"ctrl-p:toggle-preview\" --delimiter : --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' --preview-window +{2}-/2 --interactive --cmd 'rg --color=always --line-number \"{}\"'|cut -d : -f 1|uniq"
+		if type vim > /dev/null 2>&1 && type parallel > /dev/null 2>&1; then
+			alias skvi="sk --ansi --multi --bind \"ctrl-p:toggle-preview\" --delimiter : --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' --preview-window +{2}-/2 --interactive --cmd 'rg --color=always --line-number "{}"'|cut -d : -f 1|uniq|parallel -Xj1 --tty vim -p --"
+		fi
+	fi
+fi

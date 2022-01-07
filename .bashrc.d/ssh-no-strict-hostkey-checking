@@ -1,8 +1,12 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-alias SSH-insecure='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-alias SCP-insecure='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-alias SSH-very-insecure='ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-alias SCP-very-insecure='scp -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+if type ssh > /dev/null 2>&1; then
+	alias SSH-insecure='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	alias SSH-very-insecure='ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+fi
+if type ssh > /dev/null 2>&1; then
+	alias SCP-insecure='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	alias SCP-very-insecure='scp -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+fi
 if type ssh1 > /dev/null 2>&1; then
 	alias SSH1-insecure='ssh1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 	alias SSH1-very-insecure='ssh1 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'

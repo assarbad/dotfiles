@@ -1,40 +1,42 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-# Alias for convenience
-_TMUX_="tmux"
-# Establish a baseline
-if [[ -n "$TERM" ]]; then
-	_TMUX_="env _TMUXTERM=$TERM tmux"
-	if type toe > /dev/null 2>&1 && type tput > /dev/null 2>&1 && type grep > /dev/null 2>&1; then
-		TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
-		COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
-		case "$TERM" in
-			*-256color)
-				OLDTERM=$TERM
-				if ((COLORCNT >= 256)) && $TOELIST 2> /dev/null|grep -q "^$OLDTERM[[:space:]]"; then
-					_TMUX_="env _TMUXTERM=$OLDTERM tmux -2"
-				elif [[ "putty" == "${OLDTERM%-256color}" ]]; then
+if type tmux > /dev/null 2>&1; then
+	# Alias for convenience
+	_TMUX_="tmux"
+	# Establish a baseline
+	if [[ -n "$TERM" ]]; then
+		_TMUX_="env _TMUXTERM=$TERM tmux"
+		if type toe > /dev/null 2>&1 && type tput > /dev/null 2>&1 && type grep > /dev/null 2>&1; then
+			TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
+			COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
+			case "$TERM" in
+				*-256color)
+					OLDTERM=$TERM
+					if ((COLORCNT >= 256)) && $TOELIST 2> /dev/null|grep -q "^$OLDTERM[[:space:]]"; then
+						_TMUX_="env _TMUXTERM=$OLDTERM tmux -2"
+					elif [[ "putty" == "${OLDTERM%-256color}" ]]; then
+						if ((COLORCNT >= 256)) && $TOELIST 2> /dev/null|grep -q "^screen-256color[[:space:]]"; then
+							_TMUX_="env _TMUXTERM=screen-256color tmux -2"
+						fi
+					fi
+					;;
+				screen)
 					if ((COLORCNT >= 256)) && $TOELIST 2> /dev/null|grep -q "^screen-256color[[:space:]]"; then
 						_TMUX_="env _TMUXTERM=screen-256color tmux -2"
 					fi
-				fi
-				;;
-			screen)
-				if ((COLORCNT >= 256)) && $TOELIST 2> /dev/null|grep -q "^screen-256color[[:space:]]"; then
-					_TMUX_="env _TMUXTERM=screen-256color tmux -2"
-				fi
-				;;
-		esac
+					;;
+			esac
+		fi
 	fi
-fi
-alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else if tmux ls|grep -q ^$(hostname -s):; then $_TMUX_ attach-session -t $(hostname -s); else $_TMUX_ new-session -s $(hostname -s) -n shell; fi; fi"
-unset _TMUX_
-unset TOELIST
-# Are we running inside a Tmux session invoked by above alias?
-if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]] && [[ -n "$_TMUXTERM" ]]; then
-	export TERM=$_TMUXTERM
-	unset _TMUXTERM
-	if [[ -n "$BASHSRCDIR" ]] && [[ -d "$BASHSRCDIR" ]]; then
-		[[ -e "$BASHSRCDIR/fix-terminal-type" ]] && source "$BASHSRCDIR/fix-terminal-type"
+	alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else if tmux ls|grep -q ^$(hostname -s):; then $_TMUX_ attach-session -t $(hostname -s); else $_TMUX_ new-session -s $(hostname -s) -n shell; fi; fi"
+	unset _TMUX_
+	unset TOELIST
+	# Are we running inside a Tmux session invoked by above alias?
+	if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]] && [[ -n "$_TMUXTERM" ]]; then
+		export TERM=$_TMUXTERM
+		unset _TMUXTERM
+		if [[ -n "$BASHSRCDIR" ]] && [[ -d "$BASHSRCDIR" ]]; then
+			[[ -e "$BASHSRCDIR/fix-terminal-type" ]] && source "$BASHSRCDIR/fix-terminal-type"
+		fi
 	fi
 fi

@@ -3,7 +3,9 @@
 function fingerprints()
 {
 	local file="${1:-$HOME/.ssh/authorized_keys}"
-	( while read l; do
-		[[ -n $l && ${l###} = $l ]] && ssh-keygen -lf /dev/stdin <<<$l
-	done < "$file" ) | column -t
+	( \
+		while read l; do
+			[[ -n $l && ${l###} = $l ]] && ssh-keygen -lf /dev/stdin <<<$l
+		done < "$file" \
+	) | column -t
 }
