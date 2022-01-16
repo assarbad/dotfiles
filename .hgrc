@@ -9,6 +9,9 @@ users = root, oliver, jobber
 diff = diff --git
 last = log --limit 10
 
+# [pager]
+# pager = delta --dark
+
 [extensions]
 color=
 extdiff=
@@ -20,9 +23,9 @@ record=
 schemes=
 shelve=
 transplant=
-topic=
 hgext.bookmarks=
-hggit=
+topic=!
+hggit=!
 #commitsigs=
 #
 #[gpg]
@@ -34,8 +37,8 @@ hggit=
 #gnupg.path = gpg2
 #gnupg.flags = --local-user oliver@assarbad.net
 
-[tortoisehg]
-vdiff = meld
+# [tortoisehg]
+# vdiff = meld
 
-[extdiff]
-cmd.meld = meld
+# [extdiff]
+# cmd.meld = meld
