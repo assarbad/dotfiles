@@ -11,6 +11,9 @@
 	grep = auto
 # [core]
 # 	pager = delta --dark
+# 	editor = \"C:\\Program Files\\Notepad++\\notepad++.exe\" -multiInst -notabbar -nosession -noPlugin
+# [gpg]
+# 	program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
 # [interactive]
 # 	diffFilter = delta --dark --color-only
 [delta]
