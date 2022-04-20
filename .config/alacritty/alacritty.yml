@@ -7,6 +7,7 @@ window:
   #     - full: Borders and title bar
   #     - none: Neither borders nor title bar
   decorations: full
+  opacity: 1.0
   title: Terminal
   class:
     instance: Alacritty
@@ -188,7 +189,6 @@ bell:
   animation: EaseOutExpo
   duration: 0
   color: '0xcccccc'
-background_opacity: 1.0
 cursor:
   # Values for `style`:
   #   - ▇ Block
