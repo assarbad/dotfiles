@@ -2,4 +2,7 @@
 
 if type df > /dev/null 2>&1; then
 	alias df='df -x tmpfs -x squashfs -x overlay'
+	if type watch > /dev/null 2>&1; then
+		alias wdf='watch -n 1 df -x tmpfs -x squashfs -x overlay'
+	fi
 fi
