@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+function rionice
+{
+	[[ -t 1 ]] && { \
+		local cG="\033[1;32m"; \
+		local cR="\033[1;31m"; \
+		local cB="\033[1;34m"; \
+		local cW="\033[1;37m"; \
+		local cY="\033[1;33m"; \
+		local cG_="\033[0;32m"; \
+		local cR_="\033[0;31m"; \
+		local cB_="\033[0;34m"; \
+		local cW_="\033[0;37m"; \
+		local cY_="\033[0;33m"; \
+		local cZ="\033[0m"; \
+	}
+	for tool in ionice pgrep renice sudo; do type $tool > /dev/null 2>&1 || { echo -e "${cR}ERROR:${cZ} couldn't find '$tool' which is required by this function."; return; }; done
+	for procname in "$@"; do
+		local PIDS=$(pgrep "$procname")
+		echo -e "${cG}Process${cZ}: ${cW}$PIDS${cZ}"
+		for pid in $PIDS; do
+			sudo bash -c "( set -x; renice -n -10 -p $pid; ionice -c 3 -p $pid )"
+		done
+	done
+}
