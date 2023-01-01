@@ -21,7 +21,7 @@ function rionice
 		local PIDS=$(pgrep "$procname")
 		echo -e "${cG}Process${cZ}: ${cW}$PIDS${cZ}"
 		for pid in $PIDS; do
-			sudo bash -c "( set -x; renice -n -10 -p $pid; ionice -c 3 -p $pid )"
+			sudo bash -c "( set -x; renice -n -10 -p $pid; ionice -c 2 -p $pid )"
 		done
 	done
 }
