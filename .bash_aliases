@@ -26,6 +26,7 @@ if [[ -e "/etc/debian_version" ]]; then
   alias autopurge='apt-get --purge autoremove'
   alias lp='command dpkg -l'
   alias lpg='command dpkg -l|grep -iE'
+  alias tfix='reset; stty sane; tput rs1; clear; echo -e "\033c"'
   if type "colordiff" > /dev/null 2>&1; then
     alias diff="command colordiff -u"
   else
