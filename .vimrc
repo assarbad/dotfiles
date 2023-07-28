@@ -79,6 +79,8 @@ set smartcase    " ... but only when typing all lowercase, otherwise case-sensit
 " ... and how to get rid of the highlighted search matches? Like so:
 nmap <leader>h :nohlsearch<CR>
 
+nmap <leader>h :nohlsearch<CR>
+
 " Follow and back in Vim help (from: Hacking Vim 7.2)
 nmap <buffer> <CR> <C-]>
 nmap <buffer> <BS> <C-T>
@@ -97,6 +99,10 @@ if has("patch-7.4-399")
 	set cryptmethod=blowfish2
 endif
 if version >= 700
+	" Only use pathogen on Vim 7.0 and up
+	" (https://github.com/tpope/vim-pathogen)
+	runtime bundle/vim-pathogen/autoload/pathogen.vim
+	execute pathogen#infect()
 	" https://github.com/tpope/vim-sensible
 	runtime! bundle/vim-sensible/plugin/sensible.vim
 	" Check for the undo persistence and if it has, disable it
@@ -111,8 +117,6 @@ if version >= 700
 		imap <F11> <C-o>:tabprevious <CR>
 		imap <F12> <C-o>:tabnext     <CR>
 	endif
-	" Only use pathogen on Vim 7.0 and up
-	execute pathogen#infect()
 	if has('autocmd')
 		autocmd FileType python inoremap :: <End>:
 		if has('statusline')

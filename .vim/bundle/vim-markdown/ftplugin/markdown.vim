@@ -1,7 +1,7 @@
 " Vim filetype plugin
 " Language:     Markdown
 " Maintainer:   Tim Pope <https://github.com/tpope/vim-markdown>
-" Last Change:  2019 Dec 05
+" Last Change:  2022 Oct 13
 
 if exists("b:did_ftplugin")
   finish
@@ -9,14 +9,21 @@ endif
 
 runtime! ftplugin/html.vim ftplugin/html_*.vim ftplugin/html/*.vim
 
+let s:keepcpo= &cpo
+set cpo&vim
+
 setlocal comments=fb:*,fb:-,fb:+,n:> commentstring=<!--%s-->
 setlocal formatoptions+=tcqln formatoptions-=r formatoptions-=o
 setlocal formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\|^\\s*[-*+]\\s\\+\\\|^\\[^\\ze[^\\]]\\+\\]:\\&^.\\{4\\}
 
 if exists('b:undo_ftplugin')
-  let b:undo_ftplugin .= "|setl cms< com< fo< flp<"
+  let b:undo_ftplugin .= "|setl cms< com< fo< flp< et< ts< sts< sw<"
 else
-  let b:undo_ftplugin = "setl cms< com< fo< flp<"
+  let b:undo_ftplugin = "setl cms< com< fo< flp< et< ts< sts< sw<"
+endif
+
+if get(g:, 'markdown_recommended_style', 1)
+  setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
 endif
 
 if !exists("g:no_plugin_maps") && !exists("g:no_markdown_maps")
@@ -28,7 +35,7 @@ if !exists("g:no_plugin_maps") && !exists("g:no_markdown_maps")
 endif
 
 function! s:NotCodeBlock(lnum) abort
-  return synIDattr(synID(a:lnum, 1, 1), 'name') !=# 'markdownCode'
+  return synIDattr(synID(a:lnum, 1, 1), 'name') !=# 'markdownCodeBlock'
 endfunction
 
 function! MarkdownFold() abort
@@ -78,5 +85,8 @@ if has("folding") && get(g:, "markdown_folding", 0)
   setlocal foldtext=MarkdownFoldText()
   let b:undo_ftplugin .= "|setl foldexpr< foldmethod< foldtext<"
 endif
+
+let &cpo = s:keepcpo
+unlet s:keepcpo
 
 " vim:set sw=2:
