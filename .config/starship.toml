@@ -1,70 +1,15 @@
 add_newline = false
 
-format = """
-$git_branch\
-$git_commit\
-$git_state\
-$git_status\
-$hg_branch\
-$docker_context\
-$cmake\
-$golang\
-$python\
-$ruby\
-$rust\
-$lua\
-$memory_usage\
-$env_var\
-$crystal\
-$cmd_duration\
-$custom\
-$line_break\
-$shlvl\
-$username\
-$hostname\
-:$directory\
-$jobs\
-$battery\
-$time\
-$status\
-$character"""
+format = '$all'
 
-aws.disabled = true
-#cmd_duration.disabled = true
-conda.disabled = true
-crystal.disabled = true
-custom.disabled = true
-dart.disabled = true
-docker_context.disabled = true
-dotnet.disabled = true
-elixir.disabled = true
-elm.disabled = true
-env_var.disabled = true
-erlang.disabled = true
-gcloud.disabled = true
-helm.disabled = true
-java.disabled = true
-jobs.disabled = true
-julia.disabled = true
-kubernetes.disabled = true
-#memory_usage.disabled = true
-nim.disabled = true
-nix_shell.disabled = true
-nodejs.disabled = true
-ocaml.disabled = true
-openstack.disabled = true
-package.disabled = true
-perl.disabled = true
-php.disabled = true
-purescript.disabled = true
-singularity.disabled = true
-status.disabled = true
-swift.disabled = true
-terraform.disabled = true
-time.disabled = true
-zig.disabled = true
+[aws]
+disabled = true
+
+[azure]
+disabled = true
 
 [battery]
+disabled = true
 full_symbol = ''
 charging_symbol = ''
 discharging_symbol = ''
@@ -73,29 +18,94 @@ discharging_symbol = ''
 threshold = 10
 style = 'bold red'
 
+[buf]
+disabled = true
+
+[bun]
+disabled = true
+
+[c]
+disabled = true
+
 [character]
 success_symbol = '\$'
 error_symbol = '\$'
 vicmd_symbol = ''
 
 [cmake]
+disabled = true
 format = '[$symbol$version]($style) '
 symbol = '喝'
 
 [cmd_duration]
+disabled = true
 format = '[祥$duration]($style) '
+
+[cobol]
+disabled = true
+
+[conda]
+disabled = true
+
+[container]
+disabled = true
+
+[crystal]
+disabled = true
+
+#[custom]
+#disabled = true
+
+[daml]
+disabled = true
+
+[dart]
+disabled = true
+
+[deno]
+disabled = true
+
+[docker_context]
+disabled = true
 
 [directory]
 format = '[$path]($style)[$read_only]($read_only_style)'
 style = 'bold green'
 
-[line_break]
+[dotnet]
+
+[elixir]
+disabled = true
+
+[elm]
+disabled = true
+
+[env_var]
+disabled = true
+
+[erlang]
+disabled = true
+
+[fennel]
+disabled = true
+
+[fill]
+disabled = true
+
+[fossil_branch]
+disabled = true
+
+[gcloud]
 disabled = true
 
 [git_branch]
-format = '[[$symbol](bold $style)$branch](dimmed $style) '
+format = '[[$symbol](bold $style)$branch]($style) '
 symbol = ''
-style = 'purple'
+style = 'bright-purple'
+
+[git_commit]
+
+[git_metrics]
 
 [git_state]
 rebase = 'ﲐ'
@@ -108,19 +118,56 @@ disabled = true
 conflicted = ''
 
 [golang]
+disabled = true
 format = '[$symbol$version]($style) '
 symbol = ''
 
+[gradle]
+disabled = true
+
+[guix_shell]
+disabled = true
+
+[haskell]
+disabled = true
+
+[haxe]
+disabled = true
+
+[helm]
+disabled = true
+
 [hg_branch]
-disabled = false
-format = '[[$symbol](bold $style)$branch](dimmed $style) '
+disabled = true
+format = '[[$symbol](bold $style)$branch]($style) '
 symbol = ''
-style = 'purple'
+style = 'bright-purple'
 
 [hostname]
 ssh_only = true
 format = '[@$hostname]($style)'
 style = 'bold dimmed blue'
+
+[java]
+disabled = true
+
+[jobs]
+disabled = true
+
+[julia]
+disabled = true
+
+[kotlin]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[line_break]
+disabled = true
+
+[localip]
+disabled = true
 
 [lua]
 format = '[$symbol$version]($style) '
@@ -128,16 +175,68 @@ symbol = ''
 
 [memory_usage]
 threshold = 80
-disabled = false
+disabled = true
 format = '$symbol [${ram}( | ${swap})]($style) '
 symbol = ''
+
+[meson]
+disabled = true
+
+[nim]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[ocaml]
+disabled = true
+
+[opa]
+disabled = true
+
+[openstack]
+disabled = true
+
+[os]
+disabled = true
+
+[package]
+#disabled = true
+
+[perl]
+disabled = true
+
+[php]
+disabled = true
+
+[pijul_channel]
+disabled = true
+
+[pulumi]
+disabled = true
+
+[purescript]
+disabled = true
 
 [python]
 format = '[[${symbol}](green bold)${pyenv_prefix}${version}( \($virtualenv\))]($style) '
 style = 'yellow dimmed'
 symbol = ''
 
+[raku]
+disabled = true
+
+[red]
+disabled = true
+
+[rlang]
+disabled = true
+
 [ruby]
+disabled = true
 format = '[$symbol$version]($style) '
 symbol = ''
 
@@ -146,6 +245,12 @@ format = '[$symbol$version]($style) '
 #symbol = ''
 symbol = '🦀'
 
+[scala]
+disabled = true
+
+[shell]
+disabled = true
+
 [shlvl]
 disabled = false
 threshold = 2
@@ -153,8 +258,43 @@ format = '[$symbol$shlvl]($style) '
 symbol = ''
 style = 'blue'
 
+[singularity]
+disabled = true
+
+[solidity]
+disabled = true
+
+[spack]
+disabled = true
+
+[status]
+disabled = true
+
+[sudo]
+
+[swift]
+disabled = true
+
+[terraform]
+disabled = true
+
+[time]
+disabled = true
+
 [username]
 #show_always = true
 format = '[$user]($style)'
 style_user = 'bold blue'
 style_root = 'bold red'
+
+[vagrant]
+disabled = true
+
+[vlang]
+disabled = true
+
+[vcsh]
+disabled = true
+
+[zig]
+disabled = true

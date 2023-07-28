@@ -1,6 +1,8 @@
 [ui]
 username = Oliver Schneider <oliver@assarbad.net>
 paginate = never
+askusername = False
+# merge = winmergeu
 
 [trusted]
 users = root, oliver, jobber
@@ -9,24 +11,25 @@ users = root, oliver, jobber
 diff = diff --git
 last = log --limit 10
 
-# [pager]
+[pager]
 # pager = delta --dark
 
 [extensions]
 color=
+# commitsigs=
 extdiff=
-fetch=
+hgext.bookmarks=
+hggit=
+largefiles =
 mq=
+pager=
 purge=
 rebase=
-record=
+relink =
 schemes=
 shelve=
+topic=
 transplant=
-hgext.bookmarks=
-topic=!
-hggit=!
-#commitsigs=
 #
 #[gpg]
 #cmd = gpg2
@@ -38,7 +41,11 @@ hggit=!
 #gnupg.flags = --local-user oliver@assarbad.net
 
 # [tortoisehg]
-# vdiff = meld
+# vdiff = winmergeu
+# editor = notepad++
 
-# [extdiff]
-# cmd.meld = meld
+[extdiff]
+cmd.meld = meld
+
+cmd.delta = delta
+opts.delta = --dark

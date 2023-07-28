@@ -16,3 +16,6 @@ if [[ -z "$NO_PUBKEY_FETCH" ]] && [[ ! -e "$BASHRCDIR/.gnupg/.no-pubkey-fetch" ]
 		fi
 	fi
 fi
+if [[ -n "$COMSPEC" ]]; then
+	alias gpg='"/c/Program Files (x86)/GnuPG/bin/gpg.exe"'
+fi

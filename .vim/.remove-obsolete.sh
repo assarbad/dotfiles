@@ -7,6 +7,8 @@ for i in \
 	.vim/snippets \
 	.vim/bundle/nerdcommenter \
 	.vim/doc \
+	.vim/color \
+	.vim/colors \
 	.vim/bundle/SimpylFold \
 	.vim/bundle/vim-watchdog \
 	.vim/bundle/vim-airline \

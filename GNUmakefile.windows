@@ -1,0 +1,20 @@
+FILES_TO_CONSIDER:=\
+	.bashrc.d/gpg \
+	.config/flake8 \
+	.config/starship.toml \
+	.cargo/config \
+	.gnupg/gpg.conf \
+	.gnupg/.no-pubkey-fetch \
+	.bashrc \
+	.gitconfig \
+	.hgrc \
+	.inputrc \
+	.vimrc
+
+install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER))
+
+$(HOME)/%: %
+	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
+	cp -f "$<" "$@"
+
+.PHONY: install

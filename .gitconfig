@@ -1,23 +1,23 @@
 [user]
 	email = oliver@assarbad.net
 	name = Oliver Schneider
-# 	signingkey = C779D8290E88590F
-# [commit]
-# 	gpgsign = true
+	signingkey = C779D8290E88590F
+[commit]
+	gpgsign = true
 [push]
 	default = simple
+	autoSetupRemote = true
 [color]
 	ui = auto
 	grep = auto
 [core]
 	autocrlf = false
 	longpaths = true
-# 	pager = delta --dark
+	fsmonitor = false
+	pager = delta --dark
 # 	editor = \"C:\\Program Files\\Notepad++\\notepad++.exe\" -multiInst -notabbar -nosession -noPlugin
-# [gpg]
-# 	program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
-# [interactive]
-# 	diffFilter = delta --dark --color-only
+[interactive]
+	diffFilter = delta --dark --color-only
 [delta]
 	plus-style = syntax "#012800"
 	minus-style = normal "#340001"
@@ -66,5 +66,13 @@
 	smeset = submodule foreach --recursive git reset
 	smetch = submodule foreach --recursive git fetch
 	smull = submodule foreach --recursive git pull
+	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
+	delta = diff
 [init]
 	defaultBranch = main
+[gpg]
+	program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
+[help]
+	autocorrect = 0
+[advice]
+	addIgnoredFile = false

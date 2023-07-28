@@ -1,0 +1,13 @@
+./bundle/vim-surround: https://github.com/tpope/vim-surround.git
+./bundle/vim-sleuth: https://github.com/tpope/vim-sleuth.git
+./bundle/vim-tmux: https://github.com/tmux-plugins/vim-tmux.git
+./bundle/vim-markdown: https://github.com/tpope/vim-markdown.git
+./bundle/vim-commentary: https://github.com/tpope/vim-commentary.git
+./bundle/vim-eunuch: https://github.com/tpope/vim-eunuch.git
+./bundle/nerdtree: https://github.com/preservim/nerdtree.git
+./bundle/ansible-vim: https://github.com/pearofducks/ansible-vim.git
+./bundle/vim-repeat: https://github.com/tpope/vim-repeat.git
+./bundle/vim-tbone: https://github.com/tpope/vim-tbone.git
+./bundle/vim-pathogen: https://github.com/tpope/vim-pathogen.git
+./bundle/nginx.vim: https://github.com/chr4/nginx.vim
+./bundle/vim-sensible: https://github.com/tpope/vim-sensible.git
