@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
+ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
+
 SHELL := $(shell /usr/bin/env which bash)
 TGTDIR ?= $(HOME)
 TGTDIR := $(realpath $(TGTDIR))
@@ -103,3 +105,29 @@ info:
 .NOTPARALLEL: install test nodel-test
 .INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
 .ONESHELL: help
+
+else # on Windows
+
+FILES_TO_CONSIDER:=\
+	.bashrc.d/gpg \
+	.config/flake8 \
+	.config/starship.toml \
+	.cargo/config \
+	.gnupg/gpg.conf \
+	.gnupg/.no-pubkey-fetch \
+	.bashrc \
+	.gitconfig \
+	.hgrc \
+	.inputrc \
+	.vimrc \
+	Mercurial.ini
+
+install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER))
+
+$(HOME)/%: %
+	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
+	cp -f "$<" "$@"
+
+.PHONY: install
+
+endif

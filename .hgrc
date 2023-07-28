@@ -2,7 +2,6 @@
 username = Oliver Schneider <oliver@assarbad.net>
 paginate = never
 askusername = False
-# merge = winmergeu
 
 [trusted]
 users = root, oliver, jobber
@@ -30,19 +29,15 @@ schemes=
 shelve=
 topic=
 transplant=
-#
+
 #[gpg]
 #cmd = gpg2
-#key = 0E88590F
-#
+#key = C779D8290E88590F
+
 #[commitsigs]
 #scheme = gnupg
 #gnupg.path = gpg2
 #gnupg.flags = --local-user oliver@assarbad.net
-
-# [tortoisehg]
-# vdiff = winmergeu
-# editor = notepad++
 
 [extdiff]
 cmd.meld = meld
