@@ -4,10 +4,11 @@
 [[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 DOTFIROOT="${DOTFIROOT:-$(pwd)}"
 LOCALROOT="$HOME/.local/dotfiles"
-TGTDIR=${TGTDIR:-$HOME}
-HOSTNAME=$(hostname -f)
-HOST=$(hostname -s)
-DOMAIN=${HOSTNAME//$HOST/_}
+readonly TGTDIR=${TGTDIR:-$HOME}
+readonly IAM=$(whoami)
+readonly HOSTNAME=$(hostname -f)
+readonly HOST=$(hostname -s)
+readonly DOMAIN=${HOSTNAME//$HOST/_}
 ###############################################################################
 ###############################################################################
 ### Logic:
@@ -19,6 +20,27 @@ DOMAIN=${HOSTNAME//$HOST/_}
 ###   -> custom scripts get executed
 ###############################################################################
 ###############################################################################
+
+function debug
+{
+	local -r FMTSTR="$1"
+	shift
+	[[ -v DEBUG ]] && printf >&2 "${cW}[DBG]${cZ} $FMTSTR\n" "$@"
+}
+
+function error
+{
+	local -r FMTSTR="$1"
+	shift
+	printf >&2 "${cR}[ERROR]${cZ} $FMTSTR\n" "$@"
+}
+
+function info
+{
+	local -r FMTSTR="$1"
+	shift
+	printf >&2 "${cW}[INFO]${cZ} $FMTSTR\n" "$@"
+}
 
 # Simply copies files from source to target. This observes the given mode, i.e.
 # whether only newer or all files should be copied.
@@ -55,6 +77,7 @@ function copy_file
 			exit 1
 			;;
 	esac
+	debug "srcname=%q -> tgtname=%q" "$SRCNAME" "$TGTNAME"
 	((COPY)) || return
 	if [[ "${RELNAME%/*}" == "${RELNAME##*/}" ]]; then
 		echo -en "  ${cZ}${cW}${RELNAME}${cZ}"
@@ -74,109 +97,111 @@ function copy_file
 	fi
 }
 
+function execute_customization
+{
+	local -r DIR="$1"
+	local -r TYPE="$2"
+	local -r FMTSTR="$3"
+	shift 3
+	debug "$FMTSTR" "$@"
+	if [[ -x "$DIR/$TYPE" && ! -d "$DIR/$TYPE" ]]; then
+		info "Executing customization script: %s/${cW}%s${cZ}" "${DIR##*/}" "$TYPE"
+		TGTDIR="$TGTDIR" "$DIR/$TYPE" || { error "${cR}something failed with %s/%s?!${cZ}" "${DIR##*/}" "$TYPE"; }
+	fi
+
+}
+
+function determine_dir_by_precedence
+{
+	local -r BASEDIR="$1"
+	local -r DEFAULT="$2"
+	shift 2
+	for name in "$IAM@$HOST" "$IAM@$HOSTNAME" "$HOST" "$HOSTNAME" "$@"; do
+		if [[ -d "$BASEDIR/$name" ]]; then
+			D="$BASEDIR/$name"
+			debug "D=%q" "$D"
+			return
+		fi
+	done
+	D="$BASEDIR/$DEFAULT"
+	debug "D=%q (fallback)" "$D"
+}
+
+function execute_unconditional_override
+{
+	local D
+	determine_dir_by_precedence "$@"
+	if [[ -n "$D" && -d "$D" ]]; then
+		debug "unconditional overrides (D=%q)" "$D"
+		if [[ -x "${D%%/*}/ALL" && ! -d "${D%%/*}/ALL" ]]; then
+			STEP="pre" execute_customization "${D%%/*}" "ALL" "unconditional overrides (pre)"
+		elif [[ -x "${D%%/*}/ALL.sh" && ! -d "${D%%/*}/ALL.sh" ]]; then
+			STEP="pre" execute_customization "${D%%/*}" "ALL.sh" "unconditional overrides (pre)"
+		fi
+		info "Overriding from ${cW}local${cZ} files (${cW}%s${cZ})" "${D#$HOME/}"
+		while read fname; do
+			copy_file always "${fname##$D/}" "$TGTDIR" "$D"
+		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
+		if [[ -x "${D%%/*}/ALL" && ! -d "${D%%/*}/ALL" ]]; then
+			STEP="post" execute_customization "${D%%/*}" "ALL" "unconditional overrides (post)"
+		elif [[ -x "${D%%/*}/ALL.sh" && ! -d "${D%%/*}/ALL.sh" ]]; then
+			STEP="post" execute_customization "${D%%/*}" "ALL.sh" "unconditional overrides (post)"
+		fi
+	fi
+}
+
+function execute_appends
+{
+	local D
+	determine_dir_by_precedence "$@"
+	debug "items to append (D=%q)" "$D"
+	if [[ -n "$D" && -d "$D" ]]; then
+		echo -e "Appending from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
+		while read fname; do
+			X="${fname##$D/}"
+			if [[ -e "$TGTDIR/$X" ]]; then
+				if grep -q "Appended: ${D#$HOME/}:$X" "$TGTDIR/$X"; then
+					# Was already appended, so check whether the combined file is older than any of its sources
+					if [[ "$TGTDIR/$X" -ot "$fname" ]] || [[ "$TGTDIR/$X" -ot "$X" ]]; then
+						copy_file always "$X" "$TGTDIR"
+					else
+						echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (up-to-date)"
+						continue
+					fi
+				fi
+				echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
+				if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
+					echo -ne "${cG}[OK]${cZ}"
+					if echo "# Appended: ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
+						echo -e "${cG} + [marked]${cZ}"
+					else
+						echo ""
+					fi
+				else
+					echo -e "  ${cR}appending failed: $?${cZ}"
+				fi
+			fi
+		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
+	fi
+}
+
 function handle_specific_overrides
 {
 	local SRCBASEDIR="$1"
 	[[ -d "$SRCBASEDIR" ]] || return
-	if [[ -d "$SRCBASEDIR/custom/." ]]; then
-		if [[ -x "$SRCBASEDIR/custom/PRE" ]]; then
-			echo -e "Executing customization script: ${cW}PRE${cZ}"
-			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/PRE" || echo -e "\t${cR}something failed?!${cZ}"
-		fi
-	fi
+	STEP="pre" execute_customization "$SRCBASEDIR/custom" "PRE" "custom overrides (pre)"
 	# Unconditional overrides
-	if [[ -d "$SRCBASEDIR/override/." ]]; then
-		local D=""
-		if [[ -d "$SRCBASEDIR/override/$(whoami)@$HOST/." ]]; then
-			D="$SRCBASEDIR/override/$(whoami)@$HOST"
-		elif [[ -d "$SRCBASEDIR/override/$(whoami)@$HOSTNAME/." ]]; then
-			D="$SRCBASEDIR/override/$(whoami)@$HOSTNAME"
-		elif [[ -d "$SRCBASEDIR/override/$HOST/." ]]; then
-			D="$SRCBASEDIR/override/$HOST"
-		elif [[ -d "$SRCBASEDIR/override/$HOSTNAME/." ]]; then
-			D="$SRCBASEDIR/override/$HOSTNAME"
-		fi
-		[[ -z "$D" ]] && D="$SRCBASEDIR/override/$DOMAIN"
-		if [[ -d "$D/." ]]; then
-			echo -e "Overriding from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
-			while read fname; do
-				copy_file always "${fname##$D/}" "$TGTDIR" "$D"
-			done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
-		fi
-	fi
-	if [[ -d "$SRCBASEDIR/append/." ]]; then
-		local D=""
-		if [[ -d "$SRCBASEDIR/append/$(whoami)@$HOST/." ]]; then
-			D="$SRCBASEDIR/append/$(whoami)@$HOST"
-		elif [[ -d "$SRCBASEDIR/append/$(whoami)@$HOSTNAME/." ]]; then
-			D="$SRCBASEDIR/append/$(whoami)@$HOSTNAME"
-		elif [[ -d "$SRCBASEDIR/append/$HOST/." ]]; then
-			D="$SRCBASEDIR/append/$HOST"
-		elif [[ -d "$SRCBASEDIR/append/$HOSTNAME/." ]]; then
-			D="$SRCBASEDIR/append/$HOSTNAME"
-		fi
-		[[ -z "$D" ]] && D="$SRCBASEDIR/append/$DOMAIN"
-		if [[ -d "$D/." ]]; then
-			echo -e "Appending from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
-			while read fname; do
-				X="${fname##$D/}"
-				if [[ -e "$TGTDIR/$X" ]]; then
-					if grep -q "Appended: ${D#$HOME/}:$X" "$TGTDIR/$X"; then
-						# Was already appended, so check whether the combined file is older than any of its sources
-						if [[ "$TGTDIR/$X" -ot "$fname" ]] || [[ "$TGTDIR/$X" -ot "$X" ]]; then
-							copy_file always "$X" "$TGTDIR"
-						else
-							echo -e "  ${cY}Skipping ${cZ}${X%/*}/${cW}${X##*/}${cZ} (up-to-date)"
-							continue
-						fi
-					fi
-					echo -ne "  ${cZ}${X%/*}/${cW}${X##*/}${cZ} "
-					if cat "$fname" >> "$TGTDIR/$X" 2> /dev/null; then
-						echo -ne "${cG}[OK]${cZ}"
-						if echo "# Appended: ${D#$HOME/}:$X" >> "$TGTDIR/$X"; then
-							echo -e "${cG} + [marked]${cZ}"
-						else
-							echo ""
-						fi
-					else
-						echo -e "  ${cR}appending failed: $?${cZ}"
-					fi
-				fi
-			done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
-		fi
-	fi
-	if [[ -d "$SRCBASEDIR/custom/." ]]; then
-		if [[ -x "$SRCBASEDIR/custom/ALL" ]]; then
-			echo -e "Executing customization script: ${cW}ALL${cZ}"
-			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/ALL" || echo -e "\t${cR}something failed?!${cZ}"
-		fi
-		if [[ -x "$SRCBASEDIR/custom/$(whoami)@$HOST" ]]; then
-			SCR="$SRCBASEDIR/custom/$(whoami)@$HOST"
-		elif [[ -x "$SRCBASEDIR/custom/$(whoami)@$HOSTNAME" ]]; then
-			SCR="$SRCBASEDIR/custom/$(whoami)@$HOSTNAME"
-		elif [[ -x "$SRCBASEDIR/custom/$HOST" ]]; then
-			SCR="$SRCBASEDIR/custom/$HOST"
-		elif [[ -x "$SRCBASEDIR/custom/$HOSTNAME" ]]; then
-			SCR="$SRCBASEDIR/custom/$HOSTNAME"
-		fi
-		[[ -z "$SCR" ]] && SCR="$SRCBASEDIR/custom/$DOMAIN"
-		if [[ -x "$SCR" ]]; then
-			echo -e "Executing customization script: ${cW}${SCR##*/}${cZ}"
-			env TGTDIR="$TGTDIR" $SCR || echo -e "\t${cR}something failed?!${cZ}"
-		fi
-	fi
-	if [[ -d "$SRCBASEDIR/custom/." ]]; then
-		if [[ -x "$SRCBASEDIR/custom/POST" ]]; then
-			echo -e "Executing customization script: ${cW}POST${cZ}"
-			env TGTDIR="$TGTDIR" "$SRCBASEDIR/custom/POST" || echo -e "\t${cR}something failed?!${cZ}"
-		fi
-	fi
+	execute_unconditional_override "$SRCBASEDIR/override" "$DOMAIN"
+	# Appends
+	execute_appends "$SRCBASEDIR/append" "$DOMAIN"
+	STEP="main" execute_customization "$SRCBASEDIR/custom" "ALL" "custom overrides (main)"
+	STEP="post" execute_customization "$SRCBASEDIR/custom" "POST" "custom overrides (post)"
 }
 
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh)
+		GNUmakefile|GNUmakefile.*|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh)
 			;;
 		*)
 			copy_file newer "$fname" "$TGTDIR"

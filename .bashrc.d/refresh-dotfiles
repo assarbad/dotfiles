@@ -10,8 +10,18 @@ function refresh-dotfiles
 	local UPSTREAM_DOTFILES="$UPSTREAM_BASE/.dotfiles"
 	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
-	if [[ -d "$HOME/.local/dotfiles/.hg" ]] && [[ -x "$HOME/.local/dotfiles/refresh-dotfiles" ]]; then
-		[[ "$1" == "--nopull" ]] || ([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$HOME/.local/dotfiles" && ./refresh-dotfiles)
+	if [[ -d "$UPSTREAM_LOCDOTFI/.hg" ]]; then
+		if [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
+			if [[ "$1" != "--nopull" ]]; then
+				([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
+			fi
+		fi
+	elif [[ -d "$UPSTREAM_LOCDOTFI/.git" ]] && [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
+		if [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
+			if [[ "$1" != "--nopull" ]]; then
+				([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
+			fi
+		fi
 	fi
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
@@ -20,7 +30,8 @@ function refresh-dotfiles
 	fi
 	local GMAKE=make
 	type gmake 2> /dev/null && GMAKE=gmake
-	[[ -e "$MYBRCD/GNUmakefile" ]] && \
+	if [[ -e "$MYBRCD/GNUmakefile" ]]; then
 		( $GMAKE --no-print-directory -C "$MYBRCD" TGTDIR="$TGTDIR" install ) && \
-		{ source "$TGTDIR/.bashrc"; cd -; }
+			{ source "$TGTDIR/.bashrc"; cd -; }
+	fi
 }
