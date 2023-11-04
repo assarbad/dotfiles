@@ -18,10 +18,10 @@ function rionice
 	}
 	for tool in ionice pgrep renice sudo; do type $tool > /dev/null 2>&1 || { echo -e "${cR}ERROR:${cZ} couldn't find '$tool' which is required by this function."; return; }; done
 	for procname in "$@"; do
-		local PIDS=$(pgrep "$procname")
-		echo -e "${cG}Process${cZ}: ${cW}$PIDS${cZ}"
-		for pid in $PIDS; do
-			sudo bash -c "( set -x; renice -n -10 -p $pid; ionice -c 2 -p $pid )"
-		done
+		local -a PIDS=( $(pgrep "$procname") )
+		if [[ -n "$PIDS" ]]; then
+			printf "${cG}Process${cZ} [${cY}%s${cZ}]: ${cW}%s${cZ}\n" "$procname" "$pid"
+			sudo bash -c "for pid in ${PIDS[*]}; do ( set -x; renice -n -10 -p \$pid; ionice -c 2 -p \$pid ); done"
+		fi
 	done
 }
