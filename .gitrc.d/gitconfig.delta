@@ -1,0 +1,9 @@
+[core]
+	pager = delta --dark
+[interactive]
+	diffFilter = delta --dark --color-only
+[delta]
+	plus-style = syntax "#012800"
+	minus-style = normal "#340001"
+	line-numbers = true
+	syntax-theme = Monokai Extended

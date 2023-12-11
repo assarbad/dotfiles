@@ -4,6 +4,7 @@
 	signingkey = C779D8290E88590F
 [commit]
 	gpgsign = true
+	template = ~/.gitmessage
 [push]
 	default = simple
 	autoSetupRemote = true
@@ -14,15 +15,6 @@
 	autocrlf = false
 	longpaths = true
 	fsmonitor = false
-	pager = delta --dark
-# 	editor = \"C:\\Program Files\\Notepad++\\notepad++.exe\" -multiInst -notabbar -nosession -noPlugin
-[interactive]
-	diffFilter = delta --dark --color-only
-[delta]
-	plus-style = syntax "#012800"
-	minus-style = normal "#340001"
-	line-numbers = true
-	syntax-theme = Monokai Extended
 [log]
 	date = iso
 	decorate = short
@@ -70,9 +62,21 @@
 	delta = diff
 [init]
 	defaultBranch = main
-[gpg]
-#	program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
 [help]
 	autocorrect = 0
 [advice]
 	addIgnoredFile = false
+[submodule]
+	fetchJobs = 8
+[includeIf "onbranch:professional"]
+	path = ~/.gitrc.d/gitconfig.work
+[include]
+	path = ~/.gitrc.d/gitconfig.LOCAL
+[includeIf "hasconfig:remote.*.url:bogus://windows/**"]
+	path = ~/.gitrc.d/gitconfig.windows
+[includeIf "hasconfig:remote.*.url:bogus://unix/**"]
+	path = ~/.gitrc.d/gitconfig.unix
+[includeIf "hasconfig:remote.*.url:bogus://has-git-delta/**"]
+	path = ~/.gitrc.d/gitconfig.delta
+[includeIf "hasconfig:remote.*.url:bogus://has-git-lfs/**"]
+	path = ~/.gitrc.d/gitconfig.lfs

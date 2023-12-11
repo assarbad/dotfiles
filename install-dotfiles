@@ -201,7 +201,7 @@ function handle_specific_overrides
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|GNUmakefile.*|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh)
+		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh)
 			;;
 		*)
 			copy_file newer "$fname" "$TGTDIR"
@@ -217,6 +217,12 @@ if [[ -d "$LOCALROOT/.hg" ]]; then
 fi
 if [[ -x "$DOTFIROOT/.vim/.remove-obsolete.sh" ]]; then
 	env TGTDIR="$TGTDIR" "$DOTFIROOT/.vim/.remove-obsolete.sh"
+fi
+if [[ ! -d "$DOTFIROOT/.bazaar" && -d "$TGTDIR/.bazaar" ]]; then # no longer in use
+	rm -rf "$TGTDIR/.bazaar"
+fi
+if [[ -f "$TGTDIR/Mercurial.ini" && -z "$COMSPEC" ]]; then # remove previously copied Mercurial.ini
+	rm -f "$TGTDIR/Mercurial.ini"
 fi
 
 # Fix the .gnupg/.ssh file/folder permissions

@@ -99,10 +99,6 @@ if has("patch-7.4-399")
 	set cryptmethod=blowfish2
 endif
 if version >= 700
-	" Only use pathogen on Vim 7.0 and up
-	" (https://github.com/tpope/vim-pathogen)
-	runtime bundle/vim-pathogen/autoload/pathogen.vim
-	execute pathogen#infect()
 	" https://github.com/tpope/vim-sensible
 	runtime! bundle/vim-sensible/plugin/sensible.vim
 	" Check for the undo persistence and if it has, disable it
@@ -117,6 +113,12 @@ if version >= 700
 		imap <F11> <C-o>:tabprevious <CR>
 		imap <F12> <C-o>:tabnext     <CR>
 	endif
+	try
+		" Only use pathogen on Vim 7.0 and up
+		" (https://github.com/tpope/vim-pathogen)
+		execute pathogen#infect()
+	catch
+	endtry
 	if has('autocmd')
 		autocmd FileType python inoremap :: <End>:
 		if has('statusline')

@@ -3,33 +3,6 @@ username = Oliver Schneider <oliver@assarbad.net>
 paginate = never
 askusername = False
 
-[trusted]
-users = root, oliver, jobber
-
-[alias]
-diff = diff --git
-last = log --limit 10
-
-[pager]
-# pager = delta --dark
-
-[extensions]
-color=
-# commitsigs=
-extdiff=
-hgext.bookmarks=
-hggit=
-largefiles =
-mq=
-pager=
-purge=
-rebase=
-relink =
-schemes=
-shelve=
-topic=
-transplant=
-
 #[gpg]
 #cmd = gpg2
 #key = C779D8290E88590F
@@ -39,8 +12,35 @@ transplant=
 #gnupg.path = gpg2
 #gnupg.flags = --local-user oliver@assarbad.net
 
+[trusted]
+users = root, oliver, jobber
+
+[alias]
+diff = diff --git
+last = log --limit 10
+
+[extensions]
+color=
+extdiff=
+fetch=
+hgext.bookmarks=
+hggit=
+largefiles = 
+mq=
+purge=
+rebase=
+record=
+relink =
+schemes=
+shelve=
+topic=
+transplant=
+
+[tortoisehg]
+vdiff = winmergeu
+editor = notepad++
+
 [extdiff]
 cmd.meld = meld
-
 cmd.delta = delta
 opts.delta = --dark

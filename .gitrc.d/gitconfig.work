@@ -1,0 +1,2 @@
+[include]
+	path = ~/.gitrc.d/gitconfig.packcfg

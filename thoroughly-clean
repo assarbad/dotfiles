@@ -29,13 +29,17 @@ function clean_debian_derived
 		echo -e "${cW}INFO:${cZ} running ${cG}localepurge${cZ}"
 		localepurge
 	fi
-	for i in /etc/.pwd.lock /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/cache/apt/archives/partial/* /var/cache/debconf/*.dat-old; do
+	for i in /etc/.pwd.lock /var/log/*.{0..9} /var/log/*.{0..9}.gz /var/log/*.{0..9}.log /var/log/*.old /var/cache/apt/archives/partial/* /var/cache/debconf/*.dat-old; do
 		if [[ -e "$i" ]]; then
 			echo -e "${cW}INFO:${cZ} removing ${cW}$i${cZ}"
 			rm -f "$i"
 		fi
 	done
-	find /etc -type f -name '*.dpkg-old' -delete
+	if type journalctl > /dev/null 2>&1; then
+		echo -e "${cW}INFO:${cZ} running ${cG}journalctl --vacuum-time=1s${cZ}"
+		journalctl --vacuum-time=1s
+	fi
+	find /etc -type f \( -name '*.dpkg-old' -o -name '*.ucf-dist' \) -delete
 }
 
 function clean_freebsd
