@@ -15,7 +15,7 @@ else
 endif
 
 .DEFAULT: install
-.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) $(HOME)/.gitrc.d/gitconfig.LOCAL
+.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
 
 ifeq ($(strip $(DBG)),)
 endif
@@ -27,12 +27,14 @@ ifdef WEBDIR
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
-install: $(HOME)/.gitrc.d/gitconfig.LOCAL
+install: $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
+
+$(HOME)/.gitrc.d/gitconfig.OS: install.script
+	git config -f $@ --replace-all 'remote.@@@__OS__@@@.url' 'bogus://unix/'
 
 $(HOME)/.gitrc.d/gitconfig.LOCAL: install.script
-	git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://unix/'
-	D="$(shell which delta)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-delta/'; fi
-	D="$(shell which git-lfs)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-lfs/'; fi
+	D="$(shell which delta)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__delta__@@@.url' 'bogus://has-git-delta/'; fi
+	D="$(shell which git-lfs)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__lfs__@@@.url' 'bogus://has-git-lfs/'; fi
 
 install.script:
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
@@ -130,16 +132,18 @@ FILES_TO_CONSIDER:=\
 	.vimrc \
 	Mercurial.ini
 
-install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) $(HOME)/.gitrc.d/gitconfig.LOCAL
+install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
 
 $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
 	cp -f "$<" "$@"
 
+$(HOME)/.gitrc.d/gitconfig.OS:
+	git config -f $@ --replace-all 'remote.@@@__OS__@@@.url' 'bogus://windows/'
+
 $(HOME)/.gitrc.d/gitconfig.LOCAL:
-	git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://windows/'
-	D="$(shell which delta)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-delta/'; fi
-	D="$(shell which git-lfs)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-lfs/'; fi
+	D="$(shell which delta)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__delta__@@@.url' 'bogus://has-git-delta/'; fi
+	D="$(shell which git-lfs)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__lfs__@@@.url' 'bogus://has-git-lfs/'; fi
 
 .PHONY: install $(HOME)/.gitrc.d/gitconfig.LOCAL
 

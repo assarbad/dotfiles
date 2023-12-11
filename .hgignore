@@ -19,3 +19,5 @@ dotfile_installer.bin
 .vim/bundle/*/.github/**
 machine-specific/append/local/**
 machine-specific/custom/local/**
+.gitrc.d/gitconfig.LOCAL
+.gitrc.d/gitconfig.OS
