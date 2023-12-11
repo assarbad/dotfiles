@@ -15,7 +15,7 @@ else
 endif
 
 .DEFAULT: install
-.PHONY: all install info test nodel-test setup clean rebuild help $(APAYLOAD)
+.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) $(HOME)/.gitrc.d/gitconfig.LOCAL
 
 ifeq ($(strip $(DBG)),)
 endif
@@ -27,7 +27,14 @@ ifdef WEBDIR
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
-install:
+install: $(HOME)/.gitrc.d/gitconfig.LOCAL
+
+$(HOME)/.gitrc.d/gitconfig.LOCAL: install.script
+	git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://unix/'
+	D="$(shell which delta)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-delta/'; fi
+	D="$(shell which git-lfs)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-lfs/'; fi
+
+install.script:
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
 
@@ -113,6 +120,7 @@ FILES_TO_CONSIDER:=\
 	.config/flake8 \
 	.config/starship.toml \
 	.cargo/config \
+	$(wildcard .gitrc.d/gitconfig.*) \
 	.gnupg/gpg.conf \
 	.gnupg/.no-pubkey-fetch \
 	.bashrc \
@@ -122,12 +130,17 @@ FILES_TO_CONSIDER:=\
 	.vimrc \
 	Mercurial.ini
 
-install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER))
+install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) $(HOME)/.gitrc.d/gitconfig.LOCAL
 
 $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
 	cp -f "$<" "$@"
 
-.PHONY: install
+$(HOME)/.gitrc.d/gitconfig.LOCAL:
+	git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://windows/'
+	D="$(shell which delta)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-delta/'; fi
+	D="$(shell which git-lfs)"; if [ -n "$$D" && -f "$$D" ]; then git config -f $@ --add 'remote.@@@___@@@.url' 'bogus://has-git-lfs/'; fi
+
+.PHONY: install $(HOME)/.gitrc.d/gitconfig.LOCAL
 
 endif
