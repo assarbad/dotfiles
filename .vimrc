@@ -79,8 +79,6 @@ set smartcase    " ... but only when typing all lowercase, otherwise case-sensit
 " ... and how to get rid of the highlighted search matches? Like so:
 nmap <leader>h :nohlsearch<CR>
 
-nmap <leader>h :nohlsearch<CR>
-
 " Follow and back in Vim help (from: Hacking Vim 7.2)
 nmap <buffer> <CR> <C-]>
 nmap <buffer> <BS> <C-T>
