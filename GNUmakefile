@@ -1,21 +1,20 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
-DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+export DOTFILES := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 TGTDIR ?= $(HOME)
-TGTDIR := $(realpath $(TGTDIR))
-
-ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
-
-SHELL := $(shell /usr/bin/env which bash)
-APAYLOAD:=./append_payload
-NPD:=--no-print-directory
+export TGTDIR := $(realpath $(TGTDIR))
 ifneq ($(DEBUG),)
   DBG:=
 else
   DBG:=@
 endif
-
 .DEFAULT: install
+
+ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
+SHELL := $(shell /usr/bin/env which bash)
+APAYLOAD:=./append_payload
+NPD:=--no-print-directory
+
 .PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig
 
 ifeq ($(strip $(DBG)),)
@@ -111,6 +110,14 @@ info:
 
 else # on Windows
 
+ifeq ($(SHELL),C:/Program Files/Git/usr/bin/sh.exe)
+$(warning Converting paths to mixed form)
+export HOME:=$(shell /usr/bin/env cygpath -m "$$HOME")
+export DOTFILES:=$(shell /usr/bin/env cygpath -m "$$DOTFILES")
+export TGTDIR:=$(shell /usr/bin/env cygpath -m "$$TGTDIR")
+else
+$(warning SHELL=$(SHELL))
+endif
 FILES_TO_CONSIDER:=\
 	.bashrc.d/gpg \
 	.config/flake8 \
@@ -125,6 +132,7 @@ FILES_TO_CONSIDER:=\
 	.inputrc \
 	.vimrc \
 	Mercurial.ini
+$(warning Installing from DOTFILES=$(DOTFILES) into TGTDIR=$(TGTDIR) with HOME=$(HOME))
 
 install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig
 
