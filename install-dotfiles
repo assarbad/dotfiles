@@ -224,6 +224,9 @@ fi
 if [[ -f "$TGTDIR/Mercurial.ini" && -z "$COMSPEC" ]]; then # remove previously copied Mercurial.ini
 	rm -f "$TGTDIR/Mercurial.ini"
 fi
+if [[ -f "$TGTDIR/.config/alacritty/alacritty.yml" ]]; then # remove previously copied Mercurial.ini
+	rm -f "$TGTDIR/.config/alacritty/alacritty.yml"
+fi
 
 # Fix the .gnupg/.ssh file/folder permissions
 for i in .ssh/authorized_keys .gnupg/gpg.conf; do
