@@ -8,6 +8,7 @@
 [push]
 	default = simple
 	autoSetupRemote = true
+	followTags = true
 [color]
 	ui = auto
 	grep = auto
@@ -68,17 +69,8 @@
 	addIgnoredFile = false
 [submodule]
 	fetchJobs = 8
-[includeIf "hasconfig:remote.*.url:bogus://windows/"]
-	path = ~/.gitrc.d/gitconfig.windows
-[includeIf "hasconfig:remote.*.url:bogus://unix/"]
-	path = ~/.gitrc.d/gitconfig.unix
-[includeIf "hasconfig:remote.*.url:bogus://has-git-delta/"]
-	path = ~/.gitrc.d/gitconfig.delta
-[includeIf "hasconfig:remote.*.url:bogus://has-git-lfs/"]
-	path = ~/.gitrc.d/gitconfig.lfs
 [includeIf "onbranch:professional"]
 	path = ~/.gitrc.d/gitconfig.work
 [include]
-	path = ~/.gitrc.d/gitconfig.OS
-[include]
 	path = ~/.gitrc.d/gitconfig.LOCAL
+	path = ~/.gitrc.d/gitconfig.USER

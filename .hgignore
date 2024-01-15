@@ -15,9 +15,10 @@ syntax: glob
 dotfile_installer
 dotfile_installer.sh
 dotfile_installer.bin
+**.orig
 **/.git/
 .vim/bundle/*/.github/**
 machine-specific/append/local/**
 machine-specific/custom/local/**
 .gitrc.d/gitconfig.LOCAL
-.gitrc.d/gitconfig.OS
+.gitrc.d/gitconfig.USER

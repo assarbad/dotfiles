@@ -1,11 +1,12 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
+DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+TGTDIR ?= $(HOME)
+TGTDIR := $(realpath $(TGTDIR))
+
 ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
 
 SHELL := $(shell /usr/bin/env which bash)
-TGTDIR ?= $(HOME)
-TGTDIR := $(realpath $(TGTDIR))
-DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 APAYLOAD:=./append_payload
 NPD:=--no-print-directory
 ifneq ($(DEBUG),)
@@ -15,7 +16,7 @@ else
 endif
 
 .DEFAULT: install
-.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
+.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig
 
 ifeq ($(strip $(DBG)),)
 endif
@@ -27,18 +28,11 @@ ifdef WEBDIR
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
-install: $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
+install: install.script configure.gitconfig
 
-$(HOME)/.gitrc.d/gitconfig.OS: install.script
-	git config -f $@ --replace-all 'remote.@@@__OS__@@@.url' 'bogus://unix/'
-
-$(HOME)/.gitrc.d/gitconfig.LOCAL: install.script
-	D="$(shell which delta)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__delta__@@@.url' 'bogus://has-git-delta/'; fi
-	D="$(shell which git-lfs)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__lfs__@@@.url' 'bogus://has-git-lfs/'; fi
-
-install.script:
+install.script: $(DOTFILES)/install-dotfiles
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
-	$(DBG)cd $(DOTFILES) && ./install-dotfiles "$(TGTDIR)"
+	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./install-dotfiles
 
 ifndef WEBDIR
 setup: $(APAYLOAD) $(SETUPS)
@@ -132,19 +126,15 @@ FILES_TO_CONSIDER:=\
 	.vimrc \
 	Mercurial.ini
 
-install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) $(HOME)/.gitrc.d/gitconfig.LOCAL $(HOME)/.gitrc.d/gitconfig.OS
+install: $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig
 
 $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
 	cp -f "$<" "$@"
 
-$(HOME)/.gitrc.d/gitconfig.OS:
-	git config -f $@ --replace-all 'remote.@@@__OS__@@@.url' 'bogus://windows/'
-
-$(HOME)/.gitrc.d/gitconfig.LOCAL:
-	D="$(shell which delta)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__delta__@@@.url' 'bogus://has-git-delta/'; fi
-	D="$(shell which git-lfs)"; if [ -n "$$D" ] && [ -f "$$D" ]; then git config -f $@ --replace-all 'remote.@@@__lfs__@@@.url' 'bogus://has-git-lfs/'; fi
-
-.PHONY: install $(HOME)/.gitrc.d/gitconfig.LOCAL
+.PHONY: install $(HOME)/.gitrc.d/gitconfig.LOCAL configure.gitconfig
 
 endif
+
+configure.gitconfig: $(DOTFILES)/configure-gitconfig
+	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./configure-gitconfig

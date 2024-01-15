@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
-# This script now drives the 'install' goal for the GNUmakefile
+# This script now drives the 'install.script' goal for the GNUmakefile
 [[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 DOTFIROOT="${DOTFIROOT:-$(pwd)}"
 LOCALROOT="$HOME/.local/dotfiles"
@@ -201,7 +201,7 @@ function handle_specific_overrides
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh)
+		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh|configure-gitconfig)
 			;;
 		*)
 			copy_file newer "$fname" "$TGTDIR"
@@ -216,16 +216,19 @@ if [[ -d "$LOCALROOT/.hg" ]]; then
 	make -C "$LOCALROOT" > /dev/null 2>&1
 fi
 if [[ -x "$DOTFIROOT/.vim/.remove-obsolete.sh" ]]; then
-	env TGTDIR="$TGTDIR" "$DOTFIROOT/.vim/.remove-obsolete.sh"
+	( set -x; env TGTDIR="$TGTDIR" "$DOTFIROOT/.vim/.remove-obsolete.sh" )
 fi
 if [[ ! -d "$DOTFIROOT/.bazaar" && -d "$TGTDIR/.bazaar" ]]; then # no longer in use
-	rm -rf "$TGTDIR/.bazaar"
+	( set -x; rm -rf -- "$TGTDIR/.bazaar" )
 fi
 if [[ -f "$TGTDIR/Mercurial.ini" && -z "$COMSPEC" ]]; then # remove previously copied Mercurial.ini
-	rm -f "$TGTDIR/Mercurial.ini"
+	( set -x; rm -f -- "$TGTDIR/Mercurial.ini" )
 fi
-if [[ -f "$TGTDIR/.config/alacritty/alacritty.yml" ]]; then # remove previously copied Mercurial.ini
-	rm -f "$TGTDIR/.config/alacritty/alacritty.yml"
+if [[ -f "$TGTDIR/.config/alacritty/alacritty.yml" ]]; then # remove previously used alacritty.yml (now using .toml)
+	( set -x; rm -f -- "$TGTDIR/.config/alacritty/alacritty.yml" )
+fi
+if [[ -f "$TGTDIR/.gitrc.d/gitconfig.OS" ]]; then # remove previously generated gitconfig.OS
+	( set -x; rm -f -- "$TGTDIR/.gitrc.d/gitconfig.OS" )
 fi
 
 # Fix the .gnupg/.ssh file/folder permissions

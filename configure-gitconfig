@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+# This script now drives the 'configure.gitconfig' goal for the GNUmakefile
+[[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
+declare -gr TGTDIR=${TGTDIR:-$HOME}
+
+function debug
+{
+	local -r FMTSTR="$1"
+	shift
+	[[ -v DEBUG ]] && printf >&2 "${cW}[DBG]${cZ} $FMTSTR\n" "$@"
+}
+
+function error
+{
+	local -r FMTSTR="$1"
+	shift
+	printf >&2 "${cR}[ERROR]${cZ} $FMTSTR\n" "$@"
+}
+
+function info
+{
+	local -r FMTSTR="$1"
+	shift
+	printf >&2 "${cW}[INFO]${cZ} $FMTSTR\n" "$@"
+}
+
+function configure_gitconfig
+{
+	local -r GITLOCALCFG="$TGTDIR/.gitrc.d/gitconfig.LOCAL"
+	echo -n "" > "$GITLOCALCFG" # truncate existing config
+	if type -P delta > /dev/null 2>&1; then
+		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.delta' )
+	fi
+	if type -P git-lfs > /dev/null 2>&1; then
+		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.lfs' )
+	fi
+	case "$OSTYPE" in
+		msys | cygwin)
+			if type -P cygpath > /dev/null 2>&1; then
+				if [[ -f "$(cygpath -mF 42)/GnuPG/bin/gpg.exe" ]]; then
+					( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.gnupg4win' )
+				fi
+			fi
+			;;
+	esac
+}
+
+if type -P git > /dev/null 2>&1; then
+	configure_gitconfig
+fi
+
+exit 0
