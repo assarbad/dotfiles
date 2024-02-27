@@ -2,14 +2,14 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 filetype=sh:
 
 # If not running interactively, don't do anything
-[ -z "$PS1" ] && return
+[[ -z "$PS1" ]] && return
 
 # Because UID is readonly we cannot use the real thing, so let's fake it below ;)
 MYUID=$UID
 if type starship > /dev/null 2>&1; then
 	eval "$(starship init bash)"
 else
-	if [ $MYUID -eq 0 ]; then
+	if [[ $MYUID -eq 0 ]]; then
 		export PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
 	else
 		export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
@@ -17,10 +17,14 @@ else
 fi
 
 # On Windows the superuser has the UID (RID) 500, make it appear as root
-[ -n "$COMSPEC" ] && [ $MYUID -eq 500 ] && { let MYUID=0; }
+if [[ -n "$COMSPEC" && $MYUID -eq 500 ]]; then
+	let MYUID=0
+fi
 
 # Superuser will get a timeout for the shell if it's a remote shell via SSH
-[ -n "$SSH_TTY" ] && [ $MYUID -eq 0 ] && export TMOUT=1800
+if [[ -n "$SSH_TTY" && $MYUID -eq 0 ]]; then
+	export TMOUT=1800
+fi
 
 export IGNOREEOF=2
 if [[ -d "$HOME/bin" ]]; then
@@ -31,15 +35,15 @@ fi
 # Remove empty entries
 PATH=${PATH//::/:}
 
-if [ $MYUID -eq 0 ]; then
+if [[ $MYUID -eq 0 ]]; then
 	NEWPATH=''
 	LASTDIR=''
 	for dir in ${PATH//:/ }; do
 		LASTDIR=$dir
-		[ ! -d $dir ] && continue
-		if [ "$(ls -lLd $dir | grep '^d.......w. ')" ]; then
+		[[ ! -d "$dir" ]] && continue
+		if ls -lLd $dir 2>/dev/null | grep -q '^d.......w. '; then
 			echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
-		elif [ "$NEWPATH" != "$dir" ]; then
+		elif [[ "$NEWPATH" != "$dir" ]]; then
 			NEWPATH=$NEWPATH:$dir
 		fi
 	done
@@ -61,7 +65,7 @@ shopt -s dotglob
 shopt -s extglob
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(lesspipe)"
+[[ -x /usr/bin/lesspipe ]] && eval "$(lesspipe)"
 
 # ANSI color codes
 # ----------------
@@ -78,8 +82,8 @@ umask 022
 # Check for BASHRCDIR variable ...
 [[ -d "${BASHRCDIR:-$HOME}" ]] || BASHRCDIR="$HOME"
 BASHRCDIR=${BASHRCDIR:-$HOME}
-# Alias definitions for ls. Figure out the feature set ...
-if [[ "Linux" == "$(uname -s)" ]]; then
+# Alias definitions for ls. Figure out the feature set ... (GNU vs. others)
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	if type lsd > /dev/null 2>&1; then
 		alias ls='lsd --group-dirs=first'
 		alias ll='lsd --group-dirs=first --date "+%F %T" -l'
@@ -136,8 +140,29 @@ fi
 # Aliases in the external file overwrite those above.
 [[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
 
+# Load additional settings
+BASHHOST="${HOSTNAME%%.*}"
+BASHZONE="${HOSTNAME//$BASHHOST/_}"
+BASHSRCDIR="$BASHRCDIR/.bashrc.d"
+if [[ -d "$BASHSRCDIR" ]]; then
+	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
+		source "$f"
+	done
+	if [[ -d "$BASHSRCDIR/$BASHHOST" ]]; then
+		for f in $(find "$BASHSRCDIR/$BASHHOST" -maxdepth 1 -type f); do
+			source "$f"
+		done
+	fi
+	if [[ -n "$BASHZONE" ]] && [[ -d "$BASHSRCDIR/$BASHZONE" ]]; then
+		for f in $(find "$BASHSRCDIR/$BASHZONE" -maxdepth 1 -type f); do
+			source "$f"
+		done
+	fi
+fi
+unset BASHZONE BASHHOST BASHSRCDIR
+
 # On Windows we return early
-[ -n "$COMSPEC" ] && return
+[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && return
 
 # Load the SSH agent and if it's loaded already, add the default identity
 if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
@@ -165,40 +190,15 @@ if [[ -d "$HOME/.ssh" ]] && [[ -w "$HOME/.ssh" ]]; then
 	fi
 	export SSH_AUTH_SOCK="$USERSOCK"
 	LDR="$HOME/.ssh/.load"
-	if [[ -O "$LDR" ]] && [[ -G "$LDR" ]] && [[ -s "$LDR" ]]; then
+	if [[ -O "$LDR" && -G "$LDR" && -s "$LDR" ]]; then
 		if (( $(stat -c '%a' "$LDR") <= 644 )); then
 			source "$LDR"
 		fi
 	fi
-	unset LDR
-	unset USERSOCK
-	unset SSHAGENT
-	unset SSHAGENTARGS
+	unset LDR USERSOCK SSHAGENT SSHAGENTARGS
 fi
 
-# Load additional settings
-# NB: Worst-case scenario iff HOST is empty is that we source all files twice ...
-BASHHOST="$(hostname -s 2>/dev/null)"
-# hostname -s and -f are standard, -d is GNU only, it seems ... not on MacOS
-BASHZONE="$(hostname -f 2>/dev/null)"; \
-	BASHZONE="${BASHZONE//$BASHHOST/_}"
-BASHSRCDIR="$BASHRCDIR/.bashrc.d"
-if [[ -d "$BASHSRCDIR" ]]; then
-	for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
-		source "$f"
-	done
-	if [[ -d "$BASHSRCDIR/$BASHHOST" ]]; then
-		for f in $(find "$BASHSRCDIR/$BASHHOST" -maxdepth 1 -type f); do
-			source "$f"
-		done
-	fi
-	if [[ -n "$BASHZONE" ]] && [[ -d "$BASHSRCDIR/$BASHZONE" ]]; then
-		for f in $(find "$BASHSRCDIR/$BASHZONE" -maxdepth 1 -type f); do
-			source "$f"
-		done
-	fi
-fi
-if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # are we running inside Tmux already?
+if [[ -n "$TMUX" || -n "$TMUX_PANE" ]]; then # are we running inside Tmux already?
 	if [[ -n "$TERM" ]]; then
 		REPLACE_TERM=${TERM//xterm/screen}
 		if type toe > /dev/null 2>&1; then
@@ -211,14 +211,11 @@ if [[ -n "$TMUX" ]] || [[ -n "$TMUX_PANE" ]]; then # are we running inside Tmux 
 	fi
 fi
 # beroot so we feel at home when assuming super-user rights
-if [ $MYUID -eq 0 ]; then
+if [[ $MYUID -eq 0 ]]; then
 	alias beroot='echo NOP'
 else
 	alias beroot="(($UID)) || { echo "NOP"; } && { test -f $HOME/.oldstyle-beroot && sudo -E -u root /usr/bin/env BASHRCDIR='$HOME' $SHELL --rcfile $HOME/.bashrc || sudo -E -u root $SHELL; }"
 fi
-unset BASHZONE
-unset BASHHOST
-unset BASHSRCDIR
 unset MYUID
 
 if [[ -z "$STARSHIP_SESSION_KEY" ]]; then

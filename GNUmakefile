@@ -120,6 +120,7 @@ $(warning SHELL=$(SHELL))
 endif
 FILES_TO_CONSIDER:=\
 	.bashrc.d/gpg \
+	.bashrc.d/rust \
 	.config/flake8 \
 	.config/starship.toml \
 	.cargo/config \

@@ -61,6 +61,7 @@
 	smull = submodule foreach --recursive git pull
 	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
 	delta = diff
+	au = !git diff --name-only --ignore-submodules | xargs -r git add
 [init]
 	defaultBranch = main
 [help]
