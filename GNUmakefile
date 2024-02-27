@@ -127,7 +127,9 @@ FILES_TO_CONSIDER:=\
 	$(wildcard .gitrc.d/gitconfig.*) \
 	.gnupg/gpg.conf \
 	.gnupg/.no-pubkey-fetch \
-	.bashrc \
+	.bash_profile \
+	.common_profile \
+	.zshrc \
 	.gitconfig \
 	.hgrc \
 	.inputrc \

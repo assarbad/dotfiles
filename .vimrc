@@ -54,14 +54,14 @@ if has('statusline')
 	set statusline+=%#StatusLineFormat#%({%{&fileformat}\|%{(&fenc==''?&enc:&fenc).((has('bomb')\ &&\ &bomb)?',BOM':'')}%k\|%{&filetype}}%)\ %*
 	set statusline+=%#StatusLinePosition#%([%l,%v]\ [%p%%\ \@%o]\ %)%*
 	" default status line setting
-	highlight StatusLine         term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkGreen
-	highlight StatusLineBufNum   term=reverse cterm=NONE ctermbg=NONE ctermfg=Black     ctermbg=White
-	highlight StatusLineModified term=reverse cterm=NONE ctermbg=NONE ctermfg=White     ctermbg=NONE
-	highlight StatusLineRdOnly   term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkRed   ctermbg=NONE
-	highlight StatusLinePaste    term=reverse cterm=NONE ctermbg=NONE ctermfg=Yellow    ctermbg=NONE
-	highlight StatusLineChar     term=reverse cterm=NONE ctermbg=NONE ctermfg=White     ctermbg=NONE
-	highlight StatusLineFormat   term=reverse cterm=NONE ctermbg=NONE ctermfg=DarkGray  ctermbg=NONE
-	highlight StatusLinePosition term=reverse cterm=NONE ctermbg=NONE ctermfg=Gray      ctermbg=NONE
+	highlight StatusLine         term=reverse cterm=NONE ctermbg=NONE  ctermfg=DarkGreen
+	highlight StatusLineBufNum   term=reverse cterm=NONE ctermbg=White ctermfg=Black
+	highlight StatusLineModified term=reverse cterm=NONE ctermbg=NONE  ctermfg=White
+	highlight StatusLineRdOnly   term=reverse cterm=NONE ctermbg=NONE  ctermfg=DarkRed
+	highlight StatusLinePaste    term=reverse cterm=NONE ctermbg=NONE  ctermfg=Yellow
+	highlight StatusLineChar     term=reverse cterm=NONE ctermbg=NONE  ctermfg=White
+	highlight StatusLineFormat   term=reverse cterm=NONE ctermbg=NONE  ctermfg=DarkGray
+	highlight StatusLinePosition term=reverse cterm=NONE ctermbg=NONE  ctermfg=Gray
 endif
 
 set showmatch    " briefly jump to matching paren/bracket
@@ -184,7 +184,7 @@ endif
 
 " When detecting Tmux, ensure we can see highlighed lines in visual mode
 if $TMUX != "" || $TMUX_PANE != ""
-	highlight Visual cterm=reverse ctermbg=NONE
+	highlight Visual term=reverse cterm=reverse ctermbg=DarkGrey ctermfg=NONE
 endif
 
 if has('diff') && &diff

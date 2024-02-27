@@ -38,7 +38,7 @@ style = "Block"
 unfocused_hollow = true
 
 [env]
-TERM = "screen-256color"
+TERM = "tmux-256color"
 
 [font]
 size = 12.0
