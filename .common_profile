@@ -4,10 +4,13 @@
 # If not running interactively, don't do anything
 [[ $- == *i* ]] || return
 
+# Some colors
+declare -x cG="\e[1;32m" cR="\e[1;31m" cB="\e[1;34m" cW="\e[1;37m" cY="\e[1;33m" cG_="\e[0;32m" cR_="\e[0;31m" cB_="\e[0;34m" cW_="\e[0;37m" cY_="\e[0;33m" cZ="\e[0m"
+
 function set_prompt_and_uid
 {
 	# Because UID is readonly we cannot use the real thing, so let's fake it below ;)
-	declare -g MYUID=$UID
+	local MYUID=$UID
 	if [[ -v BASH_VERSION ]]; then
 		if [[ $MYUID -eq 0 ]]; then
 			declare -g PS1='${debian_chroot:+($debian_chroot)}\[\033[1;31m\]${SHLVL:+[$SHLVL] }\u\[\033[1;34m\]@\h\[\033[0m\]:\[\033[1;32m\]\w\[\033[0m\]\$ '
@@ -17,11 +20,6 @@ function set_prompt_and_uid
 	elif [[ -v ZSH_VERSION ]]; then
 		declare -g PROMPT='[%L] %F{blue}%n@%m:%2~%f %# '
 	fi
-	# On Windows the superuser has the UID (RID) 500, make it appear as root
-	if [[ -n "$COMSPEC" && $MYUID -eq 500 ]]; then
-		MYUID=0
-	fi
-	readonly MYUID
 }
 
 function add_home_bin
@@ -45,7 +43,7 @@ function clean_path_var
 {
 	# Remove empty entries
 	export PATH=${PATH//::/:}
-	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
 		return
 	fi
 
@@ -193,6 +191,10 @@ function convenience_aliases
 
 function load_ssh_agent
 {
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+		return
+	fi
+
 	# Load the SSH agent and if it's loaded already, add the default identity
 	if \
 		type -p ssh-agent > /dev/null 2>&1 && \
@@ -201,7 +203,7 @@ function load_ssh_agent
 		type -p ln > /dev/null 2>&1 && \
 		[[ -d "$HOME/.ssh" && -w "$HOME/.ssh" ]]
 	then
-		local LDR USERSOCK SSHAGENT SSHAGENTARGS
+		local USERSOCK SSHAGENT SSHAGENTARGS
 		SSHAGENT=$(type -p ssh-agent)
 		SSHAGENTARGS="-s"
 		USERSOCK="$HOME/.ssh/ssh_auth_sock"
@@ -226,12 +228,26 @@ function load_ssh_agent
 		fi
 		export SSH_AUTH_SOCK="$USERSOCK"
 	fi
+	if type -p stat > /dev/null 2>&1; then
+		local LDR="$HOME/.ssh/.load"
+		if [[ -O "$LDR" && -G "$LDR" && -s "$LDR" ]]; then
+			if (( $(stat -c '%a' "$LDR") <= 644 )); then
+				source "$LDR"
+			fi
+		fi
+	fi
 }
 
 if type -p starship > /dev/null 2>&1; then
 	eval "$(starship init bash)"
 else
 	set_prompt_and_uid
+	# The prompt command will only show the current directory and username if the terminal type is "correct"
+	case "$TERM" in
+		xterm*|rvxt*|screen*|putty*)
+			export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
+			;;
+	esac
 fi
 add_home_bin
 set_remote_timeout
@@ -241,6 +257,7 @@ set_shell_options
 [[ -x /usr/bin/lesspipe ]] && eval "$(lesspipe)"
 umask 022
 convenience_aliases
+load_ssh_agent
 
 if [[ -v BASH_VERSION ]]; then
 	# Check for BASHRCDIR variable ...
@@ -280,51 +297,18 @@ if [[ -v BASH_VERSION ]]; then
 fi
 
 # Remove local functions up to here
-unset -f set_prompt_and_uid add_home_bin set_remote_timeout clean_path_var set_shell_options ls_aliases convenience_aliases
+unset -f set_prompt_and_uid add_home_bin set_remote_timeout clean_path_var set_shell_options ls_aliases convenience_aliases load_ssh_agent
+
+type ccd > /dev/null 2>&1 && unset ccd
+# create and cd
+function ccd()
+{
+	mkdir -p -- "$1" && cd -- "$1"
+}
 
 # On Windows we return early
-[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && { unset -f load_ssh_agent; return; }
+[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && return
 
-load_ssh_agent
-if type -p stat > /dev/null 2>&1; then
-	LDR="$HOME/.ssh/.load"
-	if [[ -O "$LDR" && -G "$LDR" && -s "$LDR" ]]; then
-		if (( $(stat -c '%a' "$LDR") <= 644 )); then
-			source "$LDR"
-		fi
-	fi
-	unset LDR
-fi
-# Remove local functions
-unset -f load_ssh_agent
-
-# FOR NOW
-return
-
-if [[ -n "$TMUX" || -n "$TMUX_PANE" ]]; then # are we running inside Tmux already?
-	if [[ -n "$TERM" ]]; then
-		REPLACE_TERM=${TERM//xterm/screen}
-		if type -p toe > /dev/null 2>&1; then
-			TOELIST=$( toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h" )
-			if ! $TOELIST|grep -q ^$REPLACE_TERM; then
-				REPLACE_TERM=
-			fi
-			unset TOELIST
-		fi
-	fi
-fi
-unset MYUID
-
-if [[ -z "$STARSHIP_SESSION_KEY" ]]; then
-	# The prompt command will only show the current directory and username if the terminal type is "correct"
-	case "$TERM" in
-		xterm*|rvxt*|screen*|putty*)
-			export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
-			;;
-	esac
-fi
-
-[[ -t 1 ]] && { cG="\033[1;32m"; cR="\033[1;31m"; cB="\033[1;34m"; cW="\033[1;37m"; cY="\033[1;33m"; cG_="\033[0;32m"; cR_="\033[0;31m"; cB_="\033[0;34m"; cW_="\033[0;37m"; cY_="\033[0;33m"; cZ="\033[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
 if ((SHLVL < 2)); then
 	if type -p lsb_release > /dev/null 2>&1; then
 		if [[ -n $(lsb_release -sc) ]]; then
@@ -337,10 +321,3 @@ if ((SHLVL < 2)); then
 	fi
 	cd
 fi
-
-type ccd > /dev/null 2>&1 && unset ccd
-# create and cd
-function ccd()
-{
-	mkdir -p "$1" && cd "$1"
-}
