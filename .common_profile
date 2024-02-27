@@ -44,7 +44,6 @@ function set_remote_timeout
 function clean_path_var
 {
 	# Remove empty entries
-
 	export PATH=${PATH//::/:}
 	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 		return
@@ -52,7 +51,11 @@ function clean_path_var
 
 	if [[ $EUID -eq 0 ]]; then
 		local NEWPATH='' LASTDIR=''
-		IFS=: for dir in "$PATH"; do
+		if [[ -v ZSH_VERSION ]]; then
+			setopt sh_word_split
+		fi
+		local IFS=:
+		for dir in "$PATH"; do
 			LASTDIR=$dir
 			[[ ! -d "$dir" ]] && continue
 			if command ls -lLd $dir 2>/dev/null | command grep -q '^d.......w. '; then
