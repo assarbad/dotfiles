@@ -130,8 +130,8 @@ function ls_aliases
 
 function system_specific_aliases
 {
+	local i
 	# Syntax: __create_abs_alias <name> <command>
-	local -f __create_abs_alias
 	__create_abs_alias()
 	{
 		type -p "$2" > /dev/null 2>&1 || return
@@ -228,6 +228,7 @@ function system_specific_aliases
 			alias upgrade='pkg update && pkg upgrade'
 		fi
 	fi
+	unset -f __create_abs_alias
 }
 
 function convenience_aliases
