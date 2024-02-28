@@ -18,7 +18,11 @@ function set_prompt_and_uid
 			declare -g PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
 		fi
 	elif [[ -v ZSH_VERSION ]]; then
-		declare -g PROMPT='%F{blue}[%L] %n@%m:%2~%f%# '
+		if [[ $EUID -eq 0 ]]; then
+			declare -g PROMPT='%B%F{red}[%L] %n%f%F{blue}@%m%f%b:%F{green}%2~%f%# '
+		else
+			declare -g PROMPT='%B%F{blue}[%L] %n@%m%f%b:%F{green}%2~%f%# '
+		fi
 	fi
 }
 
