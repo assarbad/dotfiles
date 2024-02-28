@@ -18,7 +18,7 @@ function set_prompt_and_uid
 			declare -g PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]${SHLVL:+[$SHLVL] }\u@\h\[\033[00m\]:\[\033[01;32m\]\w\[\033[00m\]\$ '
 		fi
 	elif [[ -v ZSH_VERSION ]]; then
-		declare -g PROMPT='[%L] %F{blue}%n@%m:%2~%f %# '
+		declare -g PROMPT='%F{blue}[%L] %n@%m:%2~%f%# '
 	fi
 }
 
@@ -128,9 +128,112 @@ function ls_aliases
 	fi
 }
 
+function system_specific_aliases
+{
+	# Syntax: __create_abs_alias <name> <command>
+	local -f __create_abs_alias
+	__create_abs_alias()
+	{
+		type -p "$2" > /dev/null 2>&1 || return
+		if [[ -n "$3" ]]; then
+			alias $1="$3 $2"
+		else
+			alias $1="$2"
+		fi
+	}
+
+	if [[ -e "/etc/debian_version" ]] || type -p apt > /dev/null 2>&1; then
+		alias search='apt search'
+		alias show='apt show'
+		alias upgrade='apt update && apt full-upgrade'
+		alias apti='apt --no-install-recommends install'
+		alias purge='apt purge'
+		alias autopurge='apt autoremove --purge'
+		alias autoremove='apt autoremove'
+	fi
+	if [[ -e "/etc/debian_version" ]] || type -p dpkg > /dev/null 2>&1; then
+		alias lp='command dpkg -l'
+		alias lpg='command dpkg -l|grep -iE'
+	fi
+	if [[ -e "/etc/debian_version" ]]; then
+		for i in debfoster:/usr/bin/debfoster deborphan:/usr/bin/deborphan; do
+			__create_abs_alias ${i%%:*} "${i#*:}"
+		done
+		if [[ $EUID -ne 0 ]]; then
+			for i in apt-get:/usr/bin/apt-get \
+								aptitude:/usr/bin/aptitude \
+								apt-mark:/usr/bin/apt-mark \
+								apt:/usr/bin/apt \
+								dpkg-reconfigure:/usr/sbin/dpkg-reconfigure \
+								dpkg:/usr/bin/dpkg \
+								service:/usr/sbin/service \
+								lsof:/usr/bin/lsof \
+								reboot:/usr/sbin/reboot \
+								systemctl:/bin/systemctl \
+								journalctl:/bin/journalctl
+			do
+				__create_abs_alias ${i%%:*} "${i#*:}" sudo
+			done
+		fi
+	fi
+	if [[ -e "/etc/redhat-release" ]] || type -p yum > /dev/null 2>&1; then
+		alias search='yum -C search'
+		alias show='yum -C info'
+		if [[ $EUID -ne 0 ]] && type -p sudo > /dev/null 2>&1; then
+			alias upgrade='sudo yum update'
+		else
+			alias upgrade='yum update'
+		fi
+	fi
+	if [[ -e "/etc/redhat-release" ]]; then
+		if [[ $EUID -ne 0 ]]; then
+			for i in ifconfig:/sbin/ifconfig \
+								service:/sbin/service \
+								lsof:/usr/sbin/lsof \
+								reboot:/sbin/reboot \
+								yum:/usr/bin/yum \
+								iptables:/sbin/iptables
+			do
+				__create_abs_alias ${i%%:*} "${i#*:}" sudo
+			done
+		fi
+	fi
+	if type -p pacman > /dev/null 2>&1; then
+		# https://wiki.archlinux.org/title/Pacman/Rosetta
+		alias apti='printf "You are not on Debian anymore\n"'
+		alias search='pacman -Ss'
+		alias show='pacman -Qi'
+		if [[ $EUID -ne 0 ]] && type -p sudo > /dev/null 2>&1; then
+			alias upgrade='sudo pacman -Syu'
+			alias purge='sudo pacman -Rn'
+			alias autopurge='sudo pacman -Rns'
+			alias autoremove='sudo pacman -Rs'
+		else
+			alias upgrade='pacman -Syu'
+			alias purge='pacman -Rn'
+			alias autopurge='pacman -Rns'
+			alias autoremove='pacman -Rs'
+		fi
+	fi
+	if type -p uname > /dev/null 2>&1 && [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
+		alias search='pkg search'
+		alias show='pkg info'
+		if [[ $UID -ne 0 ]]; then
+			for i in pkg:/usr/sbin/pkg
+			do
+				__create_abs_alias ${i%%:*} "${i#*:}" sudo
+			done
+			alias upgrade='sudo pkg update && sudo pkg upgrade'
+		else
+			alias upgrade='pkg update && pkg upgrade'
+		fi
+	fi
+}
+
 function convenience_aliases
 {
 	ls_aliases
+	system_specific_aliases
 	# Convenience aliases
 	alias ..='cd ..'
 	alias ...='cd ../..'
@@ -154,6 +257,9 @@ function convenience_aliases
 	if type -p ssh > /dev/null 2>&1 && type -p find > /dev/null 2>&1 && type -p ls > /dev/null 2>&1; then
 		alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $EUID -exec ls -ahl {} \;'
 	fi
+	if type -p ssh-keygen > /dev/null 2>&1 && type -p test > /dev/null 2>&1; then
+		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
+	fi
 	if type -p vim > /dev/null 2>&1 && type -p grep > /dev/null 2>&1; then
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
@@ -163,10 +269,36 @@ function convenience_aliases
 		else
 			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
 		fi
+		export EDITOR=$(type -p vim)
+		export VISUAL=$(type -p vim)
 	fi
+
+	if [[ -v BASH_VERSION ]]; then
+		alias sb="source ~/.bash_profile && cd -"
+	elif [[ -v ZSH_VERSION ]]; then
+		alias sz="source ~/.zshrc && cd -"
+	fi
+
+	if type -p reset > /dev/null 2>&1 && type -p stty > /dev/null 2>&1 && type -p tput > /dev/null 2>&1; then
+		alias tfix='reset; stty sane; tput rs1; clear; printf "\033c"'
+	fi
+
+	if type -p colordiff > /dev/null 2>&1; then
+		alias diff="command colordiff -u"
+	else
+		alias diff="command diff -u"
+	fi
+
+	if type -p sort > /dev/null 2>&1 && type -p env > /dev/null 2>&1; then
+		alias e="env|sort -i"
+	elif type -p env > /dev/null 2>&1; then
+		alias e="env"
+	fi
+
 	if type -p sudo > /dev/null 2>&1; then
 		# beroot so we feel at home when assuming super-user rights
 		if [[ $EUID -eq 0 ]]; then
+			alias visudo='sudo -E visudo'
 			function beroot
 			{
 				echo 'NOP'
@@ -271,9 +403,6 @@ if [[ -v BASH_VERSION ]]; then
 		done
 	fi
 
-	# Aliases in the external file overwrite those above.
-	[[ -f "$BASHRCDIR/.bash_aliases" ]] && source "$BASHRCDIR/.bash_aliases"
-
 	# Load additional settings
 	BASHHOST="${HOSTNAME%%.*}"
 	BASHZONE="${HOSTNAME//$BASHHOST/_}"
@@ -297,7 +426,7 @@ if [[ -v BASH_VERSION ]]; then
 fi
 
 # Remove local functions up to here
-unset -f set_prompt_and_uid add_home_bin set_remote_timeout clean_path_var set_shell_options ls_aliases convenience_aliases load_ssh_agent
+unset -f set_prompt_and_uid add_home_bin set_remote_timeout clean_path_var set_shell_options ls_aliases system_specific_aliases convenience_aliases load_ssh_agent
 
 type ccd > /dev/null 2>&1 && unset ccd
 # create and cd
