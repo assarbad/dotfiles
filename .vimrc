@@ -1,5 +1,10 @@
 set nocompatible    " this is Vim, not Vi
 
+if empty(glob("$HOME/.vim/tmp"))
+    silent !mkdir -p "$HOME/.vim/tmp"
+endif
+set directory=$HOME/.vim/tmp
+
 set background=dark " using dark terminal make certain elements a little brighter ;)
 set backspace=indent,eol,start " make backspace more convenient
 
@@ -24,13 +29,14 @@ if has('linebreak')
 endif
 set wildmode=list:longest,full " make cmdline tab completion similar to bash
 if has('wildignore')
-	set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dbg
+	set wildignore=*.swp,*.bak,*.pyc,*.class,*.exe,*.pdb,*.dll,*.dbg
 endif
 if has('wildmenu')
 	set wildmenu     " enable ctrl-n and ctrl-p to scroll through matches
 endif
 set scrolloff=3  " keep 3 lines when scrolling
 set nobackup     " do not keep a backup file
+set nowritebackup
 "set noswapfile   " create no swap file
 if has('title')
 	set title        " change the terminal's title
