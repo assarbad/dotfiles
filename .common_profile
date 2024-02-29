@@ -86,14 +86,13 @@ function set_shell_options
 		shopt -s dotglob > /dev/null 2>&1
 		shopt -s extglob > /dev/null 2>&1
 		shopt -s globskipdots > /dev/null 2>&1
-		shopt -s failglob > /dev/null 2>&1
 	elif [[ -v ZSH_VERSION ]]; then
 		declare -g HISTFILE=~/.zsh_history
 		declare -g HISTSIZE=3000
 		declare -g SAVEHIST=3000
 		declare -g HIST_IGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux:lsb:chorme"
 		setopt HIST_IGNORE_SPACE
-		setopt autocd beep extendedglob nomatch
+		setopt autocd beep extendedglob
 	fi
 }
 
@@ -266,6 +265,12 @@ function convenience_aliases
 		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
 	fi
 	if type -p vim > /dev/null 2>&1 && type -p grep > /dev/null 2>&1; then
+		export EDITOR=$(type -p vim)
+		# Except on Windows and when in the terminal we set GIT_EDITOR
+		if [[ -t 1 && "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" && -z "$COMSPEC" ]] && type -p git > /dev/null 2>&1; then
+			export GIT_EDITOR=$(type -p vim)
+		fi
+		export VISUAL=$(type -p vim)
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
 		fi
@@ -274,12 +279,6 @@ function convenience_aliases
 		else
 			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
 		fi
-		export EDITOR=$(type -p vim)
-		# Except on Windows and when in the terminal we set GIT_EDITOR
-		if [[ -t 1 && "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" && -z "$COMSPEC" ]] && type -p git > /dev/null 2>&1; then
-			export GIT_EDITOR=$(type -p vim)
-		fi
-		export VISUAL=$(type -p vim)
 	fi
 
 	if [[ -v BASH_VERSION ]]; then
@@ -308,25 +307,31 @@ function convenience_aliases
 		# beroot so we feel at home when assuming super-user rights
 		if [[ $EUID -eq 0 ]]; then
 			alias visudo='sudo -E visudo'
-			function beroot
-			{
-				echo 'NOP'
-			}
-		else
-			function beroot
-			{
-				if (($EUID)); then
-					if [[ -f ~/.oldstyle-beroot ]]; then
-						sudo -E -u root /usr/bin/env BASHRCDIR="$HOME" "$SHELL"
-					else
-						sudo -E -u root "$SHELL"
-					fi
-				else
+			if ! declare -pf beroot > /dev/null 2>&1; then
+				function beroot
+				{
 					echo 'NOP'
-				fi
-			}
+				}
+			fi
+		else
+			if ! declare -pf beroot > /dev/null 2>&1; then
+				function beroot
+				{
+					if (($EUID)); then
+						if [[ -f ~/.oldstyle-beroot ]]; then
+							sudo -E -u root /usr/bin/env BASHRCDIR="$HOME" "$SHELL"
+						else
+							sudo -E -u root "$SHELL"
+						fi
+					else
+						echo 'NOP'
+					fi
+				}
+			fi
 		fi
-		declare -fgr beroot > /dev/null 2>&1
+		if ! declare -pf beroot > /dev/null 2>&1; then
+			declare -fgr beroot > /dev/null 2>&1
+		fi
 	fi
 }
 
