@@ -275,6 +275,10 @@ function convenience_aliases
 			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
 		fi
 		export EDITOR=$(type -p vim)
+		# Except on Windows and when in the terminal we set GIT_EDITOR
+		if [[ -t 1 && "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" && -z "$COMSPEC" ]] && type -p git > /dev/null 2>&1; then
+			export GIT_EDITOR=$(type -p vim)
+		fi
 		export VISUAL=$(type -p vim)
 	fi
 

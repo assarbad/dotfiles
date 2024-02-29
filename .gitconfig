@@ -4,7 +4,6 @@
 	signingkey = C779D8290E88590F
 [commit]
 	gpgsign = true
-	template = ~/.gitmessage
 [push]
 	default = simple
 	autoSetupRemote = true
