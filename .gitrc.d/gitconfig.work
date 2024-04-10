@@ -2,4 +2,4 @@
 	path = ~/.gitrc.d/gitconfig.packcfg
 
 [commit]
-	template = ~/.gitmessage
+	# template = ~/.gitmessage

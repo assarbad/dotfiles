@@ -1,0 +1,42 @@
+[alias]
+	amend = commit --amend
+	Amend = commit --amend --no-edit
+	branches = for-each-ref --sort=-committerdate --format=\"%(color:yellow)%(authordate:iso)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
+	upstreams = for-each-ref --format="%(refname:short) %(upstream:track)" refs/heads
+	move = mv
+	rename = mv
+	stat = status
+	statu = status
+	stats = status
+	gconf = config --global
+	gconfig = config --global
+	diffs = diff --staged
+	wdiff = diff --word-diff
+	wcdiff = diff --word-diff=color
+	wdiffs = diff --staged --word-diff
+	wcdiffs = diff --staged --word-diff=color
+	log1 = log --oneline
+	glog = log --graph --decorate --oneline --abbrev=2
+	id = show -s --format=%H
+	idshort = show -s --format=%h
+	shortid = show -s --format=%h
+	tip = show -s --pretty=medium
+	ffm = merge --ff-only
+	nfm = merge --no-ff
+	noff = merge --no-ff
+	tree = log --decorate --pretty=oneline --abbrev-commit --graph
+	ls = log --stat --decorate --pretty=format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\" --graph
+	npdiff = !git --no-pager diff
+	npdiffs = !git --no-pager diffs
+	squash = !echo 'Did you mean rebase?'
+	smupd = submodule update
+	smupdate = submodule update
+	smur = submodule update --recursive
+	smurr = submodule update --recursive --remote
+	smitch = submodule foreach --recursive git switch
+	smeset = submodule foreach --recursive git reset
+	smetch = submodule foreach --recursive git fetch
+	smull = submodule foreach --recursive git pull
+	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
+	delta = diff
+	au = !git diff --name-only --ignore-submodules | xargs -r git add

@@ -1,7 +1,7 @@
 [cargo-new]
 name = "Oliver Schneider"
 email = "oliver@assarbad.net"
-vcs = "hg"
+vcs = "git"
 
 [term]
 verbose = false
