@@ -1,5 +1,9 @@
 live_config_reload = true
 
+[shell]
+program = "/usr/bin/env"
+args = ["bash", "-l"]
+
 [bell]
 animation = "EaseOutExpo"
 color = "0xcccccc"
