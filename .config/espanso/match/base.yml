@@ -12,10 +12,10 @@ matches:
   - trigger: ":mfg"
     label: "MFG, mit freundlichem Gruß"
     replace: "Mit freundlichem Gruß,\nOliver Schneider"
-  - trigger: [ ":br", ":wbr" ]
+  - triggers: [ ":br",  ":wbr" ]
     label: "With best regards"
     replace: "With best regards,\nOliver Schneider"
-  - trigger: [ ":rumfg", ":rusmfg" ]
+  - triggers: [ ":rumfg", ":rusmfg" ]
     label: "С уважением"
     replace: "С уважением,\nОливер Шнайдер"
   # The rest
@@ -123,73 +123,73 @@ matches:
   - trigger: ":hi9:"
     label: "Superscript 9"
     replace: "⁹"
-  - trigger: [ ":_0:", ":lo0:" ]
+  - triggers: [ ":_0:", ":lo0:" ]
     label: "Subscript 0"
     replace: "₀"
-  - trigger: [ ":_1:", ":lo1:" ]
+  - triggers: [ ":_1:", ":lo1:" ]
     label: "Subscript 1"
     replace: "₁"
-  - trigger: [ ":_2:", ":lo2:" ]
+  - triggers: [ ":_2:", ":lo2:" ]
     label: "Subscript 2"
     replace: "₂"
-  - trigger: [ ":_3:", ":lo3:" ]
+  - triggers: [ ":_3:", ":lo3:" ]
     label: "Subscript 3"
     replace: "₃"
-  - trigger: [ ":_4:", ":lo4:" ]
+  - triggers: [ ":_4:", ":lo4:" ]
     label: "Subscript 4"
     replace: "₄"
-  - trigger: [ ":_5:", ":lo5:" ]
+  - triggers: [ ":_5:", ":lo5:" ]
     label: "Subscript 5"
     replace: "₅"
-  - trigger: [ ":_6:", ":lo6:" ]
+  - triggers: [ ":_6:", ":lo6:" ]
     label: "Subscript 6"
     replace: "₆"
-  - trigger: [ ":_7:", ":lo7:" ]
+  - triggers: [ ":_7:", ":lo7:" ]
     label: "Subscript 7"
     replace: "₇"
-  - trigger: [ ":_8:", ":lo8:" ]
+  - triggers: [ ":_8:", ":lo8:" ]
     label: "Subscript 8"
     replace: "₈"
-  - trigger: [ ":_9:", ":lo9:" ]
+  - triggers: [ ":_9:", ":lo9:" ]
     label: "Subscript 9"
     replace: "₉"
-  - triggers: ":<-"
+  - trigger: ":<-"
     label: "Arrow left (single)"
     replace: "←"
-  - triggers: ":->"
+  - trigger: ":->"
     label: "Arrow right (single)"
     replace: "→"
-  - triggers: ":<="
+  - trigger: ":<="
     label: "Arrow left (double)"
     replace: "⇐"
-  - triggers: ":=>"
+  - trigger: ":=>"
     label: "Arrow right (double)"
     replace: "⇒"
-  - triggers: ":|^"
+  - trigger: ":|^"
     label: "Arrow up (single)"
     replace: "↑"
-  - triggers: ":v|"
+  - trigger: ":v|"
     label: "Arrow down (single)"
     replace: "↓"
-  - triggers: ":fullwidth?"
+  - trigger: ":fullwidth?"
     label: "Full width question mark"
     replace: "？"
-  - triggers: ":fullwidth:"
+  - trigger: ":fullwidth:"
     label: "Full width colon"
     replace: "："
-  - trigger: [ ":\"<", ":laquo" ]
+  - triggers: [ ":\"<", ":laquo" ]
     label: "Left-pointing double angle quote"
     replace: "«"
-  - trigger: [ ":\">", ":raquo" ]
+  - triggers: [ ":\">", ":raquo" ]
     label: "Right-pointing double angle quote"
     replace: "»"
-  - trigger: [ ":\"'", ":gfzu", ":ldquo", ":''" ]
+  - triggers: [ ":\"'", ":gfzu", ":ldquo", ":''" ]
     label: "Left double quote / Gänsefüßchen zu"
     replace: "“"
-  - trigger: [ ":\",", ":rdquo" ]
+  - triggers: [ ":\",", ":rdquo" ]
     label: "Right double quote"
     replace: "”"
-  - trigger: [ ":gfauf", ":,," ]
+  - triggers: [ ":gfauf", ":,," ]
     label: "Gänsefüßchen auf"
     replace: "„"
   - trigger: ":1/4"
