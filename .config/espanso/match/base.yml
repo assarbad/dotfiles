@@ -1,0 +1,214 @@
+# espanso match file
+
+# For a complete introduction, visit the official docs at: https://espanso.org/docs/
+
+# You can use this file to define the base matches (aka snippets)
+# that will be available in every application when using espanso.
+
+# Matches are substitution rules: when you type the "trigger" string
+# it gets replaced by the "replace" string.
+matches:
+  # Personal stuff
+  - trigger: ":mfg"
+    label: "MFG, mit freundlichem Gruß"
+    replace: "Mit freundlichem Gruß,\nOliver Schneider"
+  - trigger: [ ":br", ":wbr" ]
+    label: "With best regards"
+    replace: "With best regards,\nOliver Schneider"
+  - trigger: [ ":rumfg", ":rusmfg" ]
+    label: "С уважением"
+    replace: "С уважением,\nОливер Шнайдер"
+  # The rest
+  - trigger: ":today"
+    label: "Today in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+  - trigger: ":yesterday"
+    label: "Yesterday in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+          offset: -86400
+  - trigger: ":tomorrow"
+    label: "Tomorrow in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+          offset: 86400
+  - trigger: ":now"
+    label: "Current time in YYYY-mm-dd HH:MM:SS"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%F %T"
+  - trigger: ":isonow"
+    label: "Current time in ISO 8601 format"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%+"
+  - trigger: ":epoch"
+    label: "Current time in seconds since Unix epoch"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%s"
+  - trigger: ":shrug"
+    label: "Shruggie"
+    replace: "¯\\_(ツ)_/¯"
+  - trigger: ":cunning"
+    label: "Cunning face"
+    replace: "(¬‿¬)"
+  - trigger: ":eager"
+    label: "Eager face"
+    replace: "ʘ‿ʘ"
+  - trigger: ":monocle"
+    label: "Monocle"
+    replace: "ಠ_ರೃ"
+  - trigger: ":angry"
+    label: "Angry face"
+    replace: "ಠ_ಠ"
+  - trigger: ":fight"
+    label: "Bring it on"
+    replace: "(ง ◉_◉)ง"
+  - trigger: ":mischief"
+    label: "Mischievous face"
+    replace: "ಠᴗಠ"
+  - trigger: ":unamused"
+    label: "Unamused face"
+    replace: "( ͡ಠ ʖ̯ ͡ಠ)"
+  - trigger: ":hi0:"
+    label: "Superscript 0"
+    replace: "⁰"
+  - trigger: ":hi1:"
+    label: "Superscript 1"
+    replace: "¹"
+  - trigger: ":hi2:"
+    label: "Superscript 2"
+    replace: "²"
+  - trigger: ":hi3:"
+    label: "Superscript 3"
+    replace: "³"
+  - trigger: ":hi4:"
+    label: "Superscript 4"
+    replace: "⁴"
+  - trigger: ":hi5:"
+    label: "Superscript 5"
+    replace: "⁵"
+  - trigger: ":hi6:"
+    label: "Superscript 6"
+    replace: "⁶"
+  - trigger: ":hi7:"
+    label: "Superscript 7"
+    replace: "⁷"
+  - trigger: ":hi8:"
+    label: "Superscript 8"
+    replace: "⁸"
+  - trigger: ":hi9:"
+    label: "Superscript 9"
+    replace: "⁹"
+  - trigger: [ ":_0:", ":lo0:" ]
+    label: "Subscript 0"
+    replace: "₀"
+  - trigger: [ ":_1:", ":lo1:" ]
+    label: "Subscript 1"
+    replace: "₁"
+  - trigger: [ ":_2:", ":lo2:" ]
+    label: "Subscript 2"
+    replace: "₂"
+  - trigger: [ ":_3:", ":lo3:" ]
+    label: "Subscript 3"
+    replace: "₃"
+  - trigger: [ ":_4:", ":lo4:" ]
+    label: "Subscript 4"
+    replace: "₄"
+  - trigger: [ ":_5:", ":lo5:" ]
+    label: "Subscript 5"
+    replace: "₅"
+  - trigger: [ ":_6:", ":lo6:" ]
+    label: "Subscript 6"
+    replace: "₆"
+  - trigger: [ ":_7:", ":lo7:" ]
+    label: "Subscript 7"
+    replace: "₇"
+  - trigger: [ ":_8:", ":lo8:" ]
+    label: "Subscript 8"
+    replace: "₈"
+  - trigger: [ ":_9:", ":lo9:" ]
+    label: "Subscript 9"
+    replace: "₉"
+  - triggers: ":<-"
+    label: "Arrow left (single)"
+    replace: "←"
+  - triggers: ":->"
+    label: "Arrow right (single)"
+    replace: "→"
+  - triggers: ":<="
+    label: "Arrow left (double)"
+    replace: "⇐"
+  - triggers: ":=>"
+    label: "Arrow right (double)"
+    replace: "⇒"
+  - triggers: ":|^"
+    label: "Arrow up (single)"
+    replace: "↑"
+  - triggers: ":v|"
+    label: "Arrow down (single)"
+    replace: "↓"
+  - triggers: ":fullwidth?"
+    label: "Full width question mark"
+    replace: "？"
+  - triggers: ":fullwidth:"
+    label: "Full width colon"
+    replace: "："
+  - trigger: [ ":\"<", ":laquo" ]
+    label: "Left-pointing double angle quote"
+    replace: "«"
+  - trigger: [ ":\">", ":raquo" ]
+    label: "Right-pointing double angle quote"
+    replace: "»"
+  - trigger: [ ":\"'", ":gfzu", ":ldquo", ":''" ]
+    label: "Left double quote / Gänsefüßchen zu"
+    replace: "“"
+  - trigger: [ ":\",", ":rdquo" ]
+    label: "Right double quote"
+    replace: "”"
+  - trigger: [ ":gfauf", ":,," ]
+    label: "Gänsefüßchen auf"
+    replace: "„"
+  - trigger: ":1/4"
+    replace: "¼"
+  - trigger: ":1/2"
+    replace: "½"
+  - trigger: ":3/4"
+    replace: "¾"
+  - trigger: ":1/10"
+    replace: "⅒"
+  - trigger: ":1/3"
+    replace: "⅓"
+  - trigger: ":2/3"
+    replace: "⅔"
+  - trigger: ":1/5"
+    replace: "⅕"
+  - trigger: ":2/5"
+    replace: "⅖"
+  - trigger: ":3/5"
+    replace: "⅗"
+  - trigger: ":4/5"
+    replace: "⅘"
