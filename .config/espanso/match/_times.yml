@@ -1,0 +1,51 @@
+matches:
+  - trigger: ":today"
+    label: "Today in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+  - trigger: ":yesterday"
+    label: "Yesterday in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+          offset: -86400
+  - trigger: ":tomorrow"
+    label: "Tomorrow in YYYY-mm-dd"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%F"
+          offset: 86400
+  - trigger: ":now"
+    label: "Current time in YYYY-mm-dd HH:MM:SS"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%F %T"
+  - trigger: ":isonow"
+    label: "Current time in ISO 8601 format"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%+"
+  - trigger: ":epoch"
+    label: "Current time in seconds since Unix epoch"
+    replace: "{{mytime}}"
+    vars:
+      - name: mytime
+        type: date
+        params:
+          format: "%s"

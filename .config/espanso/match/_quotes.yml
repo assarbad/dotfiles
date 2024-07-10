@@ -1,0 +1,16 @@
+matches:
+  - triggers: [ ":\"<", ":laquo" ]
+    label: "Left-pointing double angle quote"
+    replace: "«"
+  - triggers: [ ":\">", ":raquo" ]
+    label: "Right-pointing double angle quote"
+    replace: "»"
+  - triggers: [ ":\"'", ":gfzu", ":ldquo", ":''" ]
+    label: "Left double quote / Gänsefüßchen zu"
+    replace: "“"
+  - triggers: [ ":\",", ":rdquo" ]
+    label: "Right double quote"
+    replace: "”"
+  - triggers: [ ":gfauf", ":,," ]
+    label: "Gänsefüßchen auf"
+    replace: "„"
