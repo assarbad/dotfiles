@@ -5,6 +5,7 @@ imports:
   - "_quotes.yml"
   - "_supsub.yml"
   - "_times.yml"
+  - "_fullwidth.yml"
 matches:
   # Personal stuff
   - trigger: ":mfg"
@@ -16,9 +17,6 @@ matches:
   - triggers: [ ":rumfg", ":rusmfg", ":rubr", ":ruwbr" ]
     label: "С уважением"
     replace: "С уважением,\nОливер Шнайдер"
-  - trigger: ":fullwidth?"
-    label: "Full width question mark"
-    replace: "？"
-  - trigger: ":fullwidth:"
-    label: "Full width colon"
-    replace: "："
+  - triggers: [ ":ellipsis" ]
+    label: "Ellipsis …"
+    replace: "…"
