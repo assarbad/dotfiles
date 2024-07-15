@@ -6,6 +6,7 @@ imports:
   - "_supsub.yml"
   - "_times.yml"
   - "_fullwidth.yml"
+  - "_special.yml"
 matches:
   # Personal stuff
   - trigger: ":mfg"
@@ -17,6 +18,3 @@ matches:
   - triggers: [ ":rumfg", ":rusmfg", ":rubr", ":ruwbr" ]
     label: "С уважением"
     replace: "С уважением,\nОливер Шнайдер"
-  - triggers: [ ":ellipsis" ]
-    label: "Ellipsis …"
-    replace: "…"

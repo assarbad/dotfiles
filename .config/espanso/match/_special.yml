@@ -1,0 +1,76 @@
+matches:
+  - triggers: [ ":ellipsis", ":..." ]
+    label: "Ellipsis …"
+    replace: "…"
+  - triggers: [ ":div", ":/" ]
+    label: "Division Sign \u00f7"
+    replace: "\u00f7"
+  - triggers: [ ":mul", ":xmul" ]
+    label: "Multiplication Sign \u00d7"
+    replace: "\u00d7"
+  - triggers: [ ":dot", ":.mul" ]
+    label: "Dot Operator \u22c5"
+    replace: "\u22c5"
+  - triggers: [ ":inf", ":oo", ":00" ]
+    label: "Infinity \u221e"
+    replace: "\u221e"
+  - triggers: [ ":?!" ]
+    label: "Question Exclamation Mark \u2048"
+    replace: "\u2048"
+  - triggers: [ ":!?" ]
+    label: "Exclamation Question Mark \u2049"
+    replace: "\u2049"
+  - triggers: [ ":!!" ]
+    label: "Double Exclamation Mark \u203c"
+    replace: "\u203c"
+  - triggers: [ ":??" ]
+    label: "Double Question Mark \u2047"
+    replace: "\u2047"
+  - triggers: [ ":+-", ":plusminus" ]
+    label: "Plus Minus Symbol \u00b1"
+    replace: "\u00b1"
+  - triggers: [ ":<=", ":lt" ]
+    label: "Less-Than or Equal To \u2264"
+    replace: "\u2264"
+  - triggers: [ ":>=", ":gt" ]
+    label: "Greater-Than or Equal To \u2265"
+    replace: "\u2265"
+  - regex: ":(!|/)="
+    label: "Not Equal To \u2260"
+    replace: "\u2260"
+  - triggers: [ ":~=", ":approx", ":almost" ]
+    label: "Almost Equal To \u2248"
+    replace: "\u2248"
+  - triggers: [ ":\\SS", ":section" ]
+    label: "Section Sign \u00a7"
+    replace: "\u00a7"
+  - triggers: [ ":c/o" ]
+    label: "Care Of \u2105"
+    replace: "\u2105"
+  - triggers: [ ":trademark", ":TM" ]
+    label: "Trademark Sign \u2122"
+    replace: "\u2122"
+  - triggers: [ ":copy" ]
+    label: "Copyright Sign \u00a9"
+    replace: "\u00a9"
+  - triggers: [ ":reg" ]
+    label: "Registered Sign \u00ae"
+    replace: "\u00ae"
+  - triggers: [ ":pilcrow" ]
+    label: "Pilcrow Sign \u00b6"
+    replace: "\u00b6"
+  - triggers: [ ":rpilcrow" ]
+    label: "Pilcrow Sign \u204b"
+    replace: "\u204b"
+  - triggers: [ ":euro" ]
+    label: "Euro Sign \u20ac"
+    replace: "\u20ac"
+  - triggers: [ ":pound", ":pfund", ":libra" ]
+    label: "L B Bar Symbol \u2114"
+    replace: "\u2114"
+  - triggers: [ ":SZ" ]
+    label: "Latin Capital Letter Sharp S \u1e9e"
+    replace: "\u1e9e"
+  - triggers: [ ":emdash" ]
+    label: "Em Dash \u2014"
+    replace: "\u2014"
