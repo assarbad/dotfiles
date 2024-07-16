@@ -1,62 +1,62 @@
 matches:
-  - trigger: ":hi0:"
+  - triggers: [":sup0:", ":hi0:", ":^0"]
     label: "Superscript 0"
     replace: "⁰"
-  - trigger: ":hi1:"
+  - triggers: [":sup1:", ":hi1:", ":^1"]
     label: "Superscript 1"
     replace: "¹"
-  - trigger: ":hi2:"
+  - triggers: [":sup2:", ":hi2:", ":^2"]
     label: "Superscript 2"
     replace: "²"
-  - trigger: ":hi3:"
+  - triggers: [":sup3:", ":hi3:", ":^3"]
     label: "Superscript 3"
     replace: "³"
-  - trigger: ":hi4:"
+  - triggers: [":sup4:", ":hi4:", ":^4"]
     label: "Superscript 4"
     replace: "⁴"
-  - trigger: ":hi5:"
+  - triggers: [":sup5:", ":hi5:", ":^5"]
     label: "Superscript 5"
     replace: "⁵"
-  - trigger: ":hi6:"
+  - triggers: [":sup6:", ":hi6:", ":^6"]
     label: "Superscript 6"
     replace: "⁶"
-  - trigger: ":hi7:"
+  - triggers: [":sup7:", ":hi7:", ":^7"]
     label: "Superscript 7"
     replace: "⁷"
-  - trigger: ":hi8:"
+  - triggers: [":sup8:", ":hi8:", ":^8"]
     label: "Superscript 8"
     replace: "⁸"
-  - trigger: ":hi9:"
+  - triggers: [":sup9:", ":hi9:", ":^9"]
     label: "Superscript 9"
     replace: "⁹"
-  - triggers: [ ":_0:", ":lo0:" ]
+  - triggers: [":sub0", ":lo0:", ":_0:"]
     label: "Subscript 0"
     replace: "₀"
-  - triggers: [ ":_1:", ":lo1:" ]
+  - triggers: [":sub1", ":lo1:", ":_1:"]
     label: "Subscript 1"
     replace: "₁"
-  - triggers: [ ":_2:", ":lo2:" ]
+  - triggers: [":sub2", ":lo2:", ":_2:"]
     label: "Subscript 2"
     replace: "₂"
-  - triggers: [ ":_3:", ":lo3:" ]
+  - triggers: [":sub3", ":lo3:", ":_3:"]
     label: "Subscript 3"
     replace: "₃"
-  - triggers: [ ":_4:", ":lo4:" ]
+  - triggers: [":sub4", ":lo4:", ":_4:"]
     label: "Subscript 4"
     replace: "₄"
-  - triggers: [ ":_5:", ":lo5:" ]
+  - triggers: [":sub5", ":lo5:", ":_5:"]
     label: "Subscript 5"
     replace: "₅"
-  - triggers: [ ":_6:", ":lo6:" ]
+  - triggers: [":sub6", ":lo6:", ":_6:"]
     label: "Subscript 6"
     replace: "₆"
-  - triggers: [ ":_7:", ":lo7:" ]
+  - triggers: [":sub7", ":lo7:", ":_7:"]
     label: "Subscript 7"
     replace: "₇"
-  - triggers: [ ":_8:", ":lo8:" ]
+  - triggers: [":sub8", ":lo8:", ":_8:"]
     label: "Subscript 8"
     replace: "₈"
-  - triggers: [ ":_9:", ":lo9:" ]
+  - triggers: [":sub9", ":lo9:", ":_9:"]
     label: "Subscript 9"
     replace: "₉"
   - trigger: ":1/4"
