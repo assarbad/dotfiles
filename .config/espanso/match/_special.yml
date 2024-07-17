@@ -11,7 +11,7 @@ matches:
   - triggers: [ ":dot", ":.mul" ]
     label: "Dot Operator \u22c5"
     replace: "\u22c5"
-  - triggers: [ ":inf", ":oo", ":00" ]
+  - triggers: [ ":inf", ":oo" ]
     label: "Infinity \u221e"
     replace: "\u221e"
   - triggers: [ ":?!" ]
@@ -74,3 +74,12 @@ matches:
   - triggers: [ ":emdash" ]
     label: "Em Dash \u2014"
     replace: "\u2014"
+  - triggers: [ ":sqrt" ]
+    label: "Square Root \u221a"
+    replace: "\u221a"
+  - triggers: [ ":cbrt", ":cuberoot" ]
+    label: "Cube Root \u221b"
+    replace: "\u221b"
+  - triggers: [ ":permille", ":promille" ]
+    label: "Per Mille Sign \u2030"
+    replace: "\u2030"

@@ -1,4 +1,16 @@
 matches:
+  - triggers: [":o'0", ":uhr"]
+    label: "Superscript ⁰⁰"
+    replace: "⁰⁰"
+  - triggers: [":o'3", ":uhr"]
+    label: "Superscript ³⁰"
+    replace: "³⁰"
+  - triggers: [":o'1", ":uhr"]
+    label: "Superscript ¹⁵"
+    replace: "¹⁵"
+  - triggers: [":o'4", ":uhr"]
+    label: "Superscript ⁴⁵"
+    replace: "⁴⁵"
   - triggers: [":sup0:", ":hi0:", ":^0"]
     label: "Superscript 0"
     replace: "⁰"

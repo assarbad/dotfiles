@@ -1,0 +1,31 @@
+matches:
+  - triggers: [":href", ":url"]
+    label: "[Markdown] URL"
+    replace: |
+      [$|$]({{clipboard}})
+    force_mode: clipboard
+    vars:
+      - name: "clipboard"
+        type: "clipboard"
+  - trigger: ":pre"
+    label: "[Markdown] code block"
+    replace: |
+      ```
+      $|$
+      ```
+  - trigger: ":tt"
+    label: "[Markdown] monospaced text"
+    replace: |
+      `$|$`
+  - trigger: ":bold"
+    label: "[Markdown] bold text"
+    replace: |
+      **$|$**
+  - trigger: ":emph"
+    label: "[Markdown] emphasized (usually italic) text"
+    replace: |
+      _$|$_
+  - trigger: ":del"
+    label: "[Markdown] strikethrough text"
+    replace: |
+      ~~$|$~~
