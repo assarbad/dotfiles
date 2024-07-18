@@ -2,7 +2,7 @@ matches:
   - triggers: [ ":ellipsis", ":..." ]
     label: "Ellipsis …"
     replace: "…"
-  - triggers: [ ":div", ":/" ]
+  - triggers: [ ":div"] #, ":/" ]
     label: "Division Sign \u00f7"
     replace: "\u00f7"
   - triggers: [ ":mul", ":xmul" ]
