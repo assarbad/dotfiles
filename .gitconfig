@@ -60,8 +60,5 @@
 # External configuration
 [include]
 	path = ~/.gitrc.d/gitconfig.aliases
-[includeIf "onbranch:professional"]
-	path = ~/.gitrc.d/gitconfig.work
-[include]
 	path = ~/.gitrc.d/gitconfig.LOCAL
 	path = ~/.gitrc.d/gitconfig.USER

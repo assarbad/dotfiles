@@ -1,0 +1,4 @@
+filter_title: "[Olli's Wiki]"
+enable: true
+extra_includes:
+  - "../match/_dokuwiki.yml"
