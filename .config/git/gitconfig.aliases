@@ -32,6 +32,7 @@
 	smupdate = submodule update
 	smur = submodule update --recursive
 	smurr = submodule update --recursive --remote
+	spush = push --signed
 	squash = !echo 'Did you mean rebase?'
 	srebase = rebase --exec 'git commit --amend --no-edit -S'
 	stat = status

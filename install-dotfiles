@@ -227,8 +227,22 @@ fi
 if [[ -f "$TGTDIR/.config/alacritty/alacritty.yml" ]]; then # remove previously used alacritty.yml (now using .toml)
 	( set -x; rm -f -- "$TGTDIR/.config/alacritty/alacritty.yml" )
 fi
-if [[ -f "$TGTDIR/.gitrc.d/gitconfig.OS" ]]; then # remove previously generated gitconfig.OS
-	( set -x; rm -f -- "$TGTDIR/.gitrc.d/gitconfig.OS" )
+if [[ -f "$TGTDIR/.gitrc.d/gitconfig.LOCAL" && ! -f "$TGTDIR/.config/git/gitconfig.LOCAL" ]]; then
+	( set -x; mv -- "$TGTDIR/.gitrc.d/gitconfig.LOCAL" "$TGTDIR/.config/git"/ )
+fi
+if [[ -f "$TGTDIR/.gitrc.d/gitconfig.USER" && ! -f "$TGTDIR/.config/git/gitconfig.USER" ]]; then
+	( set -x; mv -- "$TGTDIR/.gitrc.d/gitconfig.USER" "$TGTDIR/.config/git"/ )
+fi
+if [[ -d "$TGTDIR/.gitrc.d" ]]; then
+	( set -x; rm -rf -- "$TGTDIR/.gitrc.d" )
+fi
+if [[ -f "$TGTDIR/.gitconfig" ]]; then
+	( set -x; rm -f -- "$TGTDIR/.gitconfig" )
+fi
+if [[ -f "$TGTDIR/.cargo/config" && ! -f "$TGTDIR/.cargo/config.toml" ]]; then
+	( set -x; mv -- "$TGTDIR/.cargo/config" "$TGTDIR/.cargo/config.toml" )
+elif [[ -f "$TGTDIR/.cargo/config" && -f "$TGTDIR/.cargo/config.toml" ]]; then
+	( set -x; rm -f -- "$TGTDIR/.cargo/config" )
 fi
 
 # Fix the .gnupg/.ssh file/folder permissions

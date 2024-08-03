@@ -27,19 +27,19 @@ function info
 
 function configure_gitconfig
 {
-	local -r GITLOCALCFG="$TGTDIR/.gitrc.d/gitconfig.LOCAL"
+	local -r GITLOCALCFG="$TGTDIR/.config/git/gitconfig.LOCAL"
 	echo -n "" > "$GITLOCALCFG" # truncate existing config
 	if type -P delta > /dev/null 2>&1; then
-		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.delta' )
+		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.config/git/gitconfig.delta' )
 	fi
 	if type -P git-lfs > /dev/null 2>&1; then
-		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.lfs' )
+		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.config/git/gitconfig.lfs' )
 	fi
 	case "$OSTYPE" in
 		msys | cygwin)
 			if type -P cygpath > /dev/null 2>&1; then
 				if [[ -f "$(cygpath -mF 42)/GnuPG/bin/gpg.exe" ]]; then
-					( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.gitrc.d/gitconfig.gnupg4win' )
+					( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.config/git/gitconfig.gnupg4win' )
 				fi
 			fi
 			;;

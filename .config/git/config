@@ -18,7 +18,8 @@
 [core]
 	autocrlf = false
 	longpaths = true
-	fsmonitor = false
+	fsmonitor = true
+	untrackedcache = true
 [diff]
 	algorithm = histogram
 	submodule = log
@@ -59,6 +60,6 @@
 
 # External configuration
 [include]
-	path = ~/.gitrc.d/gitconfig.aliases
-	path = ~/.gitrc.d/gitconfig.LOCAL
-	path = ~/.gitrc.d/gitconfig.USER
+	path = ~/.config/git/gitconfig.aliases
+	path = ~/.config/git/gitconfig.LOCAL
+	path = ~/.config/git/gitconfig.USER
