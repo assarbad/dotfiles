@@ -1,4 +1,17 @@
 # For a complete introduction, visit the official docs at: https://espanso.org/docs/
+global_vars:
+  - name: firstname
+    type: echo
+    params:
+      echo: Oliver
+  - name: lastname
+    type: echo
+    params:
+      echo: Schneider
+  - name: fullname
+    type: echo
+    params:
+      echo: "{{firstname}} {{lastname}}"
 imports:
   - "_kaomoji.yml"
   - "_arrows.yml"
@@ -11,10 +24,10 @@ matches:
   # Personal stuff
   - trigger: ":mfg"
     label: "MFG, mit freundlichem Gruß"
-    replace: "Mit freundlichem Gruß,\nOliver Schneider"
-  - triggers: [ ":br",  ":wbr" ]
+    replace: "Mit freundlichem Gruß,\n{{fullname}}"
+  - trigger: ":wbr"
     label: "With best regards"
-    replace: "With best regards,\nOliver Schneider"
+    replace: "With best regards,\n{{fullname}}"
   - triggers: [ ":rumfg", ":rusmfg", ":rubr", ":ruwbr" ]
     label: "С уважением"
-    replace: "С уважением,\nОливер Шнайдер"
+    replace: "С уважением,\nОливер Шнайдер ({{fullname}})"

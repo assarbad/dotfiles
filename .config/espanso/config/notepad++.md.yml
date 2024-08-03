@@ -1,4 +1,6 @@
 filter_title: \.md\s+?-\s+?Notepad\+\+$
 enable: true
-extra_includes:
+includes:
   - "../match/_markdown.yml"
+extra_excludes:
+  - "../match/_latex.yml"

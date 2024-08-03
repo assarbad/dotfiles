@@ -1,0 +1,200 @@
+matches:
+    - triggers: [":href", ":url"]
+      label: "[LaTeX] \\href{...}"
+      replace: "\\href{{{clipboard}}}{$|$}"
+      vars:
+        - name: "clipboard"
+          type: "clipboard"
+    - trigger: ":tt"
+      label: "[LaTeX] \\texttt{...}"
+      replace: "\\texttt{$|$}"
+    - trigger: ":itemize"
+      label: "[LaTeX] item list"
+      replace: |
+        \begin{itemize}
+            \item $|$
+        \end{itemize}
+      force_mode: keys
+    - trigger: ":enum"
+      label: "[LaTeX] enumerate list"
+      replace: |
+        \begin{enumerate}
+            \item $|$
+        \end{enumerate}
+      force_mode: keys
+    - trigger: ":pre"
+      label: "[LaTeX] verbatim environment"
+      replace: |
+        \begin{verbatim}
+        $|$
+        \end{verbatim}
+      force_mode: keys
+    - trigger: ":center"
+      label: "[LaTeX] center environment"
+      replace: |
+        \begin{center}
+        $|$
+        \end{center}
+      force_mode: keys
+    # - trigger: ":brief"
+    #   label: "[LaTeX] Deutscher Brief (Vorlage/template)"
+    #   replace: |
+    #     % !TeX encoding = UTF-8
+    #     % !TeX spellcheck = de_DE_OLDSPELL
+    #     % !TEX TS-program = lualatex
+    #     \ifdefined\directlua\else
+    #         \errmessage{LuaTeX is required to typeset this document}
+    #         \csname @@end\expandafter\endcsname
+    #     \fi
+    #     \documentclass[version=last]{scrlttr2}
+    #     \usepackage{libertine}
+    #     \usepackage{polyglossia}
+    #     \setdefaultlanguage[spelling=old]{german}
+    #     \usepackage{scrdate}
+    #     %\usepackage[official]{eurosym}
+    #     \usepackage{microtype}
+    #     \setkomavar{date}{\todaysname, \ISOToday}
+    #     \usepackage[autostyle,german=guillemets]{csquotes}
+    #     %\usepackage{setspace}
+    #     %\usepackage{pdfpages}
+    #     \usepackage[hidelinks]{hyperref}
+    #     \usepackage{fontspec-luatex}
+    #     %o\usepackage{lua-visual-debug}
+    #     %% Schriftarten vordefinieren
+    #     %\setmainfont{Vollkorn}
+    #     \setsansfont{Linux Biolinum O}
+    #     \setmonofont{TeX Gyre Cursor}
+    #     %% Schriftauswahl:
+    #     %% ---------------
+    #     %% Alegreya **
+    #     %% Alegreya Sans * ()ohne Serifen)
+    #     %% Antykwa Poltawskiego *
+    #     %% Antykwa Torunska (etwas sperrig)
+    #     %% Caladea *
+    #     %% CMU Concrete
+    #     %% CMU Typewriter Text Variable Width
+    #     %% Cormorant
+    #     %% Cormorant Garamond **
+    #     %% EB Garamond **
+    #     %% EB Garamond SC
+    #     %% Eczar * (Richtung Vollkorn)
+    #     %% Gentium **
+    #     %% Inknut Antiqua (etwas sperrig, Richtung Vollkorn)
+    #     %% Libre Baskerville **
+    #     %% Linux Biolinum O * (ohne Serifen, aber schick)
+    #     %% Linux Libertine O **
+    #     %% Linux Libertine Mono O (feste Schriftbreite)
+    #     %% Nimbus Roman
+    #     %% Nimbus Sans (ohne Serifen, eher für Doku)
+    #     %% Noto Serif
+    #     %% Rasa *
+    #     %% Source Code Pro (feste Schriftbreite)
+    #     %% TeX Gyre Bonum
+    #     %% TeX Gyre Cursor (feste Schriftbreite)
+    #     %% TeX Gyre Pagella
+    #     %% TeX Gyre PagellaX
+    #     %% TeX Gyre Schola
+    #     %% TeX Gyre Termes
+    #     %% TeX Gyre TermesX
+    #     %% URW Bookman L
+    #     %% Vollkorn **
+
+    #     \setlength{\parindent}{0pt}
+
+    #     %% Unterschrift soll immer links erscheinen, ohne Einrückung
+    #     \renewcommand\raggedsignature{\raggedright}
+
+    #     %\IfFontExistsTF{Euro Plate}{\newfontface\feschrift{Euro Plate}}{\newcommand{\feschrift}[1]{\texttt{#1}}}
+
+    #     %% Absendername erhält den Font der Absenderadresse (Sans).
+    #     \setkomafont{fromname}{%
+    #         \usekomafont{backaddress}%
+    #         \Huge%
+    #     }
+
+    #     \KOMAoptions{DIV=15} % nutzt die Papierbreite besser aus
+    #     \begin{document}
+
+    #     \begin{letter}{Empfängeradresse}
+    #     \setkomavar{subject}{...}
+    #     \setkomavar{fromname}{{{fullname}}}
+    #     \setkomavar{fromaddress}{...}
+    #     %% Sollen die folgenden Absenderdetails im Briefkopf erscheinen, müssen die
+    #     %% entsprechenden Klassenoptionen gesetzt werden, bspw.: fromemail=on
+    #     \setkomavar{fromphone}[Telefon:~]{+49 ...}
+    #     %%\setkomavar{frommobilephone}[]{}
+    #     %%\setkomavar{fromurl}{}
+    #     %%\setkomavar{frombank}{}
+
+    #     \KOMAoptions{fontsize=12pt}
+    #     \KOMAoptions{foldmarks=HP}
+    #     \KOMAoptions{fromalign=center}
+    #     \KOMAoptions{fromrule=aftername}
+    #     \KOMAoptions{parskip=true}
+    #     \KOMAoptions{enlargefirstpage=true}
+
+    #     %% Use the footer for something useful
+    #     \setkomavar{firstfoot}{%
+    #         \parbox[t]{\textwidth}{%
+    #             \sffamily
+    #             \footnotesize
+    #             \centering
+    #             \Ifkomavarempty{fromemail}{}{%
+    #                 \usekomavar*{fromemail}%
+    #                 \usekomavar{fromemail}%
+    #             }%
+    #             \Ifkomavarempty{fromphone}{}{%
+    #                 \Ifkomavarempty{fromemail}{}{,~}%
+    #                 \usekomavar*{fromphone}%
+    #                 \usekomavar{fromphone}%
+    #             }%
+    #             \Ifkomavarempty{frommobilephone}{}{%
+    #                 \Ifkomavarempty{fromemail}{\Ifkomavarempty{fromphone}{}{,~}}{,~}
+    #                 \usekomavar*{frommobilephone}
+    #                 \usekomavar{frommobilephone}
+    #             }%
+    #             \Ifkomavarempty{frombank}{}{%
+    #                 \Ifkomavarempty{fromemail}{\Ifkomavarempty{fromphone}{\Ifkomavarempty{frommobilephone}{}{\\}}{\\}}{\\}
+    #                 \usekomavar{frombank}
+    #             }%
+    #         }%
+    #     }
+
+    #     \opening{Sehr geehrte Damen und Herren,}
+
+    #     $|$
+
+    #     \closing{Vielen Dank und mit bestem Gruß,}
+
+    #     \end{letter}
+    #     \end{document}
+    #   force_mode: clipboard
+    # - trigger: ":article"
+    #   label: "[LaTeX] article"
+    #   replace: |
+    #     % !TeX encoding = UTF-8
+    #     % !TeX spellcheck = en_GB
+    #     % !TEX TS-program = lualatex
+    #     \ifdefined\directlua\else
+    #         \errmessage{LuaTeX is required to typeset this document}
+    #         \csname @@end\expandafter\endcsname
+    #     \fi
+    #     \documentclass[version=last,paper=A4,fontsize=12pt,DIV=16]{scrartcl}
+    #     \usepackage{scrlayer-scrpage}
+    #     \usepackage{polyglossia}
+    #     \setmainlanguage{english}
+    #     %\setotherlanguages{russian,german}
+    #     \usepackage[autostyle]{csquotes}
+    #     %\usepackage{lua-visual-debug}
+    #     %\usepackage{tabularray}
+    #     %\usepackage{varwidth}
+    #     %\usepackage{enumitem}
+
+    #     %\newcommand{\ENG}[1]{\foreignlanguage{english}{\enablehyphenation{}#1}}
+    #     %\newcommand{\RUS}[1]{\foreignlanguage{russian}{\enablehyphenation{}#1}}
+    #     %\newcommand{\DEU}[1]{\foreignlanguage{german}{\enablehyphenation{}#1}}
+
+    #     \begin{document}
+    #     $|$
+    #     \end{document}
+    #   force_mode: clipboard

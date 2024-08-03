@@ -1,0 +1,6 @@
+filter_class: "TeXstudio"
+enable: true
+includes:
+  - "../match/_latex.yml"
+extra_excludes:
+  - "../match/_markdown.yml"

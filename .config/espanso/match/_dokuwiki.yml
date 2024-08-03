@@ -1,28 +1,28 @@
 matches:
-    - trigger: ":tt"
-      label: "[DokuWiki] ''<nowiki></nowiki>''"
-      replace: "''<nowiki>$|$</nowiki>''"
-    - trigger: ":pre"
-      label: "[DokuWiki] preformatted block"
-      replace: |
-        <file>
-        $|$
-        </file>
-    - triggers: [":c++", ":cpp"]
-      label: "[Jira] C++ code block"
-      replace: |
-        {code:cpp}
-        $|$
-        {code}
-    - triggers: [":shell", ":bash"]
-      label: "[DokuWiki] Generic shell code block"
-      replace: |
-        <code bash>
-        $|$
-        </code>
-    - trigger: ":code"
-      label: "[DokuWiki] Generic code block"
-      replace: |
-        <code>
-        $|$
-        <code>
+  - trigger: ":tt"
+    label: "[DokuWiki] ''<nowiki></nowiki>''"
+    replace: "''<nowiki>$|$</nowiki>''"
+  - trigger: ":pre"
+    label: "[DokuWiki] preformatted block"
+    replace: |
+      <file>
+      $|$
+      </file>
+  - triggers: [":c++", ":cpp"]
+    label: "[Jira] C++ code block"
+    replace: |
+      {code:cpp}
+      $|$
+      {code}
+  - triggers: [":shell", ":bash"]
+    label: "[DokuWiki] Generic shell code block"
+    replace: |
+      <code bash>
+      $|$
+      </code>
+  - trigger: ":code"
+    label: "[DokuWiki] Generic code block"
+    replace: |
+      <code>
+      $|$
+      <code>
