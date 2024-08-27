@@ -2,3 +2,6 @@ filter_title: "\\[Olli's Wiki\\]"
 enable: true
 includes:
   - "../match/_dokuwiki.yml"
+extra_excludes:
+  - "../match/_latex.yml"
+  - "../match/_markdown.yml"

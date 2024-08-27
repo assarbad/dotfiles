@@ -1,6 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if [[ -x "$HOME/.cargo/bin/cargo" ]]; then
+if [[ -d "$HOME/.cargo/bin" ]]; then
 	if [[ ":$PATH:" != *":$HOME/.cargo/bin:"* ]]; then
 		PATH="$HOME/.cargo/bin:$PATH"
 	fi

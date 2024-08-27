@@ -3,4 +3,5 @@ enable: true
 includes:
   - "../match/_latex.yml"
 extra_excludes:
+  - "../match/_dokuwiki.yml"
   - "../match/_markdown.yml"

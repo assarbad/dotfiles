@@ -15,7 +15,7 @@ SHELL := $(shell /usr/bin/env which bash)
 APAYLOAD:=./append_payload
 NPD:=--no-print-directory
 
-.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig
+.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig bashrc.link
 
 ifeq ($(strip $(DBG)),)
 endif
@@ -27,7 +27,7 @@ ifdef WEBDIR
 endif
 SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
-install: install.script configure.gitconfig
+install: install.script configure.gitconfig bashrc.link
 
 install.script: $(DOTFILES)/install-dotfiles
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
@@ -108,6 +108,10 @@ info:
 .INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
 .ONESHELL: help
 
+bashrc.link:
+	test -f $(TGTDIR)/.bashrc && rm -f -- $(TGTDIR)/.bashrc
+	$$SHELL -c "cd '$(TGTDIR)' && ln --symbolic .bash_profile .bashrc"
+
 else # on Windows
 
 ifeq ($(SHELL),C:/Program Files/Git/usr/bin/sh.exe)
@@ -157,6 +161,9 @@ clean-windows:
 	elif [[ -f "$(HOME)/.cargo/config" && -f "$(HOME)/.cargo/config.toml" ]]; then
 		( set -x; rm -f -- "$(HOME)/.cargo/config" )
 	fi
+	if [[ -f "$(HOME)/.bashrc" ]]; then
+		( set -x; rm -f -- "$(HOME)/.bashrc" )
+	fi
 
 install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig
 
@@ -164,7 +171,10 @@ $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
 	cp -f "$<" "$@"
 
-.PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows
+.PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows bashrc.link
+
+bashrc.link:
+	cp -alf -- $(TGTDIR)/.bash_profile $(TGTDIR)/.bashrc
 
 endif
 
