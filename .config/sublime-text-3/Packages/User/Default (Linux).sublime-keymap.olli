@@ -1,0 +1,9 @@
+[
+    // Toggle the default shell in panel
+    { "keys": ["ctrl+alt+c"], "command": "toggle_terminus_panel" },
+    {
+        "keys": ["ctrl+k", "ctrl+d"],
+        "command": "rust_fmt_format_buffer",
+        "context": [{"key": "selector", "operator": "equal", "operand": "source.rust"}]
+    }
+]

@@ -6,8 +6,14 @@
 # Commands and operations
 [advice]
 	addIgnoredFile = false
+	statusUoption = false
+	addEmptyPathspec = false
 [branch]
 	sort = -committerdate
+[checkout]
+	workers = 0
+[clone]
+	filterSubmodules = true
 [color]
 	ui = auto
 	grep = auto
@@ -19,17 +25,30 @@
 	autocrlf = false
 	longpaths = true
 	fsmonitor = true
-	untrackedcache = true
+	untrackedCache = true
+	commitGraph = true
+	#ignoreStat = true
+	preloadIndex = true
+	bigFileThreshold = 64m
 [diff]
 	algorithm = histogram
 	submodule = log
 	context = 7
 	colorMovedWS = allow-indentation-change
 	colorMoved = default
+	ignoreSubmodules = dirty
+[feature]
+	manyFiles = true
 [fetch]
 	fsckobjects = true
 	prune = true
-	prunetags = true
+	pruneTags = true
+	writeCommitGraph = true
+	parallel = 0
+[format]
+	pretty = ls
+[gc]
+	writeCommitGraph = true
 [help]
 	autocorrect = 0
 [init]
@@ -39,6 +58,8 @@
 	decorate = short
 [merge]
 	conflictstyle = diff3
+[pretty]
+	ls = format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\"
 [push]
 	default = current
 	autoSetupRemote = true
@@ -52,6 +73,8 @@
 	enabled = true
 [status]
 	submoduleSummary = true
+	# showUntrackedFiles = no
+	# aheadBehind = false
 [submodule]
 	fetchJobs = 8
 	recurse = true

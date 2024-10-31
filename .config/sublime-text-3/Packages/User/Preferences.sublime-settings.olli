@@ -1,0 +1,14 @@
+{
+	"ignored_packages":
+	[
+		"Rust",
+		"Vintage",
+	],
+	"color_scheme": "Packages/Color Scheme - Sleeplessmind/Sleeplessmind.tmTheme",
+	"font_face": "Source Code Pro",
+	"font_size": 14,
+	"spell_check": true,
+	"dictionary": "Packages/User/English (American).dic",
+	"translate_tabs_to_spaces": true,
+	"index_files": true,
+}

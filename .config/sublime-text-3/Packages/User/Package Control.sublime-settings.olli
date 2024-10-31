@@ -1,0 +1,19 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"Color Scheme - Sleeplessmind",
+		"Color Scheme - Vintage Terminal",
+		"LSP",
+		"LSP-file-watcher-chokidar",
+		"LSP-rust-analyzer",
+		"Package Control",
+		"Rust Enhanced",
+		"RustFmt",
+		"Terminus",
+		"TOML",
+	],
+}

@@ -2,10 +2,11 @@
 	Amend = commit --amend --no-edit
 	amend = commit --amend
 	au = !git diff --name-only --ignore-submodules --diff-filter=d -z | xargs -0 -r git add
-	Blame = blame -w -C -C -C -C
+	Blame = blame --color-by-age -w -M -C -C -C -C
 	branches = for-each-ref --sort=-committerdate --format=\"%(color:yellow)%(authordate:iso)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
 	delta = diff
 	diffs = diff --staged
+	Clone = clone --filter=blob:none --recurse-submodules --also-filter-submodules
 	ffm = merge --ff-only
 	gconf = config --global
 	gconfig = config --global
@@ -14,15 +15,18 @@
 	idshort = show -s --format=%h
 	log1 = log --oneline
 	ls = log --stat --decorate --pretty=format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\" --graph
+	mksparse = !git config --local core.sparseCheckout true && git sparse-checkout init --cone --sparse-index
 	move = mv
 	nfm = merge --no-ff
 	noff = merge --no-ff
 	npdiff = !git --no-pager diff
 	npdiffs = !git --no-pager diffs
+	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local  gc.writeCommitGraph && git update-index --index-version 4 && git commit-graph write --reachable
 	pushf = push --force-with-lease
 	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
 	rename = mv
 	search = log -p -S
+	shclone = clone --depth 1 --filter=blob:none --recurse-submodules --also-filter-submodules
 	shortid = show -s --format=%h
 	smeset = submodule foreach --recursive git reset
 	smetch = submodule foreach --recursive git fetch
@@ -35,11 +39,13 @@
 	spush = push --signed
 	squash = !echo 'Did you mean rebase?'
 	srebase = rebase --exec 'git commit --amend --no-edit -S'
+	st = status -uno
 	stat = status
 	stats = status
 	statu = status
 	tip = show -s --pretty=medium
 	tree = log --decorate --pretty=oneline --abbrev-commit --graph
+	unshallow = !git remote set-branches origin '*'; git fetch --unshallow --update-head-ok -v --depth=1
 	upstreams = for-each-ref --format="%(refname:short) %(upstream:track)" refs/heads
 	wcdiff = diff --word-diff=color
 	wcdiffs = diff --staged --word-diff=color

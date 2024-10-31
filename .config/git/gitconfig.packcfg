@@ -1,11 +1,7 @@
 [pack]
-	theads = 10
-	deltaCacheSize = 1
-	windowMemory = 500m
-	packSizeLimit = 500m
-	threads = 6
+	theads = 0
+	windowMemory = 512m
+	packSizeLimit = 512m
 	useSparse = true
-[gc]
-	aggressiveWindow = 150
 [http]
 	postBuffer = 157286400
