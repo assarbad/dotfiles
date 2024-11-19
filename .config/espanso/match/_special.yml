@@ -83,3 +83,51 @@ matches:
   - triggers: [ ":permille", ":promille" ]
     label: "Per Mille Sign \u2030"
     replace: "\u2030"
+  - triggers: [ ":bullet" ]
+    label: "Bullet \u2022"
+    replace: "\u2022"
+  - triggers: [ ":tribullet" ]
+    label: "Triangular Bullet \u2023"
+    replace: "\u2023"
+  - triggers: [ ":cdot" ]
+    label: "Middle Dot \u00b7"
+    replace: "\u00b7"
+  - triggers: [ ":bullop" ]
+    label: "Bullet Operator \u2219"
+    replace: "\u2219"
+  - triggers: [ ":celsius" ]
+    label: "Degree Celsius \u2103"
+    replace: "\u2103"
+  - triggers: [ ":kelvin" ]
+    label: "Kelvin \u212a"
+    replace: "\u212a"
+  - triggers: [ ":ohm", "omega" ]
+    label: "Ohm/Omega \u2126"
+    replace: "\u2126"
+  - triggers: [ ":alembic" ]
+    label: "Alembic \u2697"
+    replace: "\u2697"
+  - triggers: [ ":cog", ":gear" ]
+    label: "Gear/Cog \u2699"
+    replace: "\u2699"
+  - triggers: [ ":warning" ]
+    label: "Warning \u26a0"
+    replace: "\u26a0"
+  - triggers: [ ":highvolt", ":voltage" ]
+    label: "High Voltage \u26a1"
+    replace: "\u26a1"
+  - triggers: [ ":pencil" ]
+    label: "Pencil \u270f"
+    replace: "\u270f"
+  - triggers: [ ":check", ":checkmark" ]
+    label: "Checkmark \u2713"
+    replace: "\u2713"
+  - triggers: [ ":Check", ":Checkmark" ]
+    label: "Heavy Checkmark \u2714"
+    replace: "\u2714"
+  - triggers: [ ":ballotx" ]
+    label: "Ballot X \u2717"
+    replace: "\u2717"
+  - triggers: [ ":BallotX", ":Ballotx" ]
+    label: "Heavy Ballot X \u2718"
+    replace: "\u2718"
