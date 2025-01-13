@@ -57,17 +57,20 @@ function clean_path_var
 			setopt sh_word_split
 		fi
 		local IFS=:
-		for dir in "$PATH"; do
+		for dir in $PATH; do
+			[[ -z "$dir" || ! -d "$dir" ]] && continue
 			LASTDIR=$dir
-			[[ ! -d "$dir" ]] && continue
-			if command ls -lLd $dir 2>/dev/null | command grep -q '^d.......w. '; then
-				echo -e "\nDirectory $dir in PATH was world-writable, removed it from PATH!!!"
+			if command ls -lLd "$dir" 2> /dev/null | command grep -q '^d.......w. '; then
+				printf "\nDirectory %s in PATH was world-writable, removed it from PATH!!!\n" "$dir"
 			elif [[ "$NEWPATH" != "$dir" ]]; then
-				NEWPATH=$NEWPATH:$dir
+				NEWPATH="$NEWPATH:$dir"
 			fi
 		done
-		# Remove the leading colon and export this as the path
-		PATH=${NEWPATH:1:${#NEWPATH}}
+		if [[ -n "$NEWPATH" && "${NEWPATH:1}" != "$PATH" ]]; then
+			# Remove the leading colon and export this as the path
+			declare -x PATH="${NEWPATH:1}"
+			declare -p PATH
+		fi
 	fi
 	export PATH
 }
