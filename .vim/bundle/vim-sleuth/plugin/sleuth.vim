@@ -69,8 +69,8 @@ function! s:Guess(source, detected, lines) abort
       let waiting_on = '\*/'
     elseif line =~# '^\s*<\!--' && line !~# '-->'
       let waiting_on = '-->'
-    elseif line =~# '^[^"]*"""[^"]*$'
-      let waiting_on = '^[^"]*"""[^"]*$'
+    elseif line =~# '^[^"]*"""'
+      let waiting_on = '^[^"]*"""'
     elseif a:detected.filetype ==# 'go' && line =~# '^[^`]*`[^`]*$'
       let waiting_on = '^[^`]*`[^`]*$'
     elseif has_heredocs
@@ -212,7 +212,14 @@ function! s:FnmatchReplace(pat) abort
   elseif a:pat =~# '^{[+-]\=\d\+\.\.[+-]\=\d\+}$'
     return '\%(' . join(range(matchstr(a:pat, '[+-]\=\d\+'), matchstr(a:pat, '\.\.\zs[+-]\=\d\+')), '\|') . '\)'
   elseif a:pat =~# '^{.*\\\@<!\%(\\\\\)*,.*}$'
-    return '\%(' . substitute(a:pat[1:-2], ',\|\%(\\.\|{[^\{}]*}\|[^,]\)*', '\=submatch(0) ==# "," ? "\\|" : s:FnmatchTranslate(submatch(0))', 'g') . '\)'
+    let done = []
+    let rest = a:pat[0:-2]
+    while !empty(rest)
+      let match = matchstr(rest, '\%(\\.\|{[^\{}]*}\|[^,]\)*', 1)
+      let rest = strpart(rest, len(match) + 1)
+      call add(done, s:FnmatchTranslate(match))
+    endwhile
+    return '\%(' . join(done, '\|') . '\)'
   elseif a:pat =~# '^{.*}$'
     return '{' . s:FnmatchTranslate(a:pat[1:-2]) . '}'
   elseif a:pat =~# '^\[!'
