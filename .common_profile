@@ -345,37 +345,19 @@ function load_ssh_agent
 	fi
 
 	# Load the SSH agent and if it's loaded already, add the default identity
-	if \
-		type -p ssh-agent > /dev/null 2>&1 && \
-		type -p rm > /dev/null 2>&1 && \
-		type -p find > /dev/null 2>&1 && \
-		type -p ln > /dev/null 2>&1 && \
-		[[ -d "$HOME/.ssh" && -w "$HOME/.ssh" ]]
-	then
-		local USERSOCK SSHAGENT SSHAGENTARGS
+	if type -p ssh-agent > /dev/null 2>&1; then
+		local SSHAGENT SSHAGENTARGS TMUXEXE
 		SSHAGENT=$(type -p ssh-agent)
 		SSHAGENTARGS="-s"
-		USERSOCK="$HOME/.ssh/ssh_auth_sock"
-		if [[ -z "$SSH_AUTH_SOCK" ]] && [[ -x "$SSHAGENT" ]]; then
-			eval "$($SSHAGENT $SSHAGENTARGS)"
-			[[ -n "$SSH_AGENT_PID" ]] && trap "kill $SSH_AGENT_PID" 0
-			[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
-			ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
-		elif [[ "$SSH_AUTH_SOCK" == "$USERSOCK" ]] && [[ -h "$SSH_AUTH_SOCK" ]]; then
-			echo -n ""
-		elif [[ -S "$SSH_AUTH_SOCK" ]]; then
-			echo "Using existing socket: '$SSH_AUTH_SOCK'"
-			[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
-			ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
-		else
-			SSH_AUTH_SOCK=$(find /tmp/ssh-* -type s -name agent.\* -uid $(id -u) 2> /dev/null|head -n 1)
-			if [[ -n "$SSH_AUTH_SOCK" ]]; then
-				echo "Found existing socket: $SSH_AUTH_SOCK"
-				[[ -h "$USERSOCK" ]] && rm -f "$USERSOCK"
-				ln -s "$SSH_AUTH_SOCK" "$USERSOCK"
-			fi
+		TMUXEXE="$(type -p tmux 2> /dev/null)"
+		if [[ -v TMUX && -x "$TMUXEXE" ]]; then
+			printf "${cY}Reusing${cZ} running ${cB}ssh-agent${cZ} inside tmux\n"
+			eval "$("$TMUXEXE" show-environment -s)"
+		elif [[ -z "$SSH_AUTH_SOCK" && -x "$SSHAGENT" ]]; then
+			printf "${cY}Starting${cZ} ${cB}ssh-agent${cZ} inside tmux\n"
+			eval "$("$SSHAGENT" $SSHAGENTARGS)"
+			[[ -n "$SSH_AGENT_PID" && ! -v TMUX ]] && trap "kill $SSH_AGENT_PID" 0
 		fi
-		export SSH_AUTH_SOCK="$USERSOCK"
 	fi
 	if type -p stat > /dev/null 2>&1; then
 		local LDR="$HOME/.ssh/.load"

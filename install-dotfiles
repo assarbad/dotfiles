@@ -221,6 +221,9 @@ fi
 if [[ ! -d "$DOTFIROOT/.bazaar" && -d "$TGTDIR/.bazaar" ]]; then # no longer in use
 	( set -x; rm -rf -- "$TGTDIR/.bazaar" )
 fi
+if [[ ! -d "$DOTFIROOT/.tmux" && -d "$TGTDIR/.tmux" ]]; then # no longer in use
+	( set -x; rm -rf -- "$TGTDIR/.tmux" )
+fi
 if [[ -f "$TGTDIR/Mercurial.ini" && -z "$COMSPEC" ]]; then # remove previously copied Mercurial.ini
 	( set -x; rm -f -- "$TGTDIR/Mercurial.ini" )
 fi
