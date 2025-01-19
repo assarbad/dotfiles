@@ -269,15 +269,16 @@ function convenience_aliases
 	fi
 	if type -p vim > /dev/null 2>&1 && type -p grep > /dev/null 2>&1; then
 		export EDITOR=$(type -p vim)
-		# Except on Windows and when in the terminal we set GIT_EDITOR
-		if [[ -t 1 && "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" && -z "$COMSPEC" ]] && type -p git > /dev/null 2>&1; then
-			export GIT_EDITOR=$(type -p vim)
+		if [[ -t 1 && -n "$EDITOR" ]] && type -p git > /dev/null 2>&1 && [[ -n "$(type -p git > /dev/null 2>&1)" ]]; then
+			export GIT_EDITOR="$EDITOR"
 		fi
-		export VISUAL=$(type -p vim)
+		if [[ -n "$EDITOR" ]]; then
+			export VISUAL=$(type -p vim)
+		fi
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
 		fi
-		if (vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
+		if (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
 			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -p -N -n -i NONE${VIMRC:+ $VIMRC}"
 		else
 			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
@@ -354,7 +355,16 @@ function load_ssh_agent
 			eval "$("$TMUXEXE" show-environment -s)"
 			local -i NUMKEYS
 			if type -p ssh-add > /dev/null 2>&1 && type -p wc > /dev/null 2>&1; then
-				NUMKEYS=$(command ssh-add -l 2> /dev/null | command wc -l)
+				NUMKEYS=$( \
+					command ssh-add -ql 2> /dev/null | \
+					while read -r length fingerprint path; do \
+						case "$length" in \
+							[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) \
+								printf "%s\n" "$fingerprint"\
+								;; \
+						esac; \
+					done | command wc -l \
+				)
 			fi
 			if [[ -v NUMKEYS ]]; then
 				printf "${cY}Reusing${cZ} running ${cB}ssh-agent${cZ} inside tmux (%d keys)\n" "$NUMKEYS"
