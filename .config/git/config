@@ -17,6 +17,8 @@
 [color]
 	ui = auto
 	grep = auto
+[column]
+	ui = auto
 [commit]
 	gpgsign = true
 	verbose = true
@@ -37,9 +39,12 @@
 	colorMovedWS = allow-indentation-change
 	colorMoved = default
 	ignoreSubmodules = dirty
+	mnemonicPrefix = true
+	renames = true
 [feature]
 	manyFiles = true
 [fetch]
+	all = true
 	fsckobjects = true
 	prune = true
 	pruneTags = true
@@ -49,6 +54,8 @@
 	pretty = ls
 [gc]
 	writeCommitGraph = true
+[grep]
+	patternType = perl
 [help]
 	autocorrect = 0
 [init]
@@ -65,12 +72,15 @@
 	autoSetupRemote = true
 	followTags = true
 [rebase]
-	autostash = true
+	autoSquash = true
+	autoStash = true
 	missingCommitsCheck = error
+	updateRefs = true
 [receive]
 	fsckObjects = true
 [rerere]
 	enabled = true
+	autoUpdate = true
 [status]
 	submoduleSummary = true
 	# showUntrackedFiles = no
@@ -78,6 +88,8 @@
 [submodule]
 	fetchJobs = 8
 	recurse = true
+[tag]
+	sort = version:refname
 [transfer]
 	fsckobjects = true
 
