@@ -2,9 +2,10 @@
 	Amend = commit --amend --no-edit
 	amend = commit --amend
 	au = !git diff --name-only --ignore-submodules --diff-filter=d -z | xargs -0 -r git add
-	branches = for-each-ref --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
-	brnchs = for-each-ref --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/heads
-	brranches = for-each-ref --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/heads
+	br = branch --ignore-case --sort=-committerdate --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) -> %(contents:subject) %(color:green)(%(committerdate:relative)%(color:reset), %(color:blue)%(committerdate:format:%Y-%m-%d %H:%M:%S)%(color:green)) %(color:red)[%(authorname)]%(color:reset)'
+	branches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
+	brnchs = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/heads
+	brranches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
 	delta = diff
 	diffs = diff --staged
 	cln = clone --filter=blob:none --recurse-submodules --also-filter-submodules
@@ -42,15 +43,15 @@
 	spush = push --signed
 	squash = !echo 'Did you mean rebase?'
 	srebase = rebase --exec 'git commit --amend --no-edit -S'
+	s = status -uno
 	st = status -uno
-	sta = status -uno
 	stat = status -uno
 	stats = status -uno
 	statu = status -uno
 	tip = show -s --pretty=medium
 	tree = log --decorate --pretty=oneline --abbrev-commit --graph
 	unshallow = !git remote set-branches origin '*'; git fetch --unshallow --update-head-ok -v --depth=1
-	upstreams = for-each-ref --format="%(refname:short) %(upstream:track)" refs/heads
+	upstreams = for-each-ref --color=always --format='%(align:30)%(color:white)%(color:bold)%(refname:short)%(color:reset)%(end) %(color:green)%(upstream:short)%(color:reset)' refs/heads
 	wcdiff = diff --word-diff=color
 	wcdiffs = diff --staged --word-diff=color
 	wdiff = diff --word-diff
