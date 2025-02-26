@@ -27,7 +27,7 @@
 	pushf = push --force-with-lease
 	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
 	rename = mv
-	rb = !f() { git restore --staged "$@" && git restore "$@"; }; f
+	rb = "!f() { git restore --staged \"$@\" && git restore \"$@\"; }; f"
 	search = log -p -S
 	shclone = clone --depth 1 --filter=blob:none --recurse-submodules --also-filter-submodules
 	shortid = show -s --format=%h
