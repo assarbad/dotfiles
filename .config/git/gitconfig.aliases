@@ -1,58 +1,66 @@
 [alias]
-	Amend = commit --amend --no-edit
+	Amend = !git amend --no-edit
 	amend = commit --amend
+	aliases = config --get-regexp alias\\.
 	au = !git diff --name-only --ignore-submodules --diff-filter=d -z | xargs -0 -r git add
 	br = branch --ignore-case --sort=-committerdate --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) -> %(contents:subject) %(color:green)(%(committerdate:relative)%(color:reset), %(color:blue)%(committerdate:format:%Y-%m-%d %H:%M:%S)%(color:green)) %(color:red)[%(authorname)]%(color:reset)'
-	branches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
-	brnchs = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/heads
-	brranches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\" refs/remotes refs/heads
+	branches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\"
+	brnchs = !git branches refs/heads
+	brranches =  !git branches refs/remotes refs/heads
 	delta = diff
 	diffs = diff --staged
 	cln = clone --filter=blob:none --recurse-submodules --also-filter-submodules
 	ffm = merge --ff-only
-	gconf = config --global
+	gconf = !git gconfig
 	gconfig = config --global
-	glog = log --graph --decorate --oneline --abbrev=2
+	glog = log --graph --simplify-by-decoration --oneline --all
 	history = blame --color-by-age -w -M -C -C -C -C
 	id = show -s --format=%H
 	idshort = show -s --format=%h
+	lg = !git -P log --pretty=format:\"%C(magenta)%h%C(reset) %C(red)%d%C(reset) %s %C(dim green)(%cr) [%an]\" --abbrev-commit -50 && echo \"\"
 	log1 = log --oneline
 	ls = log --stat --decorate --pretty=format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\" --graph
 	mksparse = !git config --local core.sparseCheckout true && git sparse-checkout init --cone --sparse-index
 	move = mv
 	nfm = merge --no-ff
-	noff = merge --no-ff
-	npdiff = !git --no-pager diff
-	npdiffs = !git --no-pager diffs
+	noff = !git nfm
+	npdiff = !git -P diff
+	npdiffs = !git -P diffs
+	nuke = reset --hard
 	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local  gc.writeCommitGraph && git update-index --index-version 4 && git commit-graph write --reachable
+	pf = !git pushf
 	pushf = push --force-with-lease
 	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
 	rename = mv
 	rb = "!f() { git restore --staged \"$@\" && git restore \"$@\"; }; f"
+	rv = remote -v
 	search = log -p -S
 	shclone = clone --depth 1 --filter=blob:none --recurse-submodules --also-filter-submodules
 	shortid = show -s --format=%h
-	smeset = submodule foreach --recursive git reset
-	smetch = submodule foreach --recursive git fetch
-	smitch = submodule foreach --recursive git switch
-	smull = submodule foreach --recursive git pull
+	smf = submodule foreach --recursive
+	smeset = !git smf \"git reset\"
+	smetch = !git smf \"git fetch\"
+	smitch = !git smf \"git switch\"
+	smull = !git smf \"git pull\"
 	smupd = submodule update
-	smupdate = submodule update
-	smur = submodule update --recursive
-	smurr = submodule update --recursive --remote
+	smupdate = !git smupd
+	smur = !git smupd --recursive
+	smurr = !git smur --remote
 	spush = push --signed
 	squash = !echo 'Did you mean rebase?'
 	srebase = rebase --exec 'git commit --amend --no-edit -S'
 	s = status -uno
-	st = status -uno
-	stat = status -uno
-	stats = status -uno
-	statu = status -uno
+	st = !git s
+	stat = !git s
+	stats = !git s
+	statu = !git s
 	tip = show -s --pretty=medium
+	tips = !git tip --stat
+	top = !git rev-parse --show-toplevel
 	tree = log --decorate --pretty=oneline --abbrev-commit --graph
 	unshallow = !git remote set-branches origin '*'; git fetch --unshallow --update-head-ok -v --depth=1
 	upstreams = for-each-ref --color=always --format='%(align:30)%(color:white)%(color:bold)%(refname:short)%(color:reset)%(end) %(color:green)%(upstream:short)%(color:reset)' refs/heads
-	wcdiff = diff --word-diff=color
-	wcdiffs = diff --staged --word-diff=color
-	wdiff = diff --word-diff
-	wdiffs = diff --staged --word-diff
+	wcdiff = diff --word-diff=color --ignore-space-at-eol
+	wcdiffs = !git wcdiff --staged
+	wdiff = diff --word-diff --ignore-space-at-eol
+	wdiffs = !git wdiff --staged
