@@ -93,6 +93,10 @@
 [transfer]
 	fsckobjects = true
 
+[url "ssh://git@github.com/"]
+	pushInsteadOf = https://github.com/
+	insteadOf = git@github.com:
+
 # External configuration
 [include]
 	path = ~/.config/git/gitconfig.aliases
