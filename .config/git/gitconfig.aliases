@@ -50,10 +50,10 @@
 	squash = !echo 'Did you mean rebase?'
 	srebase = rebase --exec 'git commit --amend --no-edit -S'
 	s = status -uno
-	st = !git s
-	stat = !git s
-	stats = !git s
-	statu = !git s
+	st = !git status
+	stat = !git status
+	stats = !git status
+	statu = !git status
 	tip = show -s --pretty=medium
 	tips = !git tip --stat
 	top = !git rev-parse --show-toplevel

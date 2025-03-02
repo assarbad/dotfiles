@@ -8,6 +8,7 @@
 	addIgnoredFile = false
 	statusUoption = false
 	addEmptyPathspec = false
+	statusHints = false
 [branch]
 	sort = -committerdate
 [checkout]
@@ -20,9 +21,9 @@
 [column]
 	ui = auto
 [commit]
+	cleanup = scissors
 	gpgsign = true
 	verbose = true
-	cleanup = scissors
 [core]
 	autocrlf = false
 	longpaths = true
@@ -39,6 +40,7 @@
 	colorMovedWS = allow-indentation-change
 	colorMoved = default
 	ignoreSubmodules = dirty
+	interHunkContext = 3
 	mnemonicPrefix = true
 	renames = true
 [feature]
@@ -53,6 +55,7 @@
 [format]
 	pretty = ls
 [gc]
+	rerereResolved = 365
 	writeCommitGraph = true
 [grep]
 	patternType = perl
@@ -63,15 +66,18 @@
 [log]
 	date = iso
 	decorate = short
+	follow = true
 [merge]
+	autoStash = true
 	conflictstyle = diff3
 [pretty]
 	ls = format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\"
 [push]
-	default = current
 	autoSetupRemote = true
+	default = current
 	followTags = true
 [rebase]
+	abbreviateCommands = true
 	autoSquash = true
 	autoStash = true
 	missingCommitsCheck = error
@@ -79,8 +85,11 @@
 [receive]
 	fsckObjects = true
 [rerere]
-	enabled = true
 	autoUpdate = true
+	enabled = true
+[stash]
+	showPatch = true
+	showIncludeUntracked = true
 [status]
 	submoduleSummary = true
 	# showUntrackedFiles = no
@@ -94,8 +103,8 @@
 	fsckobjects = true
 
 [url "ssh://git@github.com/"]
-	pushInsteadOf = https://github.com/
 	insteadOf = git@github.com:
+	pushInsteadOf = https://github.com/
 
 # External configuration
 [include]
