@@ -1,7 +1,7 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 if [[ -x "$HOME/bin/musl/musl-gcc" ]]; then
-	if [[ ":$PATH:" != *":$HOME/bin/musl/musl-gcc:"* ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin/musl:"* ]]; then
 		PATH="$HOME/bin/musl:$PATH"
 	fi
 fi

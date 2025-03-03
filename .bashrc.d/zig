@@ -1,0 +1,7 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+
+if [[ -x "$HOME/bin/zig/zig" || -x "$HOME/bin/zig/zig.exe" ]]; then
+	if [[ ":$PATH:" != *":$HOME/bin/zig:"* ]]; then
+		PATH="$HOME/bin/zig:$PATH"
+	fi
+fi
