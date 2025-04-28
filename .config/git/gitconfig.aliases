@@ -30,7 +30,7 @@
 	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local  gc.writeCommitGraph && git update-index --index-version 4 && git commit-graph write --reachable
 	pf = !git pushf
 	pushf = push --force-with-lease
-	recommit = !env GIT_COMMITTER_DATE=\"$(date)\" git commit --amend --no-edit --date \"$(date)\"
+	recommit = !env TZ=UTC GIT_COMMITTER_DATE=\"$(date --utc -Iseconds)\" git commit --amend --no-edit --date \"$(date --utc -Iseconds)\"
 	rename = mv
 	rb = restore -SW
 	rv = remote -v

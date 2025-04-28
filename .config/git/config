@@ -9,6 +9,8 @@
 	statusUoption = false
 	addEmptyPathspec = false
 	statusHints = false
+[blame]
+	date = iso
 [branch]
 	sort = -committerdate
 [checkout]

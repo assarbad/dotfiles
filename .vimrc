@@ -198,3 +198,8 @@ if has('diff') && &diff
 	nmap <leader>[ [c
 	nmap <leader>] ]c
 endif
+
+" Only disable sleuth if it's loaded (no error if plugin absent)
+if exists('g:loaded_sleuth')
+	let g:sleuth_automatic = 0  " Disable line-ending detection
+endif
