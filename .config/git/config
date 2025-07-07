@@ -73,7 +73,7 @@
 	autoStash = true
 	conflictstyle = diff3
 [pretty]
-	ls = format:\"commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n\"
+	ls = format:commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n
 [push]
 	autoSetupRemote = true
 	default = current
