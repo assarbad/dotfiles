@@ -35,6 +35,15 @@ function add_home_bin
 	fi
 }
 
+function add_cargo_bin
+{
+	if [[ -d "$home/.cargo/bin" ]]; then
+		if [[ ":$path:" != *":$home/.cargo/bin:"* ]]; then
+			path="$home/.cargo/bin:$path"
+		fi
+	fi
+}
+
 function set_remote_timeout
 {
 	# Superuser will get a timeout for the shell if it's a remote shell via SSH
@@ -149,6 +158,7 @@ function system_specific_aliases
 	}
 
 	if [[ -e "/etc/debian_version" ]] || type -p apt > /dev/null 2>&1; then
+		# by NOT prepending command we defer to the sudo'd apt-alias created below
 		alias search='apt search'
 		alias show='apt show'
 		alias upgrade='apt update && apt full-upgrade'
@@ -158,6 +168,7 @@ function system_specific_aliases
 		alias autoremove='apt autoremove'
 	fi
 	if [[ -e "/etc/debian_version" ]] || type -p dpkg > /dev/null 2>&1; then
+		# by prepending command we invoke the actual binary, not the sudo'd dpkg-alias created below
 		alias lp='command dpkg -l'
 		alias lpg='command dpkg -l|grep -iE'
 	fi
@@ -235,6 +246,36 @@ function system_specific_aliases
 		fi
 	fi
 	unset -f __create_abs_alias
+}
+
+function try_source_completions
+{
+	if type -p "$1" > /dev/null 2>&1; then
+		if command "$@" > /dev/null 2>&1; then
+			source <(command "$@")
+		else
+			echo -e "${cY}WARNING${cZ}: ${cW}$1${cZ} exists, but testing the command to source completions failed!"
+		fi
+	fi
+}
+
+function tool_aliases_and_init
+{
+	if type -p ast-grep > /dev/null 2>&1; then
+		alias sg="command ast-grep" # override "setgroup"
+	fi
+	local SHELLKIND=""
+	[[ -v BASH_VERSION ]] && SHELLKIND="bash"
+	[[ -v ZSH_VERSION ]] && SHELLKIND="zsh"
+	if [[ -n "$SHELLKIND" ]]; then
+		try_source_completions zoxide init $SHELLKIND
+		try_source_completions rg --generate=complete-$SHELLKIND
+		try_source_completions rustup completions $SHELLKIND
+		try_source_completions rustup completions $SHELLKIND cargo
+		try_source_completions ast-grep completions $SHELLKIND
+		try_source_completions sk --shell=$SHELLKIND
+		try_source_completions uv generate-shell-completion $SHELLKIND
+	fi
 }
 
 function convenience_aliases
@@ -337,6 +378,7 @@ function convenience_aliases
 			declare -fgr beroot > /dev/null 2>&1
 		fi
 	fi
+	tool_aliases_and_init
 }
 
 function load_ssh_agent
@@ -399,6 +441,7 @@ else
 	esac
 fi
 add_home_bin
+add_cargo_bin
 set_remote_timeout
 clean_path_var
 set_shell_options
@@ -443,13 +486,17 @@ if [[ -v BASH_VERSION ]]; then
 fi
 
 # Remove local functions up to here
-unset -f set_prompt_and_uid add_home_bin set_remote_timeout clean_path_var set_shell_options ls_aliases system_specific_aliases convenience_aliases load_ssh_agent
+unset -f set_prompt_and_uid add_home_bin add_cargo_bin set_remote_timeout clean_path_var set_shell_options ls_aliases system_specific_aliases try_source_completions tool_aliases_and_init convenience_aliases load_ssh_agent
 
 type ccd > /dev/null 2>&1 && unset ccd
 # create and cd
 function ccd()
 {
-	mkdir -p -- "$1" && cd -- "$1"
+	if ((${#@} < 2)); then
+		mkdir -p -- "$1" && cd -- "$1"
+	else
+		echo -e "${cY}WARNING${cZ}: ccd only takes a single argument"
+	fi
 }
 
 # On Windows we return early

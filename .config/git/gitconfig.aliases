@@ -3,6 +3,27 @@
 	amend = commit --amend
 	aliases = config --get-regexp alias\\.
 	au = !git diff --name-only --ignore-submodules --diff-filter=d -z | xargs -0 -r git add --verbose
+	back = !"__select_reflog_branch() \
+			{ \
+				type sk > /dev/null 2>&1 || { echo 'ERROR: sk does not seem to be installed.'; return 1; }; \
+				local NUM=\"${1:-20}\"; \
+				case $NUM in ''|*[!0-9]*) \
+						echo 'ERROR: first argument '\"($NUM)\"' not an integer (the number of branches to show; defaults to 20 if not given).'; \
+						return 1; \
+						;; \
+				esac; \
+				LANG=C LC_ALL=C git reflog --pretty=format:'%h %aI %gD %gs' \
+						| awk 'BEGIN { REFS[\"BOGUSREF\"] = 0; TGTBRNCHS[\"BOGUSBRNCH\"] = 0; } /checkout: moving from/ && !($1 in REFS) && !($9 in TGTBRNCHS) && $9 !~ /^[a-f0-9]{40}$/ { print $1, $2, $3, $7, $9; REFS[$1] = 1; TGTBRNCHS[$9] = 1; }' \
+						| head -n $NUM \
+						| while read -r commit date reflogref from to; do \
+							if git show --oneline \"$to\" -- > /dev/null 2>&1; then \
+								printf \"${cB}%s${cZ}: ${cY}%10s${cZ} ${cW}%s${cZ} [${cG}%s${cZ}]\\n\" \"$commit\" \"$reflogref\" \"$to\" \"$date\"; \
+							fi; \
+						done \
+					| sk --ansi --no-multi --header 'Select recently used branch from reflog' -p 'RECENT BRANCH: ' --preview='git show -s --pretty=medium --color=always {3} --' --preview-window=right:40% \
+					| awk '{print $3}'; \
+			}; f() { local TGTBRNCH=$(__select_reflog_branch \"$@\"); test -n \"$TGTBRNCH\" || return 1; ( set -x; git switch \"$TGTBRNCH\" ); }; f"
+	bk = back
 	br = branch --ignore-case --sort=-committerdate --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) -> %(contents:subject) %(color:green)(%(committerdate:relative)%(color:reset), %(color:blue)%(committerdate:format:%Y-%m-%d %H:%M:%S)%(color:green)) %(color:red)[%(authorname)]%(color:reset)'
 	branches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\"
 	brnchs = !git branches refs/heads
@@ -58,7 +79,7 @@
 	tips = !git tip --stat
 	top = !git rev-parse --show-toplevel
 	tree = log --cherry-mark --decorate --pretty=oneline --abbrev-commit --graph
-	unshallow = !git remote set-branches origin '*'; git fetch --unshallow --update-head-ok -v --depth=1
+	unshallow = "!git remote set-branches origin '*'; git fetch --unshallow --update-head-ok -v"
 	upstreams = for-each-ref --color=always --format='%(align:30)%(color:white)%(color:bold)%(refname:short)%(color:reset)%(end) %(color:green)%(upstream:short)%(color:reset)' refs/heads
 	wcdiff = diff --word-diff=color --ignore-space-at-eol
 	wcdiffs = !git wcdiff --staged

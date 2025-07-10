@@ -124,7 +124,6 @@ $(warning SHELL=$(SHELL))
 endif
 FILES_TO_CONSIDER:=\
 	.bashrc.d/gpg \
-	.bashrc.d/rust \
 	.config/flake8 \
 	.config/starship.toml \
 	$(wildcard .config/espanso/config/*.yml) \
@@ -163,6 +162,9 @@ clean-windows:
 	fi; \
 	if [[ -f "$(HOME)/.bashrc" ]]; then \
 		( set -x; rm -f -- "$(HOME)/.bashrc" ); \
+	fi
+	if [[ -f "$(HOME)/.bashrc.d/rust" ]]; then \
+		( set -x; rm -f -- "$(HOME)/.bashrc.d/rust" ); \
 	fi
 
 install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig
