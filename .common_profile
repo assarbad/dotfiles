@@ -111,7 +111,7 @@ function set_shell_options
 function ls_aliases
 {
 	# Alias definitions for ls. Figure out the feature set ... (GNU vs. others)
-	if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	if [[ "$OSTYPE" =~ ^linux-gnu* || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 		if type -p lsd > /dev/null 2>&1; then
 			alias ls='lsd --group-dirs=first'
 			alias ll='lsd --group-dirs=first --date "+%F %T" -l'
