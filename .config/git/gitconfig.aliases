@@ -13,14 +13,14 @@
 						;; \
 				esac; \
 				LANG=C LC_ALL=C git reflog --pretty=format:'%h %aI %gD %gs' \
-						| awk 'BEGIN { REFS[\"BOGUSREF\"] = 0; TGTBRNCHS[\"BOGUSBRNCH\"] = 0; } /checkout: moving from/ && !($1 in REFS) && !($9 in TGTBRNCHS) && $9 !~ /^[a-f0-9]{40}$/ { print $1, $2, $3, $7, $9; REFS[$1] = 1; TGTBRNCHS[$9] = 1; }' \
+						| awk 'BEGIN { REFS[\"BOGUSREF\"] = 0; TGTBRNCHS[\"BOGUSBRNCH\"] = 0; } $9 !~ /^[a-f0-9]{40}$/ && $4 ~ /checkout:/ && $5 ~ /moving/ && (!($9 in TGTBRNCHS) && !($1 in REFS)) { print $1, $2, $3, $7, $9; REFS[$1] = 1; TGTBRNCHS[$9] = 1; }' \
 						| head -n $NUM \
 						| while read -r commit date reflogref from to; do \
-							if git show --oneline \"$to\" -- > /dev/null 2>&1; then \
-								printf \"${cB}%s${cZ}: ${cY}%10s${cZ} ${cW}%s${cZ} [${cG}%s${cZ}]\\n\" \"$commit\" \"$reflogref\" \"$to\" \"$date\"; \
+							if git show --oneline \"$commit\" -- > /dev/null 2>&1; then \
+								printf \"${cB}%s${cZ} ${cY}%10s${cZ} ${cW}%s${cZ} [${cG}%s${cZ}]\\n\" \"$commit\" \"$reflogref\" \"$to\" \"$date\"; \
 							fi; \
 						done \
-					| sk --ansi --no-multi --header 'Select recently used branch from reflog' -p 'RECENT BRANCH: ' --preview='git show -s --pretty=medium --color=always {3} --' --preview-window=right:40% \
+					| sk --ansi --no-multi --header 'Select recently used branch from reflog' -p 'RECENT BRANCH: ' --preview='git show -s --pretty=medium --color=always {1} --' --preview-window=right:40% \
 					| awk '{print $3}'; \
 			}; f() { local TGTBRNCH=$(__select_reflog_branch \"$@\"); test -n \"$TGTBRNCH\" || return 1; ( set -x; git switch \"$TGTBRNCH\" ); }; f"
 	bk = back
