@@ -1,0 +1,9 @@
+default_context:
+    full_name: "Oliver Schneider"
+    email: "oliver@assarbad.net"
+    github_username: "assarbad"
+abbreviations:
+    py: https://github.com/ollis-cutters/python.git
+    gh: https://github.com/{0}.git
+    gl: https://gitlab.com/{0}.git
+    bb: https://bitbucket.org/{0}
