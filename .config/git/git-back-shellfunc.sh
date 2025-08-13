@@ -35,7 +35,7 @@ function select_reflog_branch
 		operation="${operation:1:-1}"
 		printf -v line "%s %s %s %s: %s" "$commit" "$date" "$reflogselector" "$operation" "$remainder"
 		refkey="$operation:$commit"
-		if ! LANG=C LC_ALL=C git show --oneline "$commit" -- > /dev/null 2>&1; then
+		if ! env LANG=C LC_ALL=C git show --oneline "$commit" -- > /dev/null 2>&1; then
 			continue
 		fi
 		case "$operation" in
@@ -119,7 +119,7 @@ function git_back_impl
 		printf "${cW}INFO:${cZ} error exit status from branch selection logic or empty selection (no branch, won't switch)\n"
 		return 1
 	fi
-	( set -x; ${DRY:+"echo"} LANG=C LC_ALL=C git switch "$TGTBRNCH" )
+	( set -x; ${DRY:+"echo"} env LANG=C LC_ALL=C git switch "$TGTBRNCH" )
 }
 
 git_back_impl "$@"
