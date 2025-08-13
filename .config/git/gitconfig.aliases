@@ -3,7 +3,7 @@
 	amend = commit --amend
 	aliases = config --get-regexp alias\\.
 	au = !git diff --name-only --ignore-submodules --diff-filter=d -z | xargs -0 -r git add --verbose
-	back = !"source -- ~/.config/git/git-back-shellfunc.sh && git_back_impl \"$@\""
+	back = !"\"$HOME/.config/git/git-back-shellfunc.sh\" \"$@\""
 	bk = back
 	br = branch --ignore-case --sort=-committerdate --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) -> %(contents:subject) %(color:green)(%(committerdate:relative)%(color:reset), %(color:blue)%(committerdate:format:%Y-%m-%d %H:%M:%S)%(color:green)) %(color:red)[%(authorname)]%(color:reset)'
 	branches = for-each-ref --ignore-case --count=30 --sort=-committerdate --format=\"%(color:yellow)%(committerdate:iso)  %(align:25)%(color:red)%(authorname)%(end)  %(color:white)%(color:bold)%(refname:short)\"
