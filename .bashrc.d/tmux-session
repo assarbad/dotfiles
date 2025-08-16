@@ -28,7 +28,7 @@ if type tmux > /dev/null 2>&1; then
 			esac
 		fi
 	fi
-	alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else if tmux ls|grep -q ^$(hostname -s):; then $_TMUX_ attach-session -t $(hostname -s); else $_TMUX_ new-session -s $(hostname -s) -n shell; fi; fi"
+	alias mux="if [[ -n \"\$TMUX\" ]] || [[ -n \"\$TMUX_PANE\" ]]; then echo \"NOP\"; else if tmux ls|grep -q \"^$HOSTNAME:\"; then $_TMUX_ attach-session -t \"$HOSTNAME\"; else $_TMUX_ new-session -s \"$HOSTNAME\" -n shell; fi; fi"
 	unset _TMUX_
 	unset TOELIST
 	# Are we running inside a Tmux session invoked by above alias?
