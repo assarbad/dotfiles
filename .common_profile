@@ -290,6 +290,9 @@ function convenience_aliases
 	if type -p mc > /dev/null 2>&1; then
 		alias mc='mc -c'
 	fi
+	if type -p helix > /dev/null 2>&1; then
+		alias hx='helix'
+	fi
 	if type -p ps > /dev/null 2>&1; then
 		alias psaux='ps awwwux'
 	fi
