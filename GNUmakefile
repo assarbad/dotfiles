@@ -129,6 +129,9 @@ FILES_TO_CONSIDER:=\
 	$(wildcard .config/espanso/config/*.yml) \
 	$(wildcard .config/espanso/match/*.yml) \
 	$(wildcard .config/espanso/match/*.md) \
+	$(wildcard .config/cookiecutter/*) \
+	$(wildcard .config/rustfmt/*) \
+	$(wildcard .config/alacritty/*) \
 	.cargo/config.toml \
 	$(wildcard .config/git/*) \
 	.gnupg/gpg.conf \

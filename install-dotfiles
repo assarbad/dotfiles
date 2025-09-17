@@ -50,20 +50,32 @@ function copy_file
 {
 	local MODE="${1:-always}"
 	local RELNAME="$2"
-	local TGTBASEDIR="$3"
 	local SRCBASEDIR="${4:-.}"
-	local TGTNAME="$TGTBASEDIR/$RELNAME"
+	if [[ "$MODE" =~ ^.*_rename$ ]]; then
+		local TGTBASEDIR="${3%/*}"
+		local TGTNAME="$TGTBASEDIR/${3##*/}"
+	else
+		local TGTBASEDIR="$3"
+		local TGTNAME="$TGTBASEDIR/$RELNAME"
+	fi
 	local SRCNAME="$SRCBASEDIR/$RELNAME"
 	# For relative names pointing to a subdirectory
 	if [[ "$RELNAME" != "${RELNAME//\/}" ]]; then
 		if [[ ! -d "${TGTNAME%/*}" ]]; then
-			echo -e "  ${cW}${RELNAME%/*}${cZ}${cG}/${cZ}"
-			mkdir -p "${TGTNAME%/*}" && touch -r "${SRCNAME%/*}" "${TGTNAME%/*}"
+			printf -- "  ${cW}%s${cZ}${cG}/${cZ}\n" "${RELNAME%/*}"
+			( set -x; mkdir -p -- "${TGTNAME%/*}" ) && touch -r "${SRCNAME%/*}" -- "${TGTNAME%/*}"
 		fi
 	fi
 	local COPY=1
 	case $MODE in
 		always|all) # fall through
+			;;
+		newer_rename)
+			if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
+				let COPY=1
+			else
+				let COPY=0
+			fi
 			;;
 		newer)
 			if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
@@ -73,28 +85,33 @@ function copy_file
 			fi
 			;;
 		*)
-			echo -e "${cR}ERROR:${cZ} logic error."
+			printf -- "${cR}ERROR:${cZ} logic error.\n"
 			exit 1
 			;;
 	esac
 	debug "srcname=%q -> tgtname=%q" "$SRCNAME" "$TGTNAME"
 	((COPY)) || return
+	local ITEM_TEXT ITEM_COPIED ITEM_TIMESTAMPED
 	if [[ "${RELNAME%/*}" == "${RELNAME##*/}" ]]; then
-		echo -en "  ${cZ}${cW}${RELNAME}${cZ}"
+		printf -v ITEM_TEXT -- "  ${cZ}${cW}%s${cZ}" "${RELNAME}"
 	else
-		echo -en "  ${cZ}${RELNAME%/*}/${cW}${RELNAME##*/}${cZ}"
+		printf -v ITEM_TEXT -- "  ${cZ}%s/${cW}%s${cZ}" "${RELNAME%/*}" "${RELNAME##*/}"
 	fi
-	if cp "$SRCNAME" "$TGTNAME"; then
-		echo -en " ${cW_}... copied${cZ}"
-		if touch -r "$SRCNAME" "$TGTNAME" 2> /dev/null; then
-			echo -e "${cW_}, set timestamp ${cG}[OK]${cZ}"
+	if [[ "$MODE" =~ ^.*_rename$ ]]; then
+		ITEM_TEXT="$ITEM_TEXT -> ${cW}${TGTNAME##*/}${cZ}"
+	fi
+	if cp -- "$SRCNAME" "$TGTNAME"; then
+		printf -v ITEM_COPIED -- " ${cW_}... copied${cZ}"
+		if touch -r "$SRCNAME" -- "$TGTNAME" 2> /dev/null; then
+			printf -v ITEM_TIMESTAMPED -- "${cW_}, set timestamp ${cG}[OK]${cZ}"
 		else
-			echo -e "${cW_}, ${cY}failed to set timestamp ${cG}[OK]${cZ}"
+			printf -v ITEM_TIMESTAMPED -- "${cW_}, ${cY}failed to set timestamp ${cG}[OK]${cZ}"
 		fi
 	else
 		echo -e "  ${cR}copy failed${cZ}"
 		exit 1
 	fi
+	echo -e "$ITEM_TEXT$ITEM_COPIED$ITEM_TIMESTAMPED"
 }
 
 function execute_customization
@@ -203,11 +220,15 @@ while read fname; do
 	case "$fname" in
 		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh|configure-gitconfig)
 			;;
+		.config/sublime-text/*.olli)
+			copy_file newer_rename "$fname" "$TGTDIR/${fname%.olli}"
+			copy_file newer "$fname" "$TGTDIR"
+			;;
 		*)
 			copy_file newer "$fname" "$TGTDIR"
 			;;
 	esac
-done < <(find . -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sed 's/\.\///;/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
+done < <(find . -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) -printf '%P\n' | sed '/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
 # Overrides, appends and custom scripts
 handle_specific_overrides "$LOCALROOT"
 
