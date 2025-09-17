@@ -26,6 +26,7 @@ disabled = true
 
 [c]
 disabled = true
+symbol = ''
 
 [character]
 success_symbol = '\$'
@@ -35,11 +36,11 @@ vicmd_symbol = ''
 [cmake]
 disabled = true
 format = '[$symbol$version]($style) '
-symbol = '喝'
+symbol = ''
 
 [cmd_duration]
 disabled = true
-format = '[祥$duration]($style) '
+format = '[󱦟$duration]($style) '
 
 [cobol]
 disabled = true
@@ -71,6 +72,7 @@ disabled = true
 [directory]
 format = '[$path]($style)[$read_only]($read_only_style)'
 style = 'bold green'
+read_only = '󰌾'
 
 [dotnet]
 
@@ -100,15 +102,16 @@ disabled = true
 
 [git_branch]
 format = '[[$symbol](bold $style)$branch]($style) '
-symbol = ''
 style = 'bright-purple'
+symbol = ''
 
 [git_commit]
+tag_symbol = '  '
 
 [git_metrics]
 
 [git_state]
-rebase = 'ﲐ'
+rebase = '|←'
 merge = ''
 revert = ''
 cherry_pick = ''
@@ -120,7 +123,7 @@ conflicted = ''
 [golang]
 disabled = true
 format = '[$symbol$version]($style) '
-symbol = ''
+symbol = ''
 
 [gradle]
 disabled = true
@@ -140,7 +143,7 @@ disabled = true
 [hg_branch]
 disabled = true
 format = '[[$symbol](bold $style)$branch]($style) '
-symbol = ''
+symbol = ''
 style = 'bright-purple'
 
 [hostname]
@@ -242,8 +245,8 @@ symbol = ''
 
 [rust]
 format = '[$symbol$version]($style) '
-#symbol = ''
-symbol = '🦀'
+symbol = '󱘗'
+#symbol = '🦀'
 
 [scala]
 disabled = true
@@ -298,3 +301,5 @@ disabled = true
 
 [zig]
 disabled = true
+symbol = ''
+

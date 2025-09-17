@@ -1,5 +1,5 @@
 // RustFmt Settings - User
 {
-  "executable": ["rustfmt", "+nightly", "--edition", "2021"],
+  "executable": ["rustfmt", "+nightly", "--edition", "2024"],
   "error_messages": false,
 }
