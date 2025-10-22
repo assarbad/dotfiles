@@ -1,0 +1,17 @@
+[[language]]
+name = "go"
+auto-format = true
+
+[language-server.gopls]
+# go install -v golang.org/x/tools/gopls@latest
+# go install -v github.com/go-delve/delve/cmd/dlv@latest
+# go install golang.org/x/tools/cmd/goimports@latest
+# go install mvdan.cc/gofumpt@latest
+command = "gopls"
+args = ["-logfile=/tmp/gopls.log",  "serve"]
+
+[language-server.gopls.config]
+gofumpt = true
+"ui.completion.usePlaceholders" = true
+"ui.diagnostic.analyses" = { unusedparams = true, unusedwrite = true }
+"ui.diagnostic.staticcheck" = true
