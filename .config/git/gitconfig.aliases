@@ -11,6 +11,7 @@
 	brranches =  !git branches refs/remotes refs/heads
 	delta = diff
 	diffs = diff --staged
+	cfg-pr-refs = config --add remote.origin.fetch '+refs/pull-requests/*:refs/remotes/origin/pr/*'
 	cln = clone --filter=blob:none --recurse-submodules --also-filter-submodules
 	ffm = merge --ff-only
 	gconf = !git gconfig
