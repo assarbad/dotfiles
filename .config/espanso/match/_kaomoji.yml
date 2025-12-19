@@ -92,3 +92,6 @@ matches:
   - triggers: [":bow", ":respect"]
     label: "Bowing/respect (づ ᴗ _ᴗ)づ [kaomoji]"
     replace: "(づ ᴗ _ᴗ)づ"
+  - triggers: [":desk"]
+    label: "Throwing desk (╯°□°）╯︵ ┻━┻ [kaomoji]"
+    replace: "(╯°□°）╯︵ ┻━┻"

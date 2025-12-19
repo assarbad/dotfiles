@@ -18,6 +18,7 @@
 	gconfig = config --global
 	glog = log --cherry-mark --graph --simplify-by-decoration --oneline --all
 	history = blame --color-by-age -w -M -C -C -C -C
+	hru = reset --hard @{u}
 	id = show -s --format=%H
 	idshort = show -s --format=%h
 	lg = !git -P log --cherry-mark '--pretty=format:%C(magenta)%h%C(reset) %C(red)%d%C(reset) %s %C(dim green)(%cr) [%an]' --abbrev-commit -50 && echo ''
@@ -29,13 +30,12 @@
 	noff = !git nfm
 	npdiff = !git -P diff
 	npdiffs = !git -P diffs
-	nuke = reset --hard
 	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local  gc.writeCommitGraph && git update-index --index-version 4 && git commit-graph write --reachable
 	pf = !git pushf
 	pushf = push --force-with-lease
+	rb = restore -SW
 	recommit = !env TZ=UTC GIT_COMMITTER_DATE=\"$(date --utc -Iseconds)\" git commit --amend --no-edit --date \"$(date --utc -Iseconds)\"
 	rename = mv
-	rb = restore -SW
 	rv = remote -v
 	search = log --cherry-mark -p -S
 	shclone = clone --depth 1 --filter=blob:none --recurse-submodules --also-filter-submodules

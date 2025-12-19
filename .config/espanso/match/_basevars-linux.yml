@@ -1,0 +1,5 @@
+global_vars:
+  - name: python_cmd
+    type: echo
+    params:
+      echo: python3

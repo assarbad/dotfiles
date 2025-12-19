@@ -69,7 +69,7 @@ matches:
     label: "L B Bar Symbol \u2114"
     replace: "\u2114"
   - triggers: [ ":SZ" ]
-    label: "Latin Capital Letter Sharp S \u1e9e"
+    label: "Latin Capital Letter Sharp S \u1e9e (ß)"
     replace: "\u1e9e"
   - triggers: [ ":emdash" ]
     label: "Em Dash \u2014"

@@ -1,0 +1,30 @@
+matches:
+  - trigger: ":uuid"
+    replace: "{{uuid}}"
+    vars:
+      - name: uuid
+        type: script
+        params:
+          args:
+            - "{{python_cmd}}"
+            - -m
+            - uuid
+            - -u
+            - uuid4
+        debug: true
+
+  - trigger: ":UUID"
+    replace: "{{uuid}}"
+    uppercase_style: capitalize
+    propagate_case: true
+    vars:
+      - name: uuid
+        type: script
+        params:
+          args:
+            - "{{python_cmd}}"
+            - -m
+            - uuid
+            - -u
+            - uuid4
+        debug: true

@@ -1,74 +1,62 @@
 matches:
-  - triggers: [":o'0", ":uhr"]
-    label: "Superscript ⁰⁰"
-    replace: "⁰⁰"
-  - triggers: [":o'3", ":uhr"]
-    label: "Superscript ³⁰"
-    replace: "³⁰"
-  - triggers: [":o'1", ":uhr"]
-    label: "Superscript ¹⁵"
-    replace: "¹⁵"
-  - triggers: [":o'4", ":uhr"]
-    label: "Superscript ⁴⁵"
-    replace: "⁴⁵"
-  - triggers: [":sup0:", ":hi0:", ":^0"]
+  - triggers: [":hi0:", ":^0"]
     label: "Superscript 0"
     replace: "⁰"
-  - triggers: [":sup1:", ":hi1:", ":^1"]
+  - triggers: [":hi1:", ":^1"]
     label: "Superscript 1"
     replace: "¹"
-  - triggers: [":sup2:", ":hi2:", ":^2"]
+  - triggers: [":hi2:", ":^2"]
     label: "Superscript 2"
     replace: "²"
-  - triggers: [":sup3:", ":hi3:", ":^3"]
+  - triggers: [":hi3:", ":^3"]
     label: "Superscript 3"
     replace: "³"
-  - triggers: [":sup4:", ":hi4:", ":^4"]
+  - triggers: [":hi4:", ":^4"]
     label: "Superscript 4"
     replace: "⁴"
-  - triggers: [":sup5:", ":hi5:", ":^5"]
+  - triggers: [":hi5:", ":^5"]
     label: "Superscript 5"
     replace: "⁵"
-  - triggers: [":sup6:", ":hi6:", ":^6"]
+  - triggers: [":hi6:", ":^6"]
     label: "Superscript 6"
     replace: "⁶"
-  - triggers: [":sup7:", ":hi7:", ":^7"]
+  - triggers: [":hi7:", ":^7"]
     label: "Superscript 7"
     replace: "⁷"
-  - triggers: [":sup8:", ":hi8:", ":^8"]
+  - triggers: [":hi8:", ":^8"]
     label: "Superscript 8"
     replace: "⁸"
-  - triggers: [":sup9:", ":hi9:", ":^9"]
+  - triggers: [":hi9:", ":^9"]
     label: "Superscript 9"
     replace: "⁹"
-  - triggers: [":sub0", ":lo0:", ":_0:"]
+  - triggers: [":lo0:", ":_0:"]
     label: "Subscript 0"
     replace: "₀"
-  - triggers: [":sub1", ":lo1:", ":_1:"]
+  - triggers: [":lo1:", ":_1:"]
     label: "Subscript 1"
     replace: "₁"
-  - triggers: [":sub2", ":lo2:", ":_2:"]
+  - triggers: [":lo2:", ":_2:"]
     label: "Subscript 2"
     replace: "₂"
-  - triggers: [":sub3", ":lo3:", ":_3:"]
+  - triggers: [":lo3:", ":_3:"]
     label: "Subscript 3"
     replace: "₃"
-  - triggers: [":sub4", ":lo4:", ":_4:"]
+  - triggers: [":lo4:", ":_4:"]
     label: "Subscript 4"
     replace: "₄"
-  - triggers: [":sub5", ":lo5:", ":_5:"]
+  - triggers: [":lo5:", ":_5:"]
     label: "Subscript 5"
     replace: "₅"
-  - triggers: [":sub6", ":lo6:", ":_6:"]
+  - triggers: [":lo6:", ":_6:"]
     label: "Subscript 6"
     replace: "₆"
-  - triggers: [":sub7", ":lo7:", ":_7:"]
+  - triggers: [":lo7:", ":_7:"]
     label: "Subscript 7"
     replace: "₇"
-  - triggers: [":sub8", ":lo8:", ":_8:"]
+  - triggers: [":lo8:", ":_8:"]
     label: "Subscript 8"
     replace: "₈"
-  - triggers: [":sub9", ":lo9:", ":_9:"]
+  - triggers: [":lo9:", ":_9:"]
     label: "Subscript 9"
     replace: "₉"
   - trigger: ":1/4"
@@ -91,3 +79,11 @@ matches:
     replace: "⅗"
   - trigger: ":4/5"
     replace: "⅘"
+  - trigger: ":1/8"
+    replace: "⅛"
+  - trigger: ":3/8"
+    replace: "⅜"
+  - trigger: ":5/8"
+    replace: "⅝"
+  - trigger: ":7/8"
+    replace: "⅞"

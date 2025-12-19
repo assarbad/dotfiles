@@ -20,6 +20,7 @@ imports:
   - "_times.yml"
   - "_fullwidth.yml"
   - "_special.yml"
+  - "_uuid.yml"
 matches:
   # Personal stuff
   - trigger: ":mfg"
