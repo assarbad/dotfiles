@@ -37,6 +37,8 @@ C-left = [ "move_prev_word_start", "move_char_left", "move_char_right" ]
 C-right = [ "move_next_word_start", "move_char_left", "move_char_right" ]
 F11 = ["goto_previous_buffer"]
 F12 = ["goto_next_buffer"]
+"*" = ["move_char_right", "move_prev_word_start", "move_next_word_end", "search_selection", "search_next"]
+"#" = ["move_char_right", "move_prev_word_start", "move_next_word_end", "search_selection", "search_prev"]
 
 [keys.insert]
 esc = ["collapse_selection", "normal_mode"]
