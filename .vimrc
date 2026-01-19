@@ -93,7 +93,9 @@ nmap <buffer> <BS> <C-T>
 nnoremap <F5> :set invpaste paste?<CR>
 set pastetoggle=<F5>
 
-filetype on | filetype plugin on | filetype indent on
+if has('eval') " the plugins would barf otherwise, it seems
+	filetype on | filetype plugin on | filetype indent on
+endif
 if has('syntax')
 	syntax on
 	set spelllang=en  " use English for spellchecking
@@ -136,7 +138,7 @@ if version >= 700
 	" Template support, taken from Hacking Vim 7.2
 	autocmd BufNewFile * silent! 0r $VIMHOME/templates/%:e.tpl
 	" Shortcut for toggling line/column to show current cursor location
-	if has('syntax')
+	if has('syntax') && has('eval')
 		" Toggle highlighting cursor line and column
 		function! ToggleCurline ()
 			if &cursorline && &cursorcolumn
@@ -148,16 +150,19 @@ if version >= 700
 		nmap <silent><C-c> :call ToggleCurline()<CR>
 	endif
 endif
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-" http://stackoverflow.com/q/2600783
-" cmap w!! %!sudo tee > /dev/null %
-" http://unix.stackexchange.com/q/249221
-cnoremap w!! call SudoSaveFile()
 
-function! SudoSaveFile() abort
-	execute (has('gui_running') ? '' : 'silent') 'write !env SUDO_EDITOR=tee sudo -e % >/dev/null'
-	let &modified = v:shell_error
-endfunction
+if has('eval')
+	" Allow saving of files as sudo when I forgot to start vim using sudo.
+	" http://stackoverflow.com/q/2600783
+	" cmap w!! %!sudo tee > /dev/null %
+	" http://unix.stackexchange.com/q/249221
+	cnoremap w!! call SudoSaveFile()
+
+	function! SudoSaveFile() abort
+		execute (has('gui_running') ? '' : 'silent') 'write !env SUDO_EDITOR=tee sudo -e % >/dev/null'
+		let &modified = v:shell_error
+	endfunction
+endif
 
 " Shortcut to rapidly toggle `set list`
 nmap <leader>l :set list!<CR>:set number!<CR>
@@ -169,8 +174,10 @@ highlight SpecialKey ctermfg=DarkGrey guifg=#4a4a59
 " Matching parentheses should be highlighted
 highlight MatchParen ctermbg=4
 highlight LineNr term=reverse cterm=NONE ctermfg=DarkGrey ctermbg=NONE
-" Highlight odd tabs in the middle of the line
-match errorMsg /[^\t]\zs\t\+/
+if has('eval')
+	" Highlight odd tabs in the middle of the line
+	match errorMsg /[^\t]\zs\t\+/
+endif
 
 " Allow expanding to current active file directory (Practical Vim, page 95)
 cnoremap <expr> %%  getcmdtype() == ':' ? expand('%:h').'/' : '%%'
