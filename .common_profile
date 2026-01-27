@@ -112,7 +112,7 @@ function ls_aliases
 {
 	# Alias definitions for ls. Figure out the feature set ... (GNU vs. others)
 	if [[ "$OSTYPE" =~ ^linux-gnu* || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-		if type -p lsd > /dev/null 2>&1; then
+		if "${WHENCE_CMD[@]}" lsd > /dev/null 2>&1; then
 			alias ls='lsd --group-dirs=first'
 			alias ll='lsd --group-dirs=first --date "+%F %T" -l'
 			alias l='lsd --group-dirs=first --date "+%F %T" -lA'
@@ -133,7 +133,7 @@ function ls_aliases
 		alias l='ls -Al'
 	fi
 	# color hard links in cyan, but a little darker than soft links
-	if [[ -e "/etc/debian_version" ]] && type -p dircolors > /dev/null 2>&1; then
+	if [[ -e "/etc/debian_version" ]] && "${WHENCE_CMD[@]}" dircolors > /dev/null 2>&1; then
 		# ls (from GNU coreutils) misbehaves in that it "succeeds" silently (exit code 0) although LS_COLORS is erroneous ... pain
 		# ls: unrecognized prefix: mh
 		# ls: unparsable value for LS_COLORS environment variable
@@ -149,7 +149,7 @@ function system_specific_aliases
 	# Syntax: __create_abs_alias <name> <command>
 	__create_abs_alias()
 	{
-		type -p "$2" > /dev/null 2>&1 || return
+		"${WHENCE_CMD[@]}" "$2" > /dev/null 2>&1 || return
 		if [[ -n "$3" ]]; then
 			alias $1="$3 $2"
 		else
@@ -157,7 +157,7 @@ function system_specific_aliases
 		fi
 	}
 
-	if [[ -e "/etc/debian_version" ]] || type -p apt > /dev/null 2>&1; then
+	if [[ -e "/etc/debian_version" ]] || "${WHENCE_CMD[@]}" apt > /dev/null 2>&1; then
 		# by NOT prepending command we defer to the sudo'd apt-alias created below
 		alias search='apt search'
 		alias show='apt show'
@@ -167,7 +167,7 @@ function system_specific_aliases
 		alias autopurge='apt autoremove --purge'
 		alias autoremove='apt autoremove'
 	fi
-	if [[ -e "/etc/debian_version" ]] || type -p dpkg > /dev/null 2>&1; then
+	if [[ -e "/etc/debian_version" ]] || "${WHENCE_CMD[@]}" dpkg > /dev/null 2>&1; then
 		# by prepending command we invoke the actual binary, not the sudo'd dpkg-alias created below
 		alias lp='command dpkg -l'
 		alias lpg='command dpkg -l|grep -iE'
@@ -193,10 +193,10 @@ function system_specific_aliases
 			done
 		fi
 	fi
-	if [[ -e "/etc/redhat-release" ]] || type -p yum > /dev/null 2>&1; then
+	if [[ -e "/etc/redhat-release" ]] || "${WHENCE_CMD[@]}" yum > /dev/null 2>&1; then
 		alias search='yum -C search'
 		alias show='yum -C info'
-		if [[ $EUID -ne 0 ]] && type -p sudo > /dev/null 2>&1; then
+		if [[ $EUID -ne 0 ]] && "${WHENCE_CMD[@]}" sudo > /dev/null 2>&1; then
 			alias upgrade='sudo yum update'
 		else
 			alias upgrade='yum update'
@@ -215,12 +215,12 @@ function system_specific_aliases
 			done
 		fi
 	fi
-	if type -p pacman > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" pacman > /dev/null 2>&1; then
 		# https://wiki.archlinux.org/title/Pacman/Rosetta
 		alias apti='printf "You are not on Debian anymore\n"'
 		alias search='pacman -Ss'
 		alias show='pacman -Qi'
-		if [[ $EUID -ne 0 ]] && type -p sudo > /dev/null 2>&1; then
+		if [[ $EUID -ne 0 ]] && "${WHENCE_CMD[@]}" sudo > /dev/null 2>&1; then
 			alias upgrade='sudo pacman -Syu'
 			alias purge='sudo pacman -Rn'
 			alias autopurge='sudo pacman -Rns'
@@ -232,7 +232,7 @@ function system_specific_aliases
 			alias autoremove='pacman -Rs'
 		fi
 	fi
-	if type -p uname > /dev/null 2>&1 && [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" uname > /dev/null 2>&1 && [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
 		alias search='pkg search'
 		alias show='pkg info'
 		if [[ $UID -ne 0 ]]; then
@@ -250,18 +250,26 @@ function system_specific_aliases
 
 function try_source_completions
 {
-	if type -p "$1" > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" "$1" > /dev/null 2>&1; then
 		if command "$@" > /dev/null 2>&1; then
-			source <(command "$@")
+			# printf -- "Completions for %s:\n" "$1"
+			case "$1.$SHELLKIND" in
+				rustup.zsh)
+					source <(command "$@") 2> /dev/null
+					;;
+				*)
+					source <(command "$@")
+					;;
+			esac
 		else
-			echo -e "${cY}WARNING${cZ}: ${cW}$1${cZ} exists, but testing the command to source completions failed!"
+			printf -- "${cY}WARNING${cZ}: ${cW}%s${cZ} exists, but testing the command to source completions failed!\n" "$1"
 		fi
 	fi
 }
 
 function tool_aliases_and_init
 {
-	if type -p ast-grep > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ast-grep > /dev/null 2>&1; then
 		alias sg="command ast-grep" # override "setgroup"
 	fi
 	local SHELLKIND=""
@@ -287,45 +295,47 @@ function convenience_aliases
 	alias ...='cd ../..'
 	alias ....='cd ../../..'
 	alias -- -='cd -'
-	if type -p mc > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" mc > /dev/null 2>&1; then
 		alias mc='mc -c'
 	fi
-	if type -p helix > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" helix > /dev/null 2>&1; then
 		alias hx='helix'
 	fi
-	if type -p ps > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ps > /dev/null 2>&1; then
 		alias psaux='ps awwwux'
 	fi
-	if type -p nano > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" nano > /dev/null 2>&1; then
 		alias nano='nano -w'
 	fi
-	if type -p date > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" date > /dev/null 2>&1; then
 		alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 	fi
-	if type -p ssh > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ssh > /dev/null 2>&1; then
 		alias ssh='ssh -t'
 	fi
-	if type -p ssh > /dev/null 2>&1 && type -p find > /dev/null 2>&1 && type -p ls > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ssh > /dev/null 2>&1 && "${WHENCE_CMD[@]}" find > /dev/null 2>&1 && "${WHENCE_CMD[@]}" ls > /dev/null 2>&1; then
 		alias list-ssh-sockets='find /tmp/ssh-* -name agent.\* -uid $EUID -exec ls -ahl {} \;'
 	fi
-	if type -p ssh-keygen > /dev/null 2>&1 && type -p test > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ssh-keygen > /dev/null 2>&1 && "${WHENCE_CMD[@]}" test > /dev/null 2>&1; then
 		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
 	fi
-	if type -p vim > /dev/null 2>&1 && type -p grep > /dev/null 2>&1; then
-		export EDITOR=$(type -p vim)
-		if [[ -t 1 && -n "$EDITOR" ]] && type -p git > /dev/null 2>&1 && [[ -n "$(type -p git > /dev/null 2>&1)" ]]; then
+	if "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
+		export EDITOR=$("${WHENCE_CMD[@]}" vim)
+		if [[ -t 1 && -n "$EDITOR" ]] && "${WHENCE_CMD[@]}" git > /dev/null 2>&1; then
 			export GIT_EDITOR="$EDITOR"
 		fi
 		if [[ -n "$EDITOR" ]]; then
-			export VISUAL=$(type -p vim)
+			export VISUAL=$("${WHENCE_CMD[@]}" vim)
 		fi
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
 		fi
-		if (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
-			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -p -N -n -i NONE${VIMRC:+ $VIMRC}"
-		else
-			alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
+		if "${WHENCE_CMD[@]}" grep > /dev/null 2>&1; then
+			if (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
+				alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -p -N -n -i NONE${VIMRC:+ $VIMRC}"
+			else
+				alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
+			fi
 		fi
 	fi
 
@@ -335,23 +345,23 @@ function convenience_aliases
 		alias sz="source ~/.zshrc && cd -"
 	fi
 
-	if type -p reset > /dev/null 2>&1 && type -p stty > /dev/null 2>&1 && type -p tput > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" reset > /dev/null 2>&1 && "${WHENCE_CMD[@]}" stty > /dev/null 2>&1 && "${WHENCE_CMD[@]}" tput > /dev/null 2>&1; then
 		alias tfix='reset; stty sane; tput rs1; clear; printf "\033c"'
 	fi
 
-	if type -p colordiff > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" colordiff > /dev/null 2>&1; then
 		alias diff="command colordiff -u"
 	else
 		alias diff="command diff -u"
 	fi
 
-	if type -p sort > /dev/null 2>&1 && type -p env > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" sort > /dev/null 2>&1 && "${WHENCE_CMD[@]}" env > /dev/null 2>&1; then
 		alias e="env|sort -i"
-	elif type -p env > /dev/null 2>&1; then
+	elif "${WHENCE_CMD[@]}" env > /dev/null 2>&1; then
 		alias e="env"
 	fi
 
-	if type -p sudo > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" sudo > /dev/null 2>&1; then
 		# beroot so we feel at home when assuming super-user rights
 		if [[ $EUID -eq 0 ]]; then
 			alias visudo='sudo -E visudo'
@@ -391,15 +401,15 @@ function load_ssh_agent
 	fi
 
 	# Load the SSH agent and if it's loaded already, add the default identity
-	if type -p ssh-agent > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" ssh-agent > /dev/null 2>&1; then
 		local SSHAGENT SSHAGENTARGS TMUXEXE
-		SSHAGENT=$(type -p ssh-agent)
+		SSHAGENT=$("${WHENCE_CMD[@]}" ssh-agent)
 		SSHAGENTARGS="-s"
-		TMUXEXE="$(type -p tmux 2> /dev/null)"
+		TMUXEXE="$("${WHENCE_CMD[@]}" tmux 2> /dev/null)"
 		if [[ -v TMUX && -x "$TMUXEXE" ]]; then
 			eval "$("$TMUXEXE" show-environment -s)"
 			local -i NUMKEYS
-			if type -p ssh-add > /dev/null 2>&1 && type -p wc > /dev/null 2>&1; then
+			if "${WHENCE_CMD[@]}" ssh-add > /dev/null 2>&1 && "${WHENCE_CMD[@]}" wc > /dev/null 2>&1; then
 				NUMKEYS=$( \
 					command ssh-add -ql 2> /dev/null | \
 					while read -r length fingerprint path; do \
@@ -422,7 +432,7 @@ function load_ssh_agent
 			[[ -n "$SSH_AGENT_PID" && ! -v TMUX ]] && trap "kill $SSH_AGENT_PID" 0
 		fi
 	fi
-	if type -p stat > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" stat > /dev/null 2>&1; then
 		local LDR="$HOME/.ssh/.load"
 		if [[ -O "$LDR" && -G "$LDR" && -s "$LDR" ]]; then
 			if (( $(stat -c '%a' "$LDR") <= 644 )); then
@@ -432,14 +442,23 @@ function load_ssh_agent
 	fi
 }
 
-if type -p starship > /dev/null 2>&1; then
-	eval "$(starship init bash)"
+if [[ -v BASH_VERSION ]]; then
+	declare -ga WHENCE_CMD=(builtin type -p)
+elif [[ -v ZSH_VERSION ]]; then
+	declare -ga WHENCE_CMD=(builtin whence)
+fi
+if "${WHENCE_CMD[@]}" starship > /dev/null 2>&1; then
+	if [[ -v BASH_VERSION ]]; then
+		eval "$(starship init bash)"
+	elif [[ -v ZSH_VERSION ]]; then
+		eval "$(starship init zsh)"
+	fi
 else
 	set_prompt_and_uid
 	# The prompt command will only show the current directory and username if the terminal type is "correct"
 	case "$TERM" in
-		xterm*|rvxt*|screen*|putty*)
-			export PROMPT_COMMAND='echo -ne "\033]0;${debian_chroot:+($debian_chroot)}${USER}@${HOSTNAME}: ${PWD}\007"'
+		xterm*|rvxt*|screen*|putty*|alacritty*)
+			export PROMPT_COMMAND='printf "\033]0;%s%s@%s: %s\007" "{debian_chroot:+($debian_chroot)}" "$USER" "$HOSTNAME" "$PWD"'
 			;;
 	esac
 fi
@@ -449,7 +468,7 @@ set_remote_timeout
 clean_path_var
 set_shell_options
 # make less more friendly for non-text input files, see lesspipe(1)
-[[ -x /usr/bin/lesspipe ]] && eval "$(lesspipe)"
+"${WHENCE_CMD[@]}" lesspipe > /dev/null 2>&1 && eval "$(lesspipe)"
 umask 022
 convenience_aliases
 load_ssh_agent
@@ -498,22 +517,28 @@ function ccd()
 	if ((${#@} < 2)); then
 		mkdir -p -- "$1" && cd -- "$1"
 	else
-		echo -e "${cY}WARNING${cZ}: ccd only takes a single argument"
+		printf -- "${cY}WARNING${cZ}: ${cW}ccd${cZ} only takes a single argument\n"
 	fi
 }
 
 # On Windows we return early
-[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && return
+[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && { unset WHENCE_CMD; return; }
 
 if ((SHLVL < 2)); then
-	if type -p lsb_release > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" tput > /dev/null 2>&1 && (( $(TERM=xterm-direct tput colors) > 256 )); then
+		printf -v truecolor_print " \x1b[38;2;255;100;0m[*]\x1b[0m\n";
+	fi
+	if "${WHENCE_CMD[@]}" lsb_release > /dev/null 2>&1; then
 		if [[ -n $(lsb_release -sc) ]]; then
-			echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ} ${cR_}($(lsb_release -sc))${cZ}"
+			printf -- "${cG_}%s %s${cZ} ${cR_}(%s)${cZ}${truecolor_print}\n" "$(lsb_release -si)" "$(lsb_release -sr)" "$(lsb_release -sc)"
 		else
-			echo -e "${cG_}$(lsb_release -si) $(lsb_release -sr)${cZ}"
+			printf -- "${cG_}%s %s${cZ}${truecolor_print}\n" "$(lsb_release -si)" "$(lsb_release -sr)"
 		fi
+	elif "${WHENCE_CMD[@]}" uname > /dev/null 2>&1; then
+		printf -- "${cG_}%s %s${cZ}${truecolor_print}\n" "$(uname -s)" "$(uname -r)"
 	else
-		echo -e "${cG_}$(uname -s) $(uname -r)${cZ}"
+		printf -- "${cG_}%s %s${cZ}${truecolor_print}\n" "$OSTYPE" "$MACHTYPE"
 	fi
 	cd
 fi
+unset WHENCE_CMD truecolor_print
