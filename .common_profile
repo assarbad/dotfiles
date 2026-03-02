@@ -37,9 +37,9 @@ function add_home_bin
 
 function add_cargo_bin
 {
-	if [[ -d "$home/.cargo/bin" ]]; then
-		if [[ ":$path:" != *":$home/.cargo/bin:"* ]]; then
-			path="$home/.cargo/bin:$path"
+	if [[ -d "$HOME/.cargo/bin" ]]; then
+		if [[ ":$PATH:" != *":$HOME/.cargo/bin:"* ]]; then
+			PATH="$HOME/.cargo/bin:$PATH"
 		fi
 	fi
 }
