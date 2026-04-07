@@ -92,9 +92,6 @@ function git_back_impl
 	local -i NUM="${1:-$DEFAULT_NUMBER_OF_REFLOG_ITEMS}"
 	if ! [[ -v cR && -v cG && -v cB && -v cY && -v cW && -v cR_ && -v cG_ && -v cB_ && -v cY_ && -v cW_ && -v cZ ]]; then
 		local cR="" cG="" cB="" cY="" cW="" cR_="" cG_="" cB_="" cY_="" cW_="" cZ=""
-		if [[ ($- == *i* || -t 1 ) && ! -v BATS_VERSION ]]; then # No coloring during test execution
-			cG="\e[1;32m" cR="\e[1;31m" cB="\e[1;34m" cW="\e[1;37m" cY="\e[1;33m" cG_="\e[0;32m" cR_="\e[0;31m" cB_="\e[0;34m" cW_="\e[0;37m" cY_="\e[0;33m" cZ="\e[0m"
-		fi
 		readonly cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ
 	fi
 	for tool in awk env git head sed sk; do 

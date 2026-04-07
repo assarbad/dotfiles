@@ -290,6 +290,7 @@ function convenience_aliases
 {
 	ls_aliases
 	system_specific_aliases
+	alias vf=cd
 	# Convenience aliases
 	alias ..='cd ..'
 	alias ...='cd ../..'
