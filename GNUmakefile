@@ -15,6 +15,13 @@ SHELL := $(shell /usr/bin/env which bash)
 APAYLOAD:=./append_payload
 NPD:=--no-print-directory
 
+# Allow overriding the machine name used for override/append/custom lookup in
+# install-dotfiles. Useful for debugging/spoofing, e.g.:
+#   make MACHINE=frodo install
+ifdef MACHINE
+  export MACHINE
+endif
+
 .PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig bashrc.link
 
 ifeq ($(strip $(DBG)),)

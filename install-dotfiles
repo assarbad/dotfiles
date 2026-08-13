@@ -5,9 +5,30 @@
 DOTFIROOT="${DOTFIROOT:-$(pwd)}"
 LOCALROOT="$HOME/.local/dotfiles"
 readonly TGTDIR=${TGTDIR:-$HOME}
-readonly IAM=$(whoami)
-readonly HOSTNAME=$(hostname -f)
-readonly HOST=$(hostname -s)
+readonly IAM=${IAM:-$(whoami)}
+# Machine identity used to pick the override/append/custom directories below.
+# By default this is derived from `hostname`, but it can be spoofed from the
+# outside for debugging or testing, e.g.:
+#   make MACHINE=reginn install
+#   MACHINE=somehost.example.net ./install-dotfiles
+if [[ -n "${MACHINE:-}" ]]; then
+	MACHINE_HOSTNAME="$MACHINE"
+	MACHINE_HOST="${MACHINE%%.*}"
+else
+	# hostname -s/-f may resolve to "localhost" (e.g. when the machine's
+	# hostname is not (correctly) set in /etc/hosts or DNS). In that case fall
+	# back to the static hostname from uname(1) so that the per-machine
+	# override/append/custom directories still match.
+	MACHINE_HOSTNAME=$(hostname -f)
+	MACHINE_HOST=$(hostname -s)
+	if [[ "$MACHINE_HOST" == "localhost" || "$MACHINE_HOST" == "localhost.localdomain" ]] && [[ -n "$(uname -n)" ]]; then
+		printf >&2 "${cR}WARNING${cZ}: 'hostname -s' resolved to %q (instead of the machine's real name), falling back to static hostname %q. Fix /etc/hosts or DNS, or set MACHINE to silence this.\n" "$MACHINE_HOST" "$(uname -n)"
+		MACHINE_HOSTNAME=$(uname -n)
+		MACHINE_HOST="${MACHINE_HOSTNAME%%.*}"
+	fi
+fi
+readonly HOSTNAME="$MACHINE_HOSTNAME"
+readonly HOST="$MACHINE_HOST"
 readonly DOMAIN=${HOSTNAME//$HOST/_}
 ###############################################################################
 ###############################################################################
