@@ -1,77 +1,108 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+# shellcheck shell=bash disable=SC2059,SC2154
 
 # We depend on Debian/Ubuntu
 [[ -f "/etc/debian_version" ]] || return
 
 function prune-kernels
 {
-	local VENDOR=0
-	type dpkg-vendor > /dev/null 2>&1 && let VENDOR=1
-	if ((VENDOR)); then
-		command dpkg-vendor --derives-from Debian || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+	if [[ $- == *i* ]]; then
+		declare -A _colors=(
+			[cR]='\e[1;31m'  [cG]='\e[1;32m'  [cB]='\e[1;34m'
+			[cR_]='\e[0;31m' [cG_]='\e[0;32m' [cB_]='\e[0;34m'
+			[cW]='\e[1;37m'  [cY]='\e[1;33m'
+			[cW_]='\e[0;37m' [cY_]='\e[0;33m'
+			[cZ]='\e[0m'
+		)
+		for _k in "${!_colors[@]}"; do
+			  declare -p "$_k" &>/dev/null || local "$_k"="${_colors[$_k]}"
+		done
 	fi
-	[[ -f "/etc/debian_version" ]] || { echo -e "\033[01;32mERROR:\033[00m This has only been tested on Debian/Ubuntu."; return; }
+	for tool in dpkg grep uname awk sort sed tail apt-get readlink rm; do type $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
+	local VENDOR=0
+	type dpkg-vendor > /dev/null 2>&1 && ((VENDOR++))
+	if ((VENDOR)); then
+		command dpkg-vendor --derives-from Debian || { printf -- "${cR}ERROR:${cZ} This has only been tested on Debian/Ubuntu.\n"; return; }
+	fi
+	[[ -f "/etc/debian_version" ]] || { printf -- "${cR}ERROR:${cZ} This has only been tested on Debian/Ubuntu.\n"; return; }
 	[[ "$UID" -eq "0" ]] || local SUDO=sudo
-	if command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep -q pve-kernel; then
-		echo -e "Assuming we run on Proxmox VE (PVE) based on presence of pve-kernel packages"
-		local PACKAGES=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|command sed '$ d')
-		local NOWKRNL=$(command dpkg -l|command grep ^ii|command grep $(command dpkg --print-architecture)|command grep pve-kernel|command grep -Fv pve-kernel-$(command uname -r)|command awk '{print $2}'|command sort -V|command tail -n 1)
-		NOWKRNL=${NOWKRNL#pve-kernel-}
-		echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
-		[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
-		echo -e " (\033[0;32mcurrently running\033[00m)"
-		if [[ -n "$PACKAGES" ]]; then
-			echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
-			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+	local RUNKRNL
+	RUNKRNL=$(uname -r)
+	if command dpkg -l|command grep ^ii|command grep "$(command dpkg --print-architecture)"|command grep -q pve-kernel; then
+		printf -- "Assuming we run on Proxmox VE (PVE) based on presence of pve-kernel packages\n"
+		local -a _krnls PACKAGES
+		local NOWKRNL
+		mapfile -t _krnls < <(command dpkg -l|command grep ^ii|command grep "$(command dpkg --print-architecture)"|command grep pve-kernel|command grep -Fv "pve-kernel-$RUNKRNL"|command awk '{print $2}'|command sort -V)
+		NOWKRNL=${_krnls[-1]#pve-kernel-}
+		PACKAGES=("${_krnls[@]:0:${#_krnls[@]}-1}")
+		printf -- "${cG}Skipping ${cY}the following kernels:${cZ} %s" "$NOWKRNL"
+		[[ "$RUNKRNL" == "$NOWKRNL" ]] || { printf -- ", %s" "$RUNKRNL"; }
+		printf -- " (${cG}currently running${cZ})\n"
+		if [[ ${#PACKAGES[@]} -gt 0 ]]; then
+			printf -- "${cG}[STEP 1] ${cY}Removing packages${cZ}\n"
+			$SUDO apt-get $APTGET_YES --purge autoremove "${PACKAGES[@]}" || { printf -- "${cR}Seems that ${cW}apt-get${cR} was not successful, aborting.${cZ}\n"; return; }
 		else
-			echo -e "\033[01;32mNo packages need to be removed.\033[00m"
+			printf -- "${cG}No packages need to be removed.${cZ}\n"
 		fi
 	else
 		VMLINUZ="/vmlinuz"
 		if [[ ! -L "$VMLINUZ" ]]; then
 			VMLINUZ="/boot/vmlinuz"
 			if [[ ! -L "$VMLINUZ" ]]; then
-				echo -e "\033[01;32mERROR:\033[00m Expected ${VMLINUZ##*/} to exist in / or /boot."
+				printf -- "${cR}ERROR:${cZ} Expected ${cW}%s${cZ} to exist in ${cW}/${cZ} or ${cW}/boot${cZ}.\n" "${VMLINUZ##*/}"
 				return
 			fi
 		fi
 		# Figure out the name of the newest and the previous kernel
-		local OLDKRNL=$(readlink -f "${VMLINUZ}.old")
-		local NOWKRNL=$(readlink -f "${VMLINUZ}")
-		# If vmlinuz doesn't exist, Also prune "/vmlinuz.old"?
+		local OLDKRNL NOWKRNL VERSIONS PACKAGES FILES
+		local -a LINUXINCLUDES
+		OLDKRNL=$(readlink -f "${VMLINUZ}.old")
+		NOWKRNL=$(readlink -f "${VMLINUZ}")
 		[[ -L "${VMLINUZ}.old" ]] || OLDKRNL="$NOWKRNL"
-		# Also prune "/vmlinuz.old"? If so, pretend old and new have the same name to skip only the new one
-		[[ "$1" == "--old" ]] && local OLDKRNL="$NOWKRNL"
 		# Strip path
 		OLDKRNL="${OLDKRNL##*/vmlinuz-}"
 		NOWKRNL="${NOWKRNL##*/vmlinuz-}"
-		local VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(for krnl in $(command dpkg -l|command grep 'linux-image'|command grep '^ii'|command grep -v 'meta-package'|command grep 'linux-image-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]'|awk '{print $2}'); do echo ${krnl##linux-image-}; done)|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$(uname -r)::g")
-		echo -ne "\033[01;32mSkipping \033[01;33mthe following kernels:\033[00m $NOWKRNL"
-		[[ "$(uname -r)" == "$NOWKRNL" ]] || { echo -ne ", $(uname -r)"; }
-		echo -ne " (\033[0;32mcurrently running\033[00m)"
-		[[ "$OLDKRNL" == "$NOWKRNL" ]] || echo -ne ", $OLDKRNL (\033[0;33mold kernel\033[00m)"
-		echo ""
+		# If the running kernel is newer than the symlink (stale /vmlinuz), demote the symlink kernel to "old"
+		if [[ "$RUNKRNL" != "$NOWKRNL" ]] && [[ "$(printf '%s\n' "$NOWKRNL" "$RUNKRNL" | sort -V | tail -n 1)" == "$RUNKRNL" ]]; then
+			OLDKRNL="$NOWKRNL"
+			NOWKRNL="$RUNKRNL"
+		fi
+		# --old: also prune the old-symlink kernel; collapse old==new so only NOWKRNL is skipped
+		[[ "$1" == "--old" ]] && OLDKRNL="$NOWKRNL"
+		# shellcheck disable=SC2046
+		VERSIONS=$(echo $(for krnl in /boot/vmlinuz-*; do echo "${krnl##*/vmlinuz-}"; done) $(command dpkg -l|awk '/^ii/ && $2~/^linux-image-[0-9]+\.[0-9]/{sub(/^linux-image-/,"",$2);print $2}')|sort|uniq|sed -e "s:$NOWKRNL::g;s:$OLDKRNL::g;s:$RUNKRNL::g")
+		printf -- "${cG}Skipping ${cY}the following kernels:${cZ} %s" "$NOWKRNL"
+		[[ "$RUNKRNL" == "$NOWKRNL" ]] || { printf -- ", %s" "$RUNKRNL"; }
+		[[ "$OLDKRNL" == "$NOWKRNL" ]] || printf -- ", %s (${cY}old kernel${cZ})" "$OLDKRNL"
+		printf -- " (${cG}currently running${cZ})\n"
 		# Remove packages
-		local PACKAGES=$(for i in $VERSIONS; do echo -n "linux-image-$i linux-headers-$i linux-modules-$i linux-modules-extra-$i "; done)
+		PACKAGES=$(for i in $VERSIONS; do
+				dpkg -l "linux-*-$i" 2>/dev/null | awk '/^ii/ { print $2 }'
+			done)
 		if [[ -n "$PACKAGES" ]]; then
-			echo -e "\033[0;32m[STEP 1] \033[01;33mRemoving packages\033[00m"
-			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { echo -e "\033[01;31mSeems that apt-get was not successful, aborting.\033[00m"; return; }
+			printf -- "${cG}[STEP 1] ${cY}Removing packages${cZ}\n"
+			# shellcheck disable=SC2086
+			$SUDO apt-get $APTGET_YES --purge autoremove $PACKAGES || { printf -- "${cR}Seems that ${cW}apt-get${cR} was not successful, aborting.${cZ}\n"; return; }
 		else
-			echo -e "\033[01;32mNo packages need to be removed.\033[00m"
+			printf -- "${cG}No packages need to be removed.${cZ}\n"
 		fi
 		# Remove any remaining kernel images etc from /boot
-		local FILES=$(for fname in $(for i in $VERSIONS; do echo -n "/boot/abi-$i /boot/initrd.img-$i config-$i System.map-$i vmcoreinfo-$i vmlinuz-$i "; done); do [[ -f "$fname" ]] && { echo -n "$fname "; }; done)
+		FILES=$(for fname in $(for i in $VERSIONS; do echo -n "/boot/abi-$i /boot/initrd.img-$i config-$i System.map-$i vmcoreinfo-$i vmlinuz-$i "; done); do [[ -f "$fname" ]] && { echo -n "$fname "; }; done)
 		if [[ -n "$FILES" ]]; then
-			echo -e "\033[0;32m[STEP 2] \033[01;33mNow removing remaining files:\033[00m $FILES"
-			$SUDO rm -f $FILES
+			printf -- "${cG}[STEP 2] ${cY}Now removing remaining files:${cZ} %s\n" "$FILES"
+			# shellcheck disable=SC2086
+			$SUDO rm -f -- $FILES
 		else
-			echo -e "\033[01;32mNothing else to clean up.\033[00m"
+			printf -- "${cG}Nothing else to clean up.${cZ}\n"
 		fi
-		if $SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'; then
-			local LINUXINCLUDES=$($SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|grep -q '^Purg'|awk '{print $2}')
-			echo -e "\033[01;32mRemove remaining packages with: ${SUDO} apt-get --purge autoremove $LINUXINCLUDES\033[00m"
+		mapfile -t LINUXINCLUDES < <($SUDO apt-get --assume-no --just-print --purge autoremove 2>&1|awk '/^Purg/{print $2}')
+		if [[ ${#LINUXINCLUDES[@]} -gt 0 ]]; then
+			printf -- "${cG}Remove remaining packages with: ${SUDO} apt-get --purge autoremove${cZ}\n"
+			printf -- "  (packages: %s)\n" "${LINUXINCLUDES[*]}"
 		fi
-		echo -e "If you want to purge the uninstalled packages as well, use:"
-		echo -e "\tapt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ && \$2 ~ /^linux-(headers|image|modules|modules-extra)/ {print \$2}')"
+		printf -- "If you want to purge the uninstalled packages as well, use:\n"
+		printf -- "\t${cW}apt-get purge \$(dpkg -l|awk '\$1 ~ /^rc/ && \$2 ~ /^linux-(headers|image|modules|modules-extra)/ {print \$2}')${cZ}\n"
+		printf -- "... or:\n"
+		printf -- "\t${cW}apt autopurge${cZ}\n"
 	fi
 }
