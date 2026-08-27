@@ -78,7 +78,7 @@ function prune-kernels
 		# Remove packages
 		PACKAGES=$(for i in $VERSIONS; do
 				dpkg -l "linux-*-$i" 2>/dev/null | awk '/^ii/ { print $2 }'
-			done)
+			done | while IFS= read -r pkg; do apt-cache show "$pkg" &>/dev/null && echo "$pkg"; done)
 		if [[ -n "$PACKAGES" ]]; then
 			printf -- "${cG}[STEP 1] ${cY}Removing packages${cZ}\n"
 			# shellcheck disable=SC2086
