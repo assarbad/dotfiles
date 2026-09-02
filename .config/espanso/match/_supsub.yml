@@ -29,6 +29,12 @@ matches:
   - triggers: [":hi9:", ":^9"]
     label: "Superscript 9"
     replace: "⁹"
+  - triggers: [":hi+:", ":^+"]
+    label: "Superscript Plus"
+    replace: "⁺"
+  - triggers: [":hi-:", ":^-"]
+    label: "Superscript Minus"
+    replace: "⁻"
   - triggers: [":lo0:", ":_0:"]
     label: "Subscript 0"
     replace: "₀"
@@ -59,6 +65,12 @@ matches:
   - triggers: [":lo9:", ":_9:"]
     label: "Subscript 9"
     replace: "₉"
+  - triggers: [":lo+:", ":_+:"]
+    label: "Subscript Plus"
+    replace: "₊"
+  - triggers: [":lo-:", ":_-:"]
+    label: "Subscript Minus"
+    replace: "₋"
   - trigger: ":1/4"
     replace: "¼"
   - trigger: ":1/2"

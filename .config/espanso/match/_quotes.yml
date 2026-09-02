@@ -1,17 +1,17 @@
 matches:
-  - triggers: [ ":\"<", ":laquo", ":quote" ]
+  - triggers: [ ":\"<", ":laquo" ]
     label: "Left-pointing double angle quote"
     replace: "«"
-  - triggers: [ ":\">", ":raquo", ":quote" ]
+  - triggers: [ ":\">", ":raquo" ]
     label: "Right-pointing double angle quote"
     replace: "»"
-  - triggers: [ ":\"'", ":gfzu", ":ldquo", ":''", ":quote" ]
+  - triggers: [ ":\"'", ":gfzu", ":ldquo", ":''" ]
     label: "Left double quote / Gänsefüßchen zu"
     replace: "“"
-  - triggers: [ ":\",", ":rdquo", ":quote" ]
+  - triggers: [ ":\",", ":rdquo" ]
     label: "Right double quote"
     replace: "”"
-  - triggers: [ ":gfauf", ":,,", ":quote" ]
+  - triggers: [ ":gfauf", ":,," ]
     label: "Gänsefüßchen auf"
     replace: "„"
   - triggers: [ ":enquote" ]
@@ -32,9 +32,9 @@ matches:
   - triggers: [ ":enquote", ":<<" ]
     label: "Guillemets outward «...» (enquote)"
     replace: "«$|$»"
-  - triggers: [ ":enquote" ]
+  - triggers: [ ":enquote", ":.>" ]
     label: "Angle bracket inward ›...‹ (enquote)"
     replace: "›$|$‹"
-  - triggers: [ ":enquote" ]
+  - triggers: [ ":enquote", ":.<" ]
     label: "Angle bracket outward ‹...› (enquote)"
     replace: "‹$|$›"

@@ -9,11 +9,11 @@ matches:
       $|$
       </file>
   - triggers: [":c++", ":cpp"]
-    label: "[Jira] C++ code block"
+    label: "[DokuWiki] C++ code block"
     replace: |
-      {code:cpp}
+      <code cpp>
       $|$
-      {code}
+      </code>
   - triggers: [":shell", ":bash"]
     label: "[DokuWiki] Generic shell code block"
     replace: |
@@ -25,4 +25,4 @@ matches:
     replace: |
       <code>
       $|$
-      <code>
+      </code>

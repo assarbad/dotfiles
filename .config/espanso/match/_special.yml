@@ -62,6 +62,15 @@ matches:
   - triggers: [ ":rpilcrow" ]
     label: "Pilcrow Sign \u204b"
     replace: "\u204b"
+  - triggers: [ ":dagger" ]
+    label: "Dagger \u2020"
+    replace: "\u2020"
+  - triggers: [ ":ddagger" ]
+    label: "Double Dagger \u2021"
+    replace: "\u2021"
+  - triggers: [ ":numero", ":nr" ]
+    label: "Numero Sign \u2116"
+    replace: "\u2116"
   - triggers: [ ":euro" ]
     label: "Euro Sign \u20ac"
     replace: "\u20ac"
@@ -71,10 +80,16 @@ matches:
   - triggers: [ ":SZ" ]
     label: "Latin Capital Letter Sharp S \u1e9e (ß)"
     replace: "\u1e9e"
-  - triggers: [ ":endash" ]
+  - triggers: [ ":sz", ":ss" ]
+    label: "Latin Small Letter Sharp S \u00df (ß)"
+    replace: "\u00df"
+  - triggers: [ ":nbhyphen" ]
+    label: "Non-Breaking Hyphen \u2011"
+    replace: "\u2011"
+  - triggers: [ ":endash", ":2-" ]
     label: "En Dash \u2013"
     replace: "\u2013"
-  - triggers: [ ":emdash", ":---" ]
+  - triggers: [ ":emdash", ":3-", ":-." ]
     label: "Em Dash \u2014"
     replace: "\u2014"
   - triggers: [ ":sqrt" ]
@@ -83,6 +98,12 @@ matches:
   - triggers: [ ":cbrt", ":cuberoot" ]
     label: "Cube Root \u221b"
     replace: "\u221b"
+  - triggers: [ ":prime" ]
+    label: "Prime \u2032"
+    replace: "\u2032"
+  - triggers: [ ":dprime" ]
+    label: "Double Prime \u2033"
+    replace: "\u2033"
   - triggers: [ ":permille", ":promille" ]
     label: "Per Mille Sign \u2030"
     replace: "\u2030"
@@ -98,12 +119,18 @@ matches:
   - triggers: [ ":bullop" ]
     label: "Bullet Operator \u2219"
     replace: "\u2219"
+  - triggers: [ ":deg" ]
+    label: "Degree Sign \u00b0"
+    replace: "\u00b0"
   - triggers: [ ":celsius" ]
     label: "Degree Celsius \u2103"
     replace: "\u2103"
   - triggers: [ ":kelvin" ]
     label: "Kelvin \u212a"
     replace: "\u212a"
+  - triggers: [ ":micro" ]
+    label: "Micro Sign \u00b5"
+    replace: "\u00b5"
   - triggers: [ ":ohm", "omega" ]
     label: "Ohm/Omega \u2126"
     replace: "\u2126"

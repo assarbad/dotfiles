@@ -1,5 +1,5 @@
 matches:
-  - trigger: ":today"
+  - triggers: [ ":today", ":heute", ":datum" ]
     label: "Today in YYYY-mm-dd"
     replace: "{{mydate}}"
     vars:
