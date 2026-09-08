@@ -526,7 +526,7 @@ function ccd()
 [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]] && { unset WHENCE_CMD; return; }
 
 if ((SHLVL < 2)); then
-	if "${WHENCE_CMD[@]}" tput > /dev/null 2>&1 && (( $(TERM=xterm-direct tput colors) > 256 )); then
+	if "${WHENCE_CMD[@]}" tput >/dev/null 2>&1 && colors=$(TERM=xterm-direct tput colors 2>/dev/null) && ((colors > 256)); then
 		printf -v truecolor_print " \x1b[38;2;255;100;0m[*]\x1b[0m\n";
 	fi
 	if "${WHENCE_CMD[@]}" lsb_release > /dev/null 2>&1; then
