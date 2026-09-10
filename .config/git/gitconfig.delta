@@ -2,8 +2,6 @@
 	pager = delta --dark
 [interactive]
 	diffFilter = delta --dark --color-only
-[merge]
-	conflictstyle = diff3
 [delta]
 	features = unobtrusive-line-numbers
 	navigate = true

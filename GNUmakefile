@@ -11,7 +11,7 @@ endif
 .DEFAULT: install
 
 ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
-SHELL := $(shell /usr/bin/env which bash)
+SHELL := $(shell command -v bash)
 APAYLOAD:=./append_payload
 NPD:=--no-print-directory
 
@@ -22,50 +22,16 @@ ifdef MACHINE
   export MACHINE
 endif
 
-.PHONY: all install install.script info test nodel-test setup clean rebuild help $(APAYLOAD) configure.gitconfig bashrc.link
+.PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link
 
 ifeq ($(strip $(DBG)),)
 endif
-PAYLOAD  := dotfiles.tgz
-SETUP    := dotfile_installer
-SETUPS   := $(SETUP).sh $(SETUP).bin
-ifdef WEBDIR
-  PSETUPS:= $(patsubst %,$(WEBDIR)/%,$(SETUPS))
-endif
-SENTINEL := $(DOTFILES)/.hg/store/00changelog.i
 
 install: install.script configure.gitconfig bashrc.link
 
 install.script: $(DOTFILES)/install-dotfiles
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./install-dotfiles
-
-ifndef WEBDIR
-setup: $(APAYLOAD) $(SETUPS)
-else
-setup: $(APAYLOAD) $(PSETUPS)
-	hg -R $(DOTFILES) tip|perl -ple 's/\s+<[^>]+>//g'|tee "$(WEBDIR)/tip.txt" && touch -r $(SENTINEL) "$(WEBDIR)/tip.txt"
-
-$(WEBDIR)/%: %
-	cp -a $< $@
-endif
-
-$(filter %.bin,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
-	$(APAYLOAD) -b "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
-
-$(filter %.sh,$(SETUPS)): $(PAYLOAD) $(SENTINEL)
-	$(APAYLOAD) -u "-i=$(notdir $(basename $@)).sh.in" "-o=$(notdir $@)" $(notdir $<)
-
-$(PAYLOAD): $(SENTINEL)
-	hg -R $(DOTFILES) update
-	@rm -f $(notdir $(SETUPS) $(PAYLOAD))
-	tar -vC $(DOTFILES) --exclude-vcs -czf /tmp/$(notdir $@) . && mv /tmp/$(notdir $@) $@
-
-$(APAYLOAD):
-	$(APAYLOAD) canrun
-
-.NOTPARALLEL: rebuild
-rebuild: clean setup
 
 nodel-test test: TGTDIR:=$(HOME)/dotfile-test
 test:
@@ -76,14 +42,8 @@ test:
 nodel-test:
 	$(DBG)$(strip $(MAKE) $(NPD)) TGTDIR="$(TGTDIR)" install
 
-clean:
-	rm -f $(notdir $(SETUPS) $(PAYLOAD))
-
 help:
 	-@echo "USAGE:"
-	-@echo ""
-	-@echo "  Create the installer script with payload:"
-	-@echo "    make setup"
 	-@echo ""
 	-@echo "  Install into TGTDIR [the default]:"
 	-@echo "    make install"
@@ -109,10 +69,9 @@ help:
 	-@echo "hg clone https://hg.code.sf.net/p/assarbad-dotfiles/code ~/.dotfiles && make -C ~/.dotfiles install"
 
 info:
-	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES PAYLOAD SETUP SETUPS SENTINEL,echo "$(var) = ${$(var)}";)
+	-@$(foreach var,DEBUG NPD CURDIR SHELL TGTDIR DOTFILES,echo "$(var) = ${$(var)}";)
 
 .NOTPARALLEL: install test nodel-test
-.INTERMEDIATE: $(TGTDIR)/$(VIM_RMOLD) $(PAYLOAD)
 .ONESHELL: help
 
 bashrc.link:
@@ -180,7 +139,7 @@ clean-windows:
 		( set -x; rm -f -- "$(HOME)/.config/git/gitconfig.gnupg4win" ); \
 	fi
 
-install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig
+install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig bashrc.link
 
 $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
@@ -188,7 +147,7 @@ $(HOME)/%: %
 
 .PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows bashrc.link
 
-bashrc.link:
+bashrc.link: $(HOME)/.bash_profile
 	cp -alf -- $(TGTDIR)/.bash_profile $(TGTDIR)/.bashrc
 
 endif

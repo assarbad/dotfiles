@@ -320,23 +320,32 @@ function convenience_aliases
 	if "${WHENCE_CMD[@]}" ssh-keygen > /dev/null 2>&1 && "${WHENCE_CMD[@]}" test > /dev/null 2>&1; then
 		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
 	fi
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+		if "${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 || "${WHENCE_CMD[@]}" make > /dev/null 2>&1; then
+			function refresh-dotfiles
+			{
+				local MAKE_CMD=make
+				"${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 && MAKE_CMD=gmake
+				"$MAKE_CMD" -C "$HOME/.dotfiles" install
+			}
+		fi
+	fi
 	if "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
-		export EDITOR=$("${WHENCE_CMD[@]}" vim)
-		if [[ -t 1 && -n "$EDITOR" ]] && "${WHENCE_CMD[@]}" git > /dev/null 2>&1; then
-			export GIT_EDITOR="$EDITOR"
-		fi
-		if [[ -n "$EDITOR" ]]; then
-			export VISUAL=$("${WHENCE_CMD[@]}" vim)
-		fi
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
 		fi
-		if "${WHENCE_CMD[@]}" grep > /dev/null 2>&1; then
-			if (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
-				alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -p -N -n -i NONE${VIMRC:+ $VIMRC}"
-			else
-				alias vim="env HOME="${BASHRCDIR:-$HOME}" vim -N -n -i NONE${VIMRC:+ $VIMRC}"
-			fi
+		local VIM_P_FLAG=""
+		if "${WHENCE_CMD[@]}" grep > /dev/null 2>&1 && (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
+			VIM_P_FLAG="-p "
+		fi
+		local VIM_CMD="env HOME="${BASHRCDIR:-$HOME}" vim ${VIM_P_FLAG}-N -n -i NONE${VIMRC:+ $VIMRC}"
+		alias vim="$VIM_CMD"
+		export EDITOR=$("${WHENCE_CMD[@]}" vim)
+		if [[ -t 1 ]] && "${WHENCE_CMD[@]}" git > /dev/null 2>&1; then
+			export GIT_EDITOR="$VIM_CMD"
+		fi
+		if [[ -n "$EDITOR" ]]; then
+			export VISUAL="$EDITOR"
 		fi
 	fi
 

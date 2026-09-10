@@ -1,3 +1,4 @@
+# vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 # @param string $1  Tab/window title
 # @param string $2  (optional) Separate window title
 # The latest version of this software can be obtained here:
@@ -12,5 +13,5 @@ function nameTerminal()
 	# Change tab title
 	[[ $ansiNrTab ]] && echo -n $'\e'"]$ansiNrTab;$1"$'\a'
 	# If terminal support separate window title, change window title as well
-	[ $ansiNrWindow -a "$2" ] && echo -n $'\e'"]$ansiNrWindow;$2"$'\a'
+	[[ -n "$ansiNrWindow" && -n "$2" ]] && echo -n $'\e'"]$ansiNrWindow;$2"$'\a'
 }

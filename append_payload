@@ -29,7 +29,7 @@ function print_error
 # error_exit <exit-code> <error-string>
 function error_exit
 {
-
+	[[ -z "$2" ]] || print_error "$2"
 	exit $1
 }
 

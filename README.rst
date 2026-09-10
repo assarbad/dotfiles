@@ -18,26 +18,13 @@ One shameless plug, however. I warmly recommend the following books:
 The mysterious ``GNUmakefile``
 ------------------------------
 
-You'll also find a ``GNUmakefile`` that can be used for two things.
+You'll also find a ``GNUmakefile`` that can be used to install the dotfiles.
 
 - ``make`` (default and alias for ``make install``)
-- ``make setup``
 
-The ``setup`` behavior is to create a self-contained installer named
-``dotfile_installer.sh`` (``uuencode``-d), based on the script of
-the same basename with the suffix ``.sh.in``. In addition a second
-version named ``dotfile_installer.bin`` gets created as well. This
-installer will contain all the files from this folder, including
-the ``.hg`` folder (this is intentional!).
-
-This way you can simply build this file once and download from a location
-you trust. It makes it possible to bootstrap my dotfiles conveniently on
-a system, even if no Mercurial is available (yet).
-
-The other thing is to install it to your ``$HOME`` folder directly after
-checking it out into a working copy. To do this, make sure you are in the
-folder in which the dotfiles reside (``~/.dotfiles`` on my systems;
-``$DOTFILES`` for the remainder of this document) and then run ``make install``.
+To install, make sure you are in the folder in which the dotfiles reside
+(``~/.dotfiles`` on my systems; ``$DOTFILES`` for the remainder of this
+document) and then run ``make install``.
 If you would want to use an alternate target location you'd have to set
 the ``TGTDIR`` variable in one of two ways when invoking ``make``:
 

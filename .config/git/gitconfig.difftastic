@@ -5,4 +5,6 @@
 
 [difftool "difftastic"]
 	# See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
+	# The blob-id/mode fields are placeholders: git-difftool doesn't supply real
+	# ones, and difft's diff-argument form requires something in those slots.
 	cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
