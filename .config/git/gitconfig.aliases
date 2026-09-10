@@ -30,7 +30,7 @@
 	noff = !git nfm
 	npdiff = !git -P diff
 	npdiffs = !git -P diffs
-	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local  gc.writeCommitGraph && git update-index --index-version 4 && git commit-graph write --reachable
+	optimize = !git config --local feature.manyFiles true && git config --local core.untrackedCache true && git config --local core.fsmonitor true && git config --local core.commitGraph true && git config --local fetch.writeCommitGraph true && git config --local gc.writeCommitGraph true && git update-index --index-version 4 && git commit-graph write --reachable
 	pf = !git pushf
 	pushf = push --force-with-lease
 	rb = restore -SW

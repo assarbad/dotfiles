@@ -45,6 +45,9 @@
 	interHunkContext = 3
 	mnemonicPrefix = true
 	renames = true
+[difftool]
+	# Run the difftool immediately, don't ask 'are you sure' each time.
+	prompt = false
 [feature]
 	manyFiles = true
 [fetch]
@@ -111,5 +114,6 @@
 # External configuration
 [include]
 	path = ~/.config/git/gitconfig.aliases
+	path = ~/.config/git/gitconfig.difftastic
 	path = ~/.config/git/gitconfig.LOCAL
 	path = ~/.config/git/gitconfig.USER

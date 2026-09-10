@@ -27,3 +27,6 @@
 	line-numbers-right-format = "{np:>4}│"
 	line-numbers-left-style = cyan
 	line-numbers-right-style = cyan
+
+[difftool "delta"]
+    cmd = delta "$LOCAL" "$REMOTE"
