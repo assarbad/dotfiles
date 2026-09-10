@@ -1,8 +1,8 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if type df > /dev/null 2>&1; then
+if "${WHENCE_CMD[@]}" df > /dev/null 2>&1; then
 	alias df='df -x tmpfs -x squashfs -x overlay'
-	if type watch > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" watch > /dev/null 2>&1; then
 		alias wdf='watch -n 1 df -x tmpfs -x squashfs -x overlay'
 	fi
 fi

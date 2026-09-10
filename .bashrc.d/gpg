@@ -1,10 +1,11 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
 # Populate the public trusted keys from the config in the key DB
-if [[ -z "$NO_PUBKEY_FETCH" ]] && [[ ! -e "$BASHRCDIR/.gnupg/.no-pubkey-fetch" ]]; then
+# (skipped on Windows: Kleopatra manages the keyring there)
+if [[ "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" && -z "$COMSPEC" ]] && [[ -z "$NO_PUBKEY_FETCH" ]] && [[ ! -e "$BASHRCDIR/.gnupg/.no-pubkey-fetch" ]]; then
 	if [[ -e "$BASHRCDIR/.gnupg/gpg.conf" ]]; then
 		chmod -c go= "$BASHRCDIR/.gnupg" "$BASHRCDIR/.gnupg/gpg.conf" 2> /dev/null || true
-		if type gpg > /dev/null 2>&1 && type tr > /dev/null 2>&1 ; then
+		if "${WHENCE_CMD[@]}" gpg > /dev/null 2>&1 && "${WHENCE_CMD[@]}" tr > /dev/null 2>&1 ; then
 			MISSING_KEYS=$(\
 				for i in $(awk '$1 ~ /^trusted-key$/ {print $2}' $BASHRCDIR/.gnupg/gpg.conf); do
 					if ! grep -q "$(echo "${i}"|tr a-z A-Z)" <(gpg -k --with-colons 2> /dev/null|awk -F : '$1 ~ /^pub$/ {print $5}'); then
@@ -16,6 +17,6 @@ if [[ -z "$NO_PUBKEY_FETCH" ]] && [[ ! -e "$BASHRCDIR/.gnupg/.no-pubkey-fetch" ]
 		fi
 	fi
 fi
-if type cygpath > /dev/null 2>&1; then
+if "${WHENCE_CMD[@]}" cygpath > /dev/null 2>&1; then
 	alias gpg="$(printf "%q" "$(cygpath -amF 42)")"'/GnuPG/bin/gpg.exe'
 fi

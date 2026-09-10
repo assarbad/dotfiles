@@ -4,6 +4,12 @@
 # We depend on Debian/Ubuntu
 [[ -f "/etc/debian_version" ]] || return
 
+if [[ -v BASH_VERSION ]]; then
+	WHENCE_CMD=(builtin type -P)
+elif [[ -v ZSH_VERSION ]]; then
+	WHENCE_CMD=(builtin whence -p)
+fi
+
 function prune-kernels
 {
 	if [[ $- == *i* ]]; then
@@ -18,9 +24,9 @@ function prune-kernels
 			  declare -p "$_k" &>/dev/null || local "$_k"="${_colors[$_k]}"
 		done
 	fi
-	for tool in dpkg grep uname awk sort sed tail apt-get readlink rm; do type $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
+	for tool in dpkg grep uname awk sort sed tail apt-get readlink rm; do "${WHENCE_CMD[@]}" $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
 	local VENDOR=0
-	type dpkg-vendor > /dev/null 2>&1 && ((VENDOR++))
+	"${WHENCE_CMD[@]}" dpkg-vendor > /dev/null 2>&1 && ((VENDOR++))
 	if ((VENDOR)); then
 		command dpkg-vendor --derives-from Debian || { printf -- "${cR}ERROR:${cZ} This has only been tested on Debian/Ubuntu.\n"; return; }
 	fi

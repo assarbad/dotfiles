@@ -119,8 +119,12 @@ function ls_aliases
 			alias tree='lsd --tree -l --date="+%F %T" --group-dirs=first --blocks=permission,size,date,name'
 		else
 			local MYLS_OPTIONS='--color=auto --time-style=long-iso'
-			ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
-			ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+			if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+				: # Git for Windows' coreutils always supports both flags
+			else
+				ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
+				ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+			fi
 			[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
 			alias ls='ls $LS_OPTIONS'
 			alias ll='ls $LS_OPTIONS -l'
@@ -232,7 +236,7 @@ function system_specific_aliases
 			alias autoremove='pacman -Rs'
 		fi
 	fi
-	if "${WHENCE_CMD[@]}" uname > /dev/null 2>&1 && [[ $(uname -s) == "FreeBSD" ]] && type pkg > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" uname > /dev/null 2>&1 && [[ $(uname -s) == "FreeBSD" ]] && "${WHENCE_CMD[@]}" pkg > /dev/null 2>&1; then
 		alias search='pkg search'
 		alias show='pkg info'
 		if [[ $UID -ne 0 ]]; then
@@ -271,6 +275,9 @@ function tool_aliases_and_init
 {
 	if "${WHENCE_CMD[@]}" ast-grep > /dev/null 2>&1; then
 		alias sg="command ast-grep" # override "setgroup"
+	fi
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+		return
 	fi
 	local SHELLKIND=""
 	[[ -v BASH_VERSION ]] && SHELLKIND="bash"
@@ -320,22 +327,14 @@ function convenience_aliases
 	if "${WHENCE_CMD[@]}" ssh-keygen > /dev/null 2>&1 && "${WHENCE_CMD[@]}" test > /dev/null 2>&1; then
 		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
 	fi
-	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
-		if "${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 || "${WHENCE_CMD[@]}" make > /dev/null 2>&1; then
-			function refresh-dotfiles
-			{
-				local MAKE_CMD=make
-				"${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 && MAKE_CMD=gmake
-				"$MAKE_CMD" -C "$HOME/.dotfiles" install
-			}
-		fi
-	fi
 	if "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
 			local VIMRC="-u \"${BASHRCDIR:-$HOME}/.vimrc\""
 		fi
 		local VIM_P_FLAG=""
-		if "${WHENCE_CMD[@]}" grep > /dev/null 2>&1 && (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
+		if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+			VIM_P_FLAG="-p "
+		elif "${WHENCE_CMD[@]}" grep > /dev/null 2>&1 && (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
 			VIM_P_FLAG="-p "
 		fi
 		local VIM_CMD="env HOME="${BASHRCDIR:-$HOME}" vim ${VIM_P_FLAG}-N -n -i NONE${VIMRC:+ $VIMRC}"
@@ -374,7 +373,6 @@ function convenience_aliases
 	if "${WHENCE_CMD[@]}" sudo > /dev/null 2>&1; then
 		# beroot so we feel at home when assuming super-user rights
 		if [[ $EUID -eq 0 ]]; then
-			alias visudo='sudo -E visudo'
 			if ! declare -pf beroot > /dev/null 2>&1; then
 				function beroot
 				{
@@ -386,11 +384,7 @@ function convenience_aliases
 				function beroot
 				{
 					if (($EUID)); then
-						if [[ -f ~/.oldstyle-beroot ]]; then
-							sudo -E -u root /usr/bin/env BASHRCDIR="$HOME" "$SHELL"
-						else
-							sudo -E -u root "$SHELL"
-						fi
+						sudo -u root /usr/bin/env BASHRCDIR="$HOME" "$SHELL"
 					else
 						echo 'NOP'
 					fi
@@ -453,9 +447,9 @@ function load_ssh_agent
 }
 
 if [[ -v BASH_VERSION ]]; then
-	declare -ga WHENCE_CMD=(builtin type -p)
+	declare -ga WHENCE_CMD=(builtin type -P)
 elif [[ -v ZSH_VERSION ]]; then
-	declare -ga WHENCE_CMD=(builtin whence)
+	declare -ga WHENCE_CMD=(builtin whence -p)
 fi
 if "${WHENCE_CMD[@]}" starship > /dev/null 2>&1; then
 	if [[ -v BASH_VERSION ]]; then
@@ -500,17 +494,17 @@ if [[ -v BASH_VERSION ]]; then
 	BASHZONE="${HOSTNAME//$BASHHOST/_}"
 	BASHSRCDIR="$BASHRCDIR/.bashrc.d"
 	if [[ -d "$BASHSRCDIR" ]]; then
-		for f in $(find "$BASHSRCDIR" -maxdepth 1 -type f); do
-			source "$f"
+		for f in "$BASHSRCDIR"/*; do
+			[[ -f "$f" ]] && source "$f"
 		done
 		if [[ -d "$BASHSRCDIR/$BASHHOST" ]]; then
-			for f in $(find "$BASHSRCDIR/$BASHHOST" -maxdepth 1 -type f); do
-				source "$f"
+			for f in "$BASHSRCDIR/$BASHHOST"/*; do
+				[[ -f "$f" ]] && source "$f"
 			done
 		fi
 		if [[ -n "$BASHZONE" ]] && [[ -d "$BASHSRCDIR/$BASHZONE" ]]; then
-			for f in $(find "$BASHSRCDIR/$BASHZONE" -maxdepth 1 -type f); do
-				source "$f"
+			for f in "$BASHSRCDIR/$BASHZONE"/*; do
+				[[ -f "$f" ]] && source "$f"
 			done
 		fi
 	fi

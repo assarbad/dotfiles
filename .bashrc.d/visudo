@@ -1,15 +1,15 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if type visudo > /dev/null 2>&1; then
-	if type vim.nox > /dev/null 2>&1; then
+if "${WHENCE_CMD[@]}" visudo > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" vim.nox > /dev/null 2>&1; then
 		EDITOR=vim.nox
-	elif type vim > /dev/null 2>&1; then
+	elif "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
 		EDITOR=vim
-	elif type vi > /dev/null 2>&1; then
+	elif "${WHENCE_CMD[@]}" vi > /dev/null 2>&1; then
 		EDITOR=vi
 	fi
 fi
-if [[ -n "" ]]; then
+if [[ -n "$EDITOR" ]]; then
 	export EDITOR
-	[[ $UID -eq 0 ]] || alias visudo="sudo -E visudo"
+	[[ $UID -eq 0 ]] || alias visudo="sudo env EDITOR=\"$EDITOR\" visudo"
 fi

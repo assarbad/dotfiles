@@ -239,7 +239,7 @@ function handle_specific_overrides
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|termclr256|append_payload|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|dotfile_installer.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|bootstrap-ansible|gnupg-keygen.sh|configure-gitconfig)
+		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|gnupg-keygen.sh|configure-gitconfig)
 			;;
 		.config/sublime-text/*.olli)
 			copy_file newer_rename "$fname" "$TGTDIR/${fname%.olli}"

@@ -12,7 +12,6 @@ endif
 
 ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
 SHELL := $(shell command -v bash)
-APAYLOAD:=./append_payload
 NPD:=--no-print-directory
 
 # Allow overriding the machine name used for override/append/custom lookup in
@@ -22,16 +21,19 @@ ifdef MACHINE
   export MACHINE
 endif
 
-.PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link
+.PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link clean-legacy
 
 ifeq ($(strip $(DBG)),)
 endif
 
-install: install.script configure.gitconfig bashrc.link
+install: clean-legacy install.script configure.gitconfig bashrc.link
 
 install.script: $(DOTFILES)/install-dotfiles
 	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./install-dotfiles
+
+clean-legacy:
+	$(DBG)if [[ -f "$(TGTDIR)/.oldstyle-beroot" ]]; then ( set -x; rm -f -- "$(TGTDIR)/.oldstyle-beroot" ); fi
 
 nodel-test test: TGTDIR:=$(HOME)/dotfile-test
 test:
@@ -137,6 +139,9 @@ clean-windows:
 	fi
 	if [[ -f "$(HOME)/.config/git/gitconfig.gnupg4win" ]]; then \
 		( set -x; rm -f -- "$(HOME)/.config/git/gitconfig.gnupg4win" ); \
+	fi
+	if [[ -f "$(HOME)/.oldstyle-beroot" ]]; then \
+		( set -x; rm -f -- "$(HOME)/.oldstyle-beroot" ); \
 	fi
 
 install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig bashrc.link

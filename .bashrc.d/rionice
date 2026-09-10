@@ -3,6 +3,10 @@
 
 function rionice
 {
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+		echo 'NOP'
+		return
+	fi
 	if [[ $- == *i* ]]; then
 		declare -A _colors=(
 			[cR]='\e[1;31m'  [cG]='\e[1;32m'  [cB]='\e[1;34m'
@@ -19,7 +23,7 @@ function rionice
 	for procname in "$@"; do
 		local -a PIDS=( $(pgrep "$procname") )
 		if [[ -n "$PIDS" ]]; then
-			printf "${cG}Process${cZ} [${cY}%s${cZ}]: ${cW}%s${cZ}\n" "$procname" "$pid"
+			printf "${cG}Process${cZ} [${cY}%s${cZ}]: ${cW}%s${cZ}\n" "$procname" "${PIDS[*]}"
 			sudo bash -c "for pid in ${PIDS[*]}; do ( set -x; renice -n -10 -p \$pid; ionice -c 2 -p \$pid ); done"
 		fi
 	done

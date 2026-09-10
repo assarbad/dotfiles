@@ -1,12 +1,12 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if type tmux > /dev/null 2>&1; then
+if "${WHENCE_CMD[@]}" tmux > /dev/null 2>&1; then
 	# Alias for convenience
 	_TMUX_="tmux"
 	# Establish a baseline
 	if [[ -n "$TERM" ]]; then
 		_TMUX_="env _TMUXTERM=$TERM tmux"
-		if type toe > /dev/null 2>&1 && type tput > /dev/null 2>&1 && type grep > /dev/null 2>&1; then
+		if "${WHENCE_CMD[@]}" toe > /dev/null 2>&1 && "${WHENCE_CMD[@]}" tput > /dev/null 2>&1 && "${WHENCE_CMD[@]}" grep > /dev/null 2>&1; then
 			TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
 			COLORCNT=$(tput Co 2> /dev/null || tput colors 2> /dev/null)
 			case "$TERM" in

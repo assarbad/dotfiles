@@ -4,6 +4,12 @@
 declare -ir DEFAULT_NUMBER_OF_REFLOG_ITEMS=50
 shopt -s extglob
 
+if [[ -v BASH_VERSION ]]; then
+	WHENCE_CMD=(builtin type -P)
+elif [[ -v ZSH_VERSION ]]; then
+	WHENCE_CMD=(builtin whence -p)
+fi
+
 function select_reflog_branch
 {
 	# Relevant operation markers (probably incomplete)
@@ -95,7 +101,7 @@ function git_back_impl
 		readonly cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ
 	fi
 	for tool in awk env git head sed sk; do 
-		if ! type -p "$tool" > /dev/null 2>&1; then
+		if ! "${WHENCE_CMD[@]}" "$tool" > /dev/null 2>&1; then
 			printf "${cR}ERROR:${cZ} ${cW}%s${cZ} does not seem to be installed.\n" "$tool"
 			return 1
 		fi

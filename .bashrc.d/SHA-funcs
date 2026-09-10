@@ -27,12 +27,10 @@ function SHA_sum
 
 function register_shasums
 {
+	local bitness path
 	for bitness in 1 224 256 384 512; do
-		if type "sha${bitness}sum" > /dev/null 2>&1; then
-			if grep -qF "is hashed ($(which "sha${bitness}sum"))" <(type "sha${bitness}sum" 2> /dev/null) || grep -q "is $(which "sha${bitness}sum")$" <(type "sha${bitness}sum" 2> /dev/null); then
-				alias sha${bitness}="SHA_sum $bitness $(which "sha${bitness}sum")"
-			fi
-		fi
+		path=$("${WHENCE_CMD[@]}" "sha${bitness}sum" 2> /dev/null) || continue
+		alias sha${bitness}="SHA_sum $bitness $path"
 	done
 }
 

@@ -1,9 +1,10 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
+# Intentionally disabled for now.
 return 0
 
 # Establish a default
 if [[ -n "$TERM" ]]; then
-	if type toe > /dev/null 2>&1 && type grep > /dev/null 2>&1; then
+	if "${WHENCE_CMD[@]}" toe > /dev/null 2>&1 && "${WHENCE_CMD[@]}" grep > /dev/null 2>&1; then
 		# Figure out if we can use toe to get a list of supported terminal types, otherwise fall back to toe -h
 		TOELIST=$(toe -a > /dev/null 2>&1 && echo "toe -a" || echo "toe -h")
 		case "$TERM" in
@@ -24,7 +25,7 @@ if [[ -n "$TERM" ]]; then
 						fi
 					fi
 					if [[ -z "$NEWTERM" ]]; then
-						if type dpkg > /dev/null 2>&1 && type awk > /dev/null 2>&1; then
+						if "${WHENCE_CMD[@]}" dpkg > /dev/null 2>&1 && "${WHENCE_CMD[@]}" awk > /dev/null 2>&1; then
 							if command dpkg -l|awk '$1 ~ /^ii$/ && $2 ~ /^ncurses/ {print}'|grep -vq ncurses-term; then
 								echo -ne "${cR}!${cY}ncurses-term${cZ} "
 							fi

@@ -1,5 +1,23 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
+if [[ -v BASH_VERSION ]]; then
+	WHENCE_CMD=(builtin type -P)
+elif [[ -v ZSH_VERSION ]]; then
+	WHENCE_CMD=(builtin whence -p)
+fi
+
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
+	if "${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 || "${WHENCE_CMD[@]}" make > /dev/null 2>&1; then
+		function refresh-dotfiles
+		{
+			local MAKE_CMD=make
+			"${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 && MAKE_CMD=gmake
+			"$MAKE_CMD" -C "$HOME/.dotfiles" install
+		}
+	fi
+	return
+fi
+
 function refresh-dotfiles
 {
 	local TGTDIR="${BASHRCDIR:-$HOME}"
@@ -26,10 +44,10 @@ function refresh-dotfiles
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then
 		[[ "$MYBRCD/hgrc.local" -nt "$MYBRCD/.hg/hgrc" ]] && cp -a "$MYBRCD/hgrc.local" "$MYBRCD/.hg/hgrc"
-		[[ "$1" == "--nopull" ]] || ([[ -d "$UPSTREAM_DOTFILES/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_DOTFILES"; set -x; type hg 2> /dev/null && hg -R "$MYBRCD" pull -u ${UPSTREAM_REPO:-} || hg up -R "$MYBRCD")
+		[[ "$1" == "--nopull" ]] || ([[ -d "$UPSTREAM_DOTFILES/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_DOTFILES"; set -x; "${WHENCE_CMD[@]}" hg 2> /dev/null && hg -R "$MYBRCD" pull -u ${UPSTREAM_REPO:-} || hg up -R "$MYBRCD")
 	fi
 	local GMAKE=make
-	type gmake 2> /dev/null && GMAKE=gmake
+	"${WHENCE_CMD[@]}" gmake 2> /dev/null && GMAKE=gmake
 	if [[ -e "$MYBRCD/GNUmakefile" ]]; then
 		if ( $GMAKE --no-print-directory -C "$MYBRCD" TGTDIR="$TGTDIR" install ); then
 			if [[ -n "$ZSH_VERSION" ]]; then

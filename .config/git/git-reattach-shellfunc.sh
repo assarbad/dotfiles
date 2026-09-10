@@ -4,6 +4,12 @@
 set -e
 shopt -s extglob
 
+if [[ -v BASH_VERSION ]]; then
+	WHENCE_CMD=(builtin type -P)
+elif [[ -v ZSH_VERSION ]]; then
+	WHENCE_CMD=(builtin whence -p)
+fi
+
 function git_reattach_impl
 {
 	if ! [[ -v cR && -v cG && -v cB && -v cY && -v cW && -v cR_ && -v cG_ && -v cB_ && -v cY_ && -v cW_ && -v cZ ]]; then
@@ -11,7 +17,7 @@ function git_reattach_impl
 		readonly cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ
 	fi
 	for tool in env git; do 
-		if ! type -p "$tool" > /dev/null 2>&1; then
+		if ! "${WHENCE_CMD[@]}" "$tool" > /dev/null 2>&1; then
 			printf "${cR}ERROR:${cZ} ${cW}%s${cZ} does not seem to be installed.\n" "$tool"
 			return 1
 		fi

@@ -1,6 +1,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if type vimdiff > /dev/null 2>&1 && type tree > /dev/null 2>&1; then
+if "${WHENCE_CMD[@]}" vimdiff > /dev/null 2>&1 && "${WHENCE_CMD[@]}" tree > /dev/null 2>&1; then
 	function dirdiff
 	{
 		local DIR1="$1"
