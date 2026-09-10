@@ -81,7 +81,7 @@ function copy_file
 	fi
 	local SRCNAME="$SRCBASEDIR/$RELNAME"
 	# For relative names pointing to a subdirectory
-	if [[ "$RELNAME" != "${RELNAME//\/}" ]]; then
+	if [[ "$RELNAME" == */* ]]; then
 		if [[ ! -d "${TGTNAME%/*}" ]]; then
 			printf -- "  ${cW}%s${cZ}${cG}/${cZ}\n" "${RELNAME%/*}"
 			( set -x; mkdir -p -- "${TGTNAME%/*}" ) && touch -r "${SRCNAME%/*}" -- "${TGTNAME%/*}"
@@ -91,18 +91,11 @@ function copy_file
 	case $MODE in
 		always|all) # fall through
 			;;
-		newer_rename)
+		newer_rename|newer)
 			if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-				let COPY=1
+				COPY=1
 			else
-				let COPY=0
-			fi
-			;;
-		newer)
-			if [[ "$TGTNAME" -ot "$SRCNAME" ]]; then
-				let COPY=1
-			else
-				let COPY=0
+				COPY=0
 			fi
 			;;
 		*)
@@ -113,7 +106,7 @@ function copy_file
 	debug "srcname=%q -> tgtname=%q" "$SRCNAME" "$TGTNAME"
 	((COPY)) || return
 	local ITEM_TEXT ITEM_COPIED ITEM_TIMESTAMPED
-	if [[ "${RELNAME%/*}" == "${RELNAME##*/}" ]]; then
+	if [[ "$RELNAME" != */* ]]; then
 		printf -v ITEM_TEXT -- "  ${cZ}${cW}%s${cZ}" "${RELNAME}"
 	else
 		printf -v ITEM_TEXT -- "  ${cZ}%s/${cW}%s${cZ}" "${RELNAME%/*}" "${RELNAME##*/}"
@@ -236,6 +229,11 @@ function handle_specific_overrides
 	STEP="post" execute_customization "$SRCBASEDIR/custom" "POST" "custom overrides (post)"
 }
 
+# The base-file copy below relies on these tools
+for tool in find sed sort; do
+	type -P "$tool" > /dev/null 2>&1 || { error "required tool '%s' not found in PATH" "$tool"; exit 1; }
+done
+
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
@@ -249,7 +247,7 @@ while read fname; do
 			copy_file newer "$fname" "$TGTDIR"
 			;;
 	esac
-done < <(find . -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) -printf '%P\n' | sed '/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
+done < <(find . -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sed -e 's|^\./||' -e '/^\.hg\//d;/^\.hgignore/d;/^machine-specific/d' | sort)
 # Overrides, appends and custom scripts
 handle_specific_overrides "$LOCALROOT"
 

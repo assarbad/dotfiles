@@ -28,7 +28,7 @@ function info
 function configure_gitconfig
 {
 	local -r GITLOCALCFG="$TGTDIR/.config/git/gitconfig.LOCAL"
-	echo -n "" > "$GITLOCALCFG" # truncate existing config
+	: > "$GITLOCALCFG" # truncate existing config
 	if type -P delta > /dev/null 2>&1; then
 		( set -x; git config -f "$GITLOCALCFG" --add 'include.path' '~/.config/git/gitconfig.delta' )
 	fi

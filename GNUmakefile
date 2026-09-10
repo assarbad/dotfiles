@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
-export DOTFILES := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+export DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 TGTDIR ?= $(HOME)
 export TGTDIR := $(realpath $(TGTDIR))
 ifneq ($(DEBUG),)
@@ -23,13 +23,10 @@ endif
 
 .PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link clean-legacy
 
-ifeq ($(strip $(DBG)),)
-endif
-
 install: clean-legacy install.script configure.gitconfig bashrc.link
 
 install.script: $(DOTFILES)/install-dotfiles
-	$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
+	-$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./install-dotfiles
 
 clean-legacy:

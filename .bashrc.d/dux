@@ -4,6 +4,14 @@
 
 function dux
 {
+	if [[ ! -v WHENCE_CMD ]]; then
+		local -a WHENCE_CMD
+		if [[ -v BASH_VERSION ]]; then
+			WHENCE_CMD=(builtin type -P)
+		elif [[ -v ZSH_VERSION ]]; then
+			WHENCE_CMD=(builtin whence -p)
+		fi
+	fi
 	if [[ $- == *i* ]]; then
 		declare -A _colors=(
 			[cR]='\e[1;31m'  [cG]='\e[1;32m'  [cB]='\e[1;34m'
@@ -16,7 +24,7 @@ function dux
 			  declare -p "$_k" &>/dev/null || local "$_k"="${_colors[$_k]}"
 		done
 	fi
-	for tool in du sort head awk sed; do type $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
+	for tool in du sort head awk sed; do "${WHENCE_CMD[@]}" $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
 	local SCANDIR=.
 	[[ -n "$1" && -d "$1" ]] && SCANDIR=${1%/}
 	du -cksx "$SCANDIR"/*|sort -rn|head -11|sed 's/\t/:/g'|awk -F : '\

@@ -4,6 +4,24 @@
 # If not running interactively, don't do anything
 [[ $- == *i* ]] || return
 
+# Enforce the minimum supported shell versions: Bash >= 4.2, Zsh >= 5.3
+if [[ -n "$BASH_VERSION" ]]; then
+	if (( BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 2) )); then
+		printf 'ERROR: .common_profile requires Bash >= 4.2 (found %s); aborting.\n' "$BASH_VERSION" >&2
+		return
+	fi
+elif [[ -n "$ZSH_VERSION" ]]; then
+	zsh_major=${ZSH_VERSION%%.*}
+	zsh_minor=${ZSH_VERSION#*.}
+	zsh_minor=${zsh_minor%%.*}
+	if (( zsh_major < 5 || (zsh_major == 5 && zsh_minor < 3) )); then
+		printf 'ERROR: .common_profile requires Zsh >= 5.3 (found %s); aborting.\n' "$ZSH_VERSION" >&2
+		unset zsh_major zsh_minor
+		return
+	fi
+	unset zsh_major zsh_minor
+fi
+
 # Some colors
 declare -x cG="\e[1;32m" cR="\e[1;31m" cB="\e[1;34m" cW="\e[1;37m" cY="\e[1;33m" cG_="\e[0;32m" cR_="\e[0;31m" cB_="\e[0;34m" cW_="\e[0;37m" cY_="\e[0;33m" cZ="\e[0m"
 
@@ -61,12 +79,15 @@ function clean_path_var
 	fi
 
 	if [[ $EUID -eq 0 ]]; then
-		local NEWPATH='' LASTDIR=''
+		local NEWPATH='' LASTDIR='' dir
+		local -a PATH_DIRS
 		if [[ -v ZSH_VERSION ]]; then
-			setopt sh_word_split
+			PATH_DIRS=("${path[@]}")
+		else
+			local IFS=:
+			read -r -a PATH_DIRS <<< "$PATH"
 		fi
-		local IFS=:
-		for dir in $PATH; do
+		for dir in "${PATH_DIRS[@]}"; do
 			[[ -z "$dir" || ! -d "$dir" ]] && continue
 			LASTDIR=$dir
 			if command ls -lLd "$dir" 2> /dev/null | command grep -q '^d.......w. '; then
@@ -87,48 +108,52 @@ function clean_path_var
 function set_shell_options
 {
 	if [[ -v BASH_VERSION ]]; then
-		# don't put duplicate lines in the history. See bash(1) for more options
 		declare -g HISTCONTROL=erasedups:ignorespace
-		declare -g HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux:lsb:chorme"
+		declare -g HISTIGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux:lsb:lsbx:chorme"
 		declare -g HISTFILESIZE=3000
-
-		shopt -s autocd > /dev/null 2>&1
-		shopt -s checkwinsize > /dev/null 2>&1
-		shopt -s cdspell > /dev/null 2>&1
-		shopt -s dotglob > /dev/null 2>&1
-		shopt -s extglob > /dev/null 2>&1
-		shopt -s globskipdots > /dev/null 2>&1
+		shopt -s autocd
+		shopt -s checkwinsize
+		shopt -s cdspell
+		shopt -s dotglob
+		shopt -s extglob
+		if (( BASH_VERSINFO[0] > 5 || (BASH_VERSINFO[0] == 5 && BASH_VERSINFO[1] >= 2) )); then
+			shopt -s globskipdots
+		fi
 	elif [[ -v ZSH_VERSION ]]; then
 		declare -g HISTFILE=~/.zsh_history
 		declare -g HISTSIZE=3000
 		declare -g SAVEHIST=3000
-		declare -g HIST_IGNORE="&:ls:ll:l:[bf]g:exit:clear:vim:env:cd:cdf:ccd:pushf:ducks:dux:psaux:lsb:chorme"
+		declare -g HISTORY_IGNORE='(ls|ll|l|[bf]g|exit|clear|vim|env|cd|cdf|ccd|pushf|ducks|dux|psaux|lsb|lsbx|chorme)'
+		setopt HIST_IGNORE_ALL_DUPS
 		setopt HIST_IGNORE_SPACE
-		setopt autocd beep extendedglob
+		setopt autocd
+		setopt correct
+		setopt globdots
+		setopt extendedglob
 	fi
 }
 
 function ls_aliases
 {
 	# Alias definitions for ls. Figure out the feature set ... (GNU vs. others)
-	if [[ "$OSTYPE" =~ ^linux-gnu* || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	if [[ "$OSTYPE" =~ ^linux-gnu || "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 		if "${WHENCE_CMD[@]}" lsd > /dev/null 2>&1; then
 			alias ls='lsd --group-dirs=first'
 			alias ll='lsd --group-dirs=first --date "+%F %T" -l'
 			alias l='lsd --group-dirs=first --date "+%F %T" -lA'
 			alias tree='lsd --tree -l --date="+%F %T" --group-dirs=first --blocks=permission,size,date,name'
 		else
-			local MYLS_OPTIONS='--color=auto --time-style=long-iso'
+			local -a MYLS_OPTS=(--color=auto --time-style=long-iso)
 			if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
 				: # Git for Windows' coreutils always supports both flags
 			else
-				ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS='--color=auto'
-				ls $MYLS_OPTIONS . > /dev/null 2>&1 || MYLS_OPTIONS=''
+				ls "${MYLS_OPTS[@]}" . > /dev/null 2>&1 || MYLS_OPTS=(--color=auto)
+				ls "${MYLS_OPTS[@]}" . > /dev/null 2>&1 || MYLS_OPTS=()
 			fi
-			[[ -n "$MYLS_OPTIONS" ]] && export LS_OPTIONS="$MYLS_OPTIONS"
-			alias ls='ls $LS_OPTIONS'
-			alias ll='ls $LS_OPTIONS -l'
-			alias l='ls $LS_OPTIONS -Al'
+			(( ${#MYLS_OPTS[@]} )) && export LS_OPTIONS="${MYLS_OPTS[*]}"
+			alias ls="ls${LS_OPTIONS:+ $LS_OPTIONS}"
+			alias ll="ls${LS_OPTIONS:+ $LS_OPTIONS} -l"
+			alias l="ls${LS_OPTIONS:+ $LS_OPTIONS} -Al"
 		fi
 	else
 		[[ "$(uname -s)" == "Darwin"  ]] && export CLICOLOR=
@@ -142,8 +167,13 @@ function ls_aliases
 		# ls: unrecognized prefix: mh
 		# ls: unparsable value for LS_COLORS environment variable
 		# However, this output doesn't seem to be shown when piping. How useless.
-		command dircolors|command grep -q 'hl=' && export LS_COLORS="ln=01;36:hl=00;36"
-		command dircolors|command grep -q 'mh=' && export LS_COLORS="ln=01;36:mh=00;36"
+		local DIRCOLORS_OUTPUT MYLSCOLORS="ln=01;36"
+		DIRCOLORS_OUTPUT=$(command dircolors)
+		if [[ "$DIRCOLORS_OUTPUT" == *hl=* || "$DIRCOLORS_OUTPUT" == *mh=* ]]; then
+			[[ "$DIRCOLORS_OUTPUT" == *hl=* ]] && MYLSCOLORS="$MYLSCOLORS:hl=00;36"
+			[[ "$DIRCOLORS_OUTPUT" == *mh=* ]] && MYLSCOLORS="$MYLSCOLORS:mh=00;36"
+			export LS_COLORS="$MYLSCOLORS"
+		fi
 	fi
 }
 
@@ -283,6 +313,11 @@ function tool_aliases_and_init
 	[[ -v BASH_VERSION ]] && SHELLKIND="bash"
 	[[ -v ZSH_VERSION ]] && SHELLKIND="zsh"
 	if [[ -n "$SHELLKIND" ]]; then
+		# Completion scripts below need compdef, which is only defined after compinit
+		if [[ -v ZSH_VERSION ]] && ! whence -w compdef > /dev/null 2>&1; then
+			autoload -Uz compinit
+			compinit -i
+		fi
 		try_source_completions zoxide init $SHELLKIND
 		try_source_completions rg --generate=complete-$SHELLKIND
 		try_source_completions rustup completions $SHELLKIND
@@ -318,6 +353,33 @@ function convenience_aliases
 	if "${WHENCE_CMD[@]}" date > /dev/null 2>&1; then
 		alias currdate='date +"%Y-%m-%d %H:%M:%S"'
 	fi
+	if "${WHENCE_CMD[@]}" lsblk > /dev/null 2>&1; then
+		alias lsb="lsblk --exclude 7 -o NAME,MAJ:MIN,SIZE,RO,TYPE,FSTYPE,LABEL,MOUNTPOINT"
+		alias lsbx="lsblk --exclude 7 -o NAME,MAJ:MIN,SIZE,RO,TYPE,FSTYPE,LABEL,MOUNTPOINT,PARTUUID,UUID"
+	fi
+	if "${WHENCE_CMD[@]}" df > /dev/null 2>&1; then
+		alias df='df -x tmpfs -x squashfs -x overlay'
+		if "${WHENCE_CMD[@]}" watch > /dev/null 2>&1; then
+			alias wdf='watch -n 1 df -x tmpfs -x squashfs -x overlay'
+		fi
+	fi
+	if "${WHENCE_CMD[@]}" chown > /dev/null 2>&1; then
+		if [[ $UID -ne 0 ]]; then
+			alias chorme='sudo /bin/chown -hR $USER:'
+		else
+			alias chorme='chown -hR $USER:'
+		fi
+	fi
+	if "${WHENCE_CMD[@]}" rg > /dev/null 2>&1; then
+		alias rgI="command rg --follow --no-ignore"
+	fi
+	export SYSTEMD_PAGER=''
+	if "${WHENCE_CMD[@]}" systemctl > /dev/null 2>&1; then
+		alias systemctl='systemctl --no-pager'
+	fi
+	if "${WHENCE_CMD[@]}" gpg > /dev/null 2>&1 && "${WHENCE_CMD[@]}" tty > /dev/null 2>&1 && "${WHENCE_CMD[@]}" git > /dev/null 2>&1; then
+		alias git='env -u DISPLAY -u WAYLAND_DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u XDG_CURRENT_DESKTOP GPG_TTY="$(tty)" PINENTRY_USER_DATA="USE_TTY=1" git'
+	fi
 	if "${WHENCE_CMD[@]}" ssh > /dev/null 2>&1; then
 		alias ssh='ssh -t'
 	fi
@@ -326,6 +388,22 @@ function convenience_aliases
 	fi
 	if "${WHENCE_CMD[@]}" ssh-keygen > /dev/null 2>&1 && "${WHENCE_CMD[@]}" test > /dev/null 2>&1; then
 		alias ssh-list='for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -lf $i; done; for i in /etc/ssh/ssh_host_*.pub; do test -r $i && ssh-keygen -r $(hostname -s) -f $i; done'
+	fi
+	if "${WHENCE_CMD[@]}" ssh > /dev/null 2>&1; then
+		alias SSH-insecure='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+		alias SSH-very-insecure='ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	fi
+	if "${WHENCE_CMD[@]}" scp > /dev/null 2>&1; then
+		alias SCP-insecure='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+		alias SCP-very-insecure='scp -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	fi
+	if "${WHENCE_CMD[@]}" ssh1 > /dev/null 2>&1; then
+		alias SSH1-insecure='ssh1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+		alias SSH1-very-insecure='ssh1 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+	fi
+	if "${WHENCE_CMD[@]}" scp1 > /dev/null 2>&1; then
+		alias SCP1-insecure='scp1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+		alias SCP1-very-insecure='scp1 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 	fi
 	if "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
 		if [[ -f "${BASHRCDIR:-$HOME}/.vimrc" ]]; then
@@ -337,7 +415,7 @@ function convenience_aliases
 		elif "${WHENCE_CMD[@]}" grep > /dev/null 2>&1 && (command vim --help 2> /dev/null|grep -q '[[:space:]]*-p'); then
 			VIM_P_FLAG="-p "
 		fi
-		local VIM_CMD="env HOME="${BASHRCDIR:-$HOME}" vim ${VIM_P_FLAG}-N -n -i NONE${VIMRC:+ $VIMRC}"
+		local VIM_CMD="env HOME=\"${BASHRCDIR:-$HOME}\" vim ${VIM_P_FLAG}-N -n -i NONE${VIMRC:+ $VIMRC}"
 		alias vim="$VIM_CMD"
 		export EDITOR=$("${WHENCE_CMD[@]}" vim)
 		if [[ -t 1 ]] && "${WHENCE_CMD[@]}" git > /dev/null 2>&1; then
@@ -345,6 +423,19 @@ function convenience_aliases
 		fi
 		if [[ -n "$EDITOR" ]]; then
 			export VISUAL="$EDITOR"
+		fi
+	fi
+	if "${WHENCE_CMD[@]}" visudo > /dev/null 2>&1; then
+		if "${WHENCE_CMD[@]}" vim.nox > /dev/null 2>&1; then
+			EDITOR=vim.nox
+		elif "${WHENCE_CMD[@]}" vim > /dev/null 2>&1; then
+			EDITOR=vim
+		elif "${WHENCE_CMD[@]}" vi > /dev/null 2>&1; then
+			EDITOR=vi
+		fi
+		if [[ -n "$EDITOR" ]]; then
+			export EDITOR
+			[[ $UID -eq 0 ]] || alias visudo="sudo env EDITOR=\"$EDITOR\" visudo"
 		fi
 	fi
 
@@ -391,9 +482,6 @@ function convenience_aliases
 				}
 			fi
 		fi
-		if ! declare -pf beroot > /dev/null 2>&1; then
-			declare -fgr beroot > /dev/null 2>&1
-		fi
 	fi
 	tool_aliases_and_init
 }
@@ -412,11 +500,11 @@ function load_ssh_agent
 		TMUXEXE="$("${WHENCE_CMD[@]}" tmux 2> /dev/null)"
 		if [[ -v TMUX && -x "$TMUXEXE" ]]; then
 			eval "$("$TMUXEXE" show-environment -s)"
-			local -i NUMKEYS
+			local NUMKEYS=''
 			if "${WHENCE_CMD[@]}" ssh-add > /dev/null 2>&1 && "${WHENCE_CMD[@]}" wc > /dev/null 2>&1; then
 				NUMKEYS=$( \
 					command ssh-add -ql 2> /dev/null | \
-					while read -r length fingerprint path; do \
+					while read -r length fingerprint keycomment; do \
 						case "$length" in \
 							[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) \
 								printf "%s\n" "$fingerprint"\
@@ -425,7 +513,7 @@ function load_ssh_agent
 					done | command wc -l \
 				)
 			fi
-			if [[ -v NUMKEYS ]]; then
+			if [[ -n "$NUMKEYS" ]]; then
 				printf "${cY}Reusing${cZ} running ${cB}ssh-agent${cZ} inside tmux (%d keys)\n" "$NUMKEYS"
 			else
 				printf "${cY}Reusing${cZ} running ${cB}ssh-agent${cZ} inside tmux\n"
@@ -439,9 +527,14 @@ function load_ssh_agent
 	if "${WHENCE_CMD[@]}" stat > /dev/null 2>&1; then
 		local LDR="$HOME/.ssh/.load"
 		if [[ -O "$LDR" && -G "$LDR" && -s "$LDR" ]]; then
-			if (( $(stat -c '%a' "$LDR") <= 644 )); then
-				source "$LDR"
-			fi
+			local PERMS
+			PERMS=$(stat -c '%a' "$LDR" 2> /dev/null) || \
+				PERMS=$(stat -f '%Lp' "$LDR" 2> /dev/null)
+			# Only source when the permissions are known and not group/world writable
+			case "$PERMS" in
+				''|*[!0-7]*) : ;; # unknown/unparseable -> do not source
+				*) (( (8#$PERMS & 8#22) == 0 )) && source "$LDR" ;;
+			esac
 		fi
 	fi
 }
@@ -461,8 +554,16 @@ else
 	set_prompt_and_uid
 	# The prompt command will only show the current directory and username if the terminal type is "correct"
 	case "$TERM" in
-		xterm*|rvxt*|screen*|putty*|alacritty*)
-			export PROMPT_COMMAND='printf "\033]0;%s%s@%s: %s\007" "${debian_chroot:+($debian_chroot)}" "$USER" "$HOSTNAME" "$PWD"'
+		xterm*|rxvt*|screen*|putty*|alacritty*)
+			function set_terminal_title
+			{
+				printf '\033]0;%s%s@%s: %s\007' "${debian_chroot:+($debian_chroot)}" "$USER" "${HOSTNAME:-$HOST}" "$PWD"
+			}
+			if [[ -v BASH_VERSION ]]; then
+				PROMPT_COMMAND=set_terminal_title
+			elif [[ -v ZSH_VERSION ]]; then
+				precmd_functions+=(set_terminal_title)
+			fi
 			;;
 	esac
 fi
@@ -514,7 +615,7 @@ fi
 # Remove local functions up to here
 unset -f set_prompt_and_uid add_home_bin add_cargo_bin set_remote_timeout clean_path_var set_shell_options ls_aliases system_specific_aliases try_source_completions tool_aliases_and_init convenience_aliases load_ssh_agent
 
-type ccd > /dev/null 2>&1 && unset ccd
+type ccd > /dev/null 2>&1 && { unset -f ccd 2> /dev/null; unalias ccd 2> /dev/null; }
 # create and cd
 function ccd()
 {

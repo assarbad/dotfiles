@@ -2,11 +2,12 @@
 # shellcheck disable=SC2059
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 set -e
-shopt -s extglob
 
 if [[ -v BASH_VERSION ]]; then
+	shopt -s extglob
 	WHENCE_CMD=(builtin type -P)
 elif [[ -v ZSH_VERSION ]]; then
+	setopt extendedglob ksharrays
 	WHENCE_CMD=(builtin whence -p)
 fi
 
@@ -24,7 +25,7 @@ function git_reattach_impl
 	done
 	local -a CANDIDATE_BRANCHES
 	local STATUS_DETACHED_BRANCH
-	if env LANG=C LC_ALL=C git symbolic-ref -q HEAD > /dev/null 2>&1; then # detached HEAD?
+	if env LANG=C LC_ALL=C git symbolic-ref -q HEAD > /dev/null 2>&1; then # on a branch (not detached)?
 		local BRANCH_NAME
 		if BRANCH_NAME=$(env LANG=C LC_ALL=C git symbolic-ref -q HEAD); then
 			BRANCH_NAME="${BRANCH_NAME##refs\/heads\/}"
@@ -34,7 +35,9 @@ function git_reattach_impl
 		# Determine whether git status gives us the output "HEAD detached at refs/heads/..." and if so, return "..." (only first line of output!)
 		STATUS_DETACHED_BRANCH=$(env LANG=C LC_ALL=C git status | awk 'NR==1 && /HEAD detached at refs\/heads\// {  sub(/^refs\/heads\//, "", $4); print $4 }')
 		# Determine all candidate branches, for HEAD
-		mapfile -t CANDIDATE_BRANCHES < <(env LANG=C LC_ALL=C git for-each-ref --format="%(refname:short)" --points-at HEAD refs/heads/)
+		while IFS= read -r bname; do
+			CANDIDATE_BRANCHES+=("$bname")
+		done < <(env LANG=C LC_ALL=C git for-each-ref --format="%(refname:short)" --points-at HEAD refs/heads/)
 		if (( ${#CANDIDATE_BRANCHES[@]} == 1 )); then
 			if [[ -n "$STATUS_DETACHED_BRANCH" && "$STATUS_DETACHED_BRANCH" == "${CANDIDATE_BRANCHES[0]}" ]]; then
 				printf -- "Unambiguously switching to ${cW}%s${cZ}\n" "$STATUS_DETACHED_BRANCH"
@@ -53,7 +56,7 @@ function git_reattach_impl
 					break
 					;;
 				*)
-					printf -- "${cY}WARNING:${cZ} cannot reasonably decide which branch to switch to. Candidates:\n" "$bname"
+					printf -- "${cY}WARNING:${cZ} cannot reasonably decide which branch to switch to. Candidates:\n"
 					for b in "${CANDIDATE_BRANCHES[@]}"; do
 						printf -- "    * ${cW}%s${cZ}\n" "$b"
 					done

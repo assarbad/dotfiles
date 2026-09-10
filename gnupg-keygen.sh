@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 [[ -t 1 ]] && { cG="\e[1;32m"; cR="\e[1;31m"; cB="\e[1;34m"; cW="\e[1;37m"; cY="\e[1;33m"; cG_="\e[0;32m"; cR_="\e[0;31m"; cB_="\e[0;34m"; cW_="\e[0;37m"; cY_="\e[0;33m"; cZ="\e[0m"; export cR cG cB cY cW cR_ cG_ cB_ cY_ cW_ cZ; }
-for tool in readlink tr fold head mktemp cat awk find grep; do type $tool > /dev/null 2>&1 || { echo -e "${cR}ERROR:${cZ} couldn't find '$tool' which is required by this script."; exit 1; }; done
-pushd "$(dirname "$0")" > /dev/null; CURRABSPATH=$(readlink -nf "$(pwd)"); popd > /dev/null; # Get the directory in which the script resides
+for tool in tr fold head mktemp cat awk find grep sed; do type $tool > /dev/null 2>&1 || { echo -e "${cR}ERROR:${cZ} couldn't find '$tool' which is required by this script."; exit 1; }; done
 ###############################################################################
 ### Feel free to override any of those variables up to the next "ruler"
 ###############################################################################
@@ -9,8 +8,8 @@ export PASSPHRASE=${PASSPHRASE:-$(tr -dc '[:upper:]' < /dev/urandom | fold -w 32
 export GNUPGHOME=${GNUPGHOME:-$(mktemp -d)}
 NAME=${NAME:-Jane Doe}
 MAIL=${MAIL:-j.doe@example.com}
-let KEYLEN=${KEYLEN:-4096}
-let SUBKEYLEN=${SUBKEYLEN:-$KEYLEN}
+KEYLEN=${KEYLEN:-4096}
+SUBKEYLEN=${SUBKEYLEN:-$KEYLEN}
 EXPIRY=${EXPIRY:-0}
 # GnuPG expects a particular format for the time ...
 TIME=${TIME:-$(date +"%Y%m%dT000000")} # today at midnight
@@ -85,7 +84,7 @@ grep -ve "^#" "$GNUPGHOME/gpg.conf"
 echo -e "${cW}INFO:${cZ} writing master key generation 'batch' script"
 cat <<EOKEYGEN|tee "$BATCH"
 Key-Type: RSA
-Key-Length: 4096
+Key-Length: $KEYLEN
 Key-Usage: cert
 Name-Real: $NAME
 Name-Email: $MAIL
@@ -142,7 +141,7 @@ echo -e "${cW}INFO:${cZ} exporting secret keys."
 ( set -x; gpg --batch --passphrase "$PASSPHRASE" --pinentry-mode=loopback --armor --export-secret-subkeys "$KEYID" > "$GNUPGHOME/$KEYFPR-subkeys-only.asc" ) \
 	|| { echo -e "${cR}FATAL:${cZ} failed to export only secret subkeys."; exit 1; }
 echo -e "${cG}SUCCESS${cZ} artifacts are in ${cW}$GNUPGHOME${cZ}:"
-find "$GNUPGHOME" -maxdepth 1 -type f -name $KEYFPR'*' -printf '%f\n'|while read fname; do
+find "$GNUPGHOME" -maxdepth 1 -type f -name $KEYFPR'*'|sed 's|.*/||'|while read fname; do
 	echo -e "\t${cW}$fname${cZ}"
 done
 echo -e "${cG}PASSPHRASE ${cB_}$PASSPHRASE${cZ}"

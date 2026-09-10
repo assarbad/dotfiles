@@ -2,11 +2,12 @@
 # shellcheck disable=SC2059
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 declare -ir DEFAULT_NUMBER_OF_REFLOG_ITEMS=50
-shopt -s extglob
 
 if [[ -v BASH_VERSION ]]; then
+	shopt -s extglob
 	WHENCE_CMD=(builtin type -P)
 elif [[ -v ZSH_VERSION ]]; then
+	setopt extendedglob
 	WHENCE_CMD=(builtin whence -p)
 fi
 

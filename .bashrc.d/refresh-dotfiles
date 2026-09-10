@@ -28,18 +28,10 @@ function refresh-dotfiles
 	local UPSTREAM_DOTFILES="$UPSTREAM_BASE/.dotfiles"
 	[[ -d "$TGTDIR/.ssh" ]] || mkdir "$TGTDIR/.ssh"
 	[[ -d "$MYBRCD" ]] || { echo "ERROR: $MYBRCD missing or not a directory."; return; }
-	if [[ -d "$UPSTREAM_LOCDOTFI/.hg" ]]; then
-		if [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
-			if [[ "$1" != "--nopull" ]]; then
-				([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
-			fi
-		fi
-	elif [[ -d "$UPSTREAM_LOCDOTFI/.git" ]] && [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
-		if [[ -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" ]]; then
-			if [[ "$1" != "--nopull" ]]; then
-				([[ -d "$UPSTREAM_LOCDOTFI/.hg" ]] && export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
-			fi
-		fi
+	if [[ -d "$UPSTREAM_LOCDOTFI/.hg" && -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" && "$1" != "--nopull" ]]; then
+		(export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
+	elif [[ -d "$UPSTREAM_LOCDOTFI/.git" && -x "$UPSTREAM_LOCDOTFI/refresh-dotfiles" && "$1" != "--nopull" ]]; then
+		(export UPSTREAM_REPO="$UPSTREAM_LOCDOTFI"; set -x; cd "$UPSTREAM_LOCDOTFI" && ./refresh-dotfiles)
 	fi
 	echo "Refreshing $MYBRCD from default pull location"
 	if [[ -d "$MYBRCD/.hg" ]]; then

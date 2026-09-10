@@ -4,14 +4,14 @@
 # The latest version of this software can be obtained here:
 # http://fvue.nl/wiki/NameTerminal
  
-function nameTerminal()
+function name-terminal()
 {
-	[[ -n "$1" ]] || { echo -e "SYNTAX:\n\tnameTerminal <tabname> [window-name]"; return; }
+	[[ -n "$1" ]] || { printf 'SYNTAX:\n\tname-terminal <tabname> [window-name]\n'; return; }
 	[[ "${TERM:0:5}" = "xterm" ]]   && local ansiNrTab=0
 	[[ "$TERM"       = "rxvt" ]]    && local ansiNrTab=61
 	[[ "$TERM"       = "konsole" ]] && local ansiNrTab=30 ansiNrWindow=0
 	# Change tab title
-	[[ $ansiNrTab ]] && echo -n $'\e'"]$ansiNrTab;$1"$'\a'
+	[[ $ansiNrTab ]] && printf '\e]%s;%s\a' "$ansiNrTab" "$1"
 	# If terminal support separate window title, change window title as well
-	[[ -n "$ansiNrWindow" && -n "$2" ]] && echo -n $'\e'"]$ansiNrWindow;$2"$'\a'
+	[[ -n "$ansiNrWindow" && -n "$2" ]] && printf '\e]%s;%s\a' "$ansiNrWindow" "$2"
 }

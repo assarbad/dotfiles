@@ -21,8 +21,9 @@ function rionice
 	fi
 	for tool in ionice pgrep renice sudo; do type $tool > /dev/null 2>&1 || { printf -- "${cR}ERROR:${cZ} couldn't find ${cW}'%s'${cZ} which is required by this function.\n" "$tool"; return; }; done
 	for procname in "$@"; do
-		local -a PIDS=( $(pgrep "$procname") )
-		if [[ -n "$PIDS" ]]; then
+		local -a PIDS
+		mapfile -t PIDS < <(pgrep "$procname")
+		if (( ${#PIDS[@]} > 0 )); then
 			printf "${cG}Process${cZ} [${cY}%s${cZ}]: ${cW}%s${cZ}\n" "$procname" "${PIDS[*]}"
 			sudo bash -c "for pid in ${PIDS[*]}; do ( set -x; renice -n -10 -p \$pid; ionice -c 2 -p \$pid ); done"
 		fi
