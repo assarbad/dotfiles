@@ -1,17 +1,20 @@
+#!/usr/bin/env bash
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 # shellcheck shell=bash disable=SC2059,SC2154
 
 # We depend on Debian/Ubuntu
-[[ -f "/etc/debian_version" ]] || return
-
-if [[ -v BASH_VERSION ]]; then
-	WHENCE_CMD=(builtin type -P)
-elif [[ -v ZSH_VERSION ]]; then
-	WHENCE_CMD=(builtin whence -p)
-fi
+[[ -f "/etc/debian_version" ]] || { alias prune-kernels="echo 'Not on Debian or a Debian-derived distro.'"; return; }
 
 function prune-kernels
 {
+	if [[ ! -v WHENCE_CMD ]]; then
+		local -a WHENCE_CMD
+		if [[ -v BASH_VERSION ]]; then
+			WHENCE_CMD=(builtin type -P)
+		elif [[ -v ZSH_VERSION ]]; then
+			WHENCE_CMD=(builtin whence -p)
+		fi
+	fi
 	if [[ $- == *i* ]]; then
 		declare -A _colors=(
 			[cR]='\e[1;31m'  [cG]='\e[1;32m'  [cB]='\e[1;34m'
@@ -112,3 +115,12 @@ function prune-kernels
 		printf -- "\t${cW}apt autopurge${cZ}\n"
 	fi
 }
+
+let SOURCED=1
+(return >/dev/null 2>&1) || let SOURCED=0
+
+if ! ((SOURCED)); then
+	prune-kernels "$@"
+fi
+
+unset SOURCED

@@ -1,15 +1,18 @@
+#!/usr/bin/env bash
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 
-if [[ -v BASH_VERSION ]]; then
-	WHENCE_CMD=(builtin type -P)
-elif [[ -v ZSH_VERSION ]]; then
-	WHENCE_CMD=(builtin whence -p)
-fi
-
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || -n "$COMSPEC" ]]; then
-	if "${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 || "${WHENCE_CMD[@]}" make > /dev/null 2>&1; then
+	if command -v gmake > /dev/null 2>&1 || command -v make > /dev/null 2>&1; then
 		function refresh-dotfiles
 		{
+			if [[ ! -v WHENCE_CMD ]]; then
+				local -a WHENCE_CMD
+				if [[ -v BASH_VERSION ]]; then
+					WHENCE_CMD=(builtin type -P)
+				elif [[ -v ZSH_VERSION ]]; then
+					WHENCE_CMD=(builtin whence -p)
+				fi
+			fi
 			local MAKE_CMD=make
 			"${WHENCE_CMD[@]}" gmake > /dev/null 2>&1 && MAKE_CMD=gmake
 			"$MAKE_CMD" -C "$HOME/.dotfiles" install
@@ -20,6 +23,14 @@ fi
 
 function refresh-dotfiles
 {
+	if [[ ! -v WHENCE_CMD ]]; then
+		local -a WHENCE_CMD
+		if [[ -v BASH_VERSION ]]; then
+			WHENCE_CMD=(builtin type -P)
+		elif [[ -v ZSH_VERSION ]]; then
+			WHENCE_CMD=(builtin whence -p)
+		fi
+	fi
 	local TGTDIR="${BASHRCDIR:-$HOME}"
 	local MYBRCD="$TGTDIR/.dotfiles"
 	local UPSTREAM_BASE=/dev/null
