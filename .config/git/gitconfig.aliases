@@ -14,6 +14,7 @@
 	cfg-pr-refs = config --add remote.origin.fetch '+refs/pull-requests/*:refs/remotes/origin/pr/*'
 	cln = clone --filter=blob:none --recurse-submodules --also-filter-submodules
 	ffm = merge --ff-only
+	fru = !bash ~/.config/git/git-fru-shellfunc.sh "$@"
 	gconf = !git gconfig
 	gconfig = config --global
 	glog = log --cherry-mark --graph --simplify-by-decoration --oneline --all

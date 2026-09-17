@@ -3,14 +3,6 @@
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=sh:
 declare -ir DEFAULT_NUMBER_OF_REFLOG_ITEMS=50
 
-if [[ -v BASH_VERSION ]]; then
-	shopt -s extglob
-	WHENCE_CMD=(builtin type -P)
-elif [[ -v ZSH_VERSION ]]; then
-	setopt extendedglob
-	WHENCE_CMD=(builtin whence -p)
-fi
-
 function select_reflog_branch
 {
 	# Relevant operation markers (probably incomplete)
@@ -96,6 +88,16 @@ function select_reflog_branch
 
 function git_back_impl
 {
+	if [[ ! -v WHENCE_CMD ]]; then
+		local -a WHENCE_CMD
+		if [[ -v BASH_VERSION ]]; then
+			shopt -s extglob
+			WHENCE_CMD=(builtin type -P)
+		elif [[ -v ZSH_VERSION ]]; then
+			setopt extendedglob
+			WHENCE_CMD=(builtin whence -p)
+		fi
+	fi
 	local -i NUM="${1:-$DEFAULT_NUMBER_OF_REFLOG_ITEMS}"
 	if ! [[ -v cR && -v cG && -v cB && -v cY && -v cW && -v cR_ && -v cG_ && -v cB_ && -v cY_ && -v cW_ && -v cZ ]]; then
 		local cR="" cG="" cB="" cY="" cW="" cR_="" cG_="" cB_="" cY_="" cW_="" cZ=""
