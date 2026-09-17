@@ -553,6 +553,10 @@ if [[ -v BASH_VERSION ]]; then
 elif [[ -v ZSH_VERSION ]]; then
 	declare -ga WHENCE_CMD=(builtin whence -p)
 fi
+# possibly needed to detect starship
+add_home_bin
+add_cargo_bin
+hash -r
 if "${WHENCE_CMD[@]}" starship > /dev/null 2>&1; then
 	if [[ -v BASH_VERSION ]]; then
 		eval "$(starship init bash)"
@@ -576,8 +580,6 @@ else
 			;;
 	esac
 fi
-add_home_bin
-add_cargo_bin
 set_remote_timeout
 clean_path_var
 set_shell_options
