@@ -8,5 +8,5 @@ zstyle :compinstall filename "${SHELLRCDIR:-$HOME}/.zshrc"
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
-[[ -f "${SHELLRCDIR:-$HOME}/.common_profile" ]] && source "${SHELLRCDIR:-$HOME}/.common_profile"
 [[ -f "${SHELLRCDIR:-$HOME}/.local/bin/env" ]] && source "${SHELLRCDIR:-$HOME}/.local/bin/env"
+[[ -f "${SHELLRCDIR:-$HOME}/.common_profile" ]] && source "${SHELLRCDIR:-$HOME}/.common_profile"
