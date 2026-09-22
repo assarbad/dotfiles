@@ -19,8 +19,8 @@ else
 	# hostname is not (correctly) set in /etc/hosts or DNS). In that case fall
 	# back to the static hostname from uname(1) so that the per-machine
 	# override/append/custom directories still match.
-	MACHINE_HOSTNAME=$(hostname -f)
-	MACHINE_HOST=$(hostname -s)
+	MACHINE_HOSTNAME=$(hostname -f 2>/dev/null) || MACHINE_HOSTNAME="${COMPUTERNAME:-"localhost"}"
+	MACHINE_HOST=$(hostname -s 2>/dev/null) || MACHINE_HOST="${COMPUTERNAME:-"localhost"}"
 	if [[ "$MACHINE_HOST" == "localhost" || "$MACHINE_HOST" == "localhost.localdomain" ]] && [[ -n "$(uname -n)" ]]; then
 		printf >&2 "${cR}WARNING${cZ}: 'hostname -s' resolved to %q (instead of the machine's real name), falling back to static hostname %q. Fix /etc/hosts or DNS, or set MACHINE to silence this.\n" "$MACHINE_HOST" "$(uname -n)"
 		MACHINE_HOSTNAME=$(uname -n)
@@ -151,19 +151,53 @@ function execute_customization
 
 }
 
+# Resolves BASEDIR/NAME through a chain of git-tracked symlinks (mode 120000)
+# NB: this sidesteps symlink woes on Windows
+function resolve_git_symlink_chain
+{
+	local -r BASE="$1" NAME="$2"
+	local PATH_="$BASE/$NAME" RELPATH LINE MODE SHA STAGE REST TARGET HOPS=0
+	while true; do
+		RELPATH="${PATH_#$LOCALROOT/}"
+		LINE=$(git -C "$LOCALROOT" ls-files -s -- "$RELPATH" 2> /dev/null | head -n1)
+		[[ -n "$LINE" ]] || break
+		read -r MODE SHA STAGE REST <<< "$LINE"
+		[[ "$MODE" == "120000" ]] || break
+		TARGET=$(git -C "$LOCALROOT" cat-file -p "$SHA" 2> /dev/null)
+		if [[ -z "$TARGET" || "$TARGET" == */* || "$TARGET" == *'\'* || "$TARGET" == "." || "$TARGET" == ".." ]]; then
+			error "unsafe or unreadable git symlink target for %q: %q" "$RELPATH" "$TARGET"
+			return 1
+		fi
+		PATH_="$BASE/$TARGET"
+		if (( ++HOPS > 10 )); then
+			error "symlink chain too deep resolving %q/%q" "$BASE" "$NAME"
+			return 1
+		fi
+	done
+	printf '%s' "$PATH_"
+}
+
 function determine_dir_by_precedence
 {
 	local -r BASEDIR="$1"
 	local -r DEFAULT="$2"
 	shift 2
-	for name in "$IAM@$HOST" "$IAM@$HOSTNAME" "$HOST" "$HOSTNAME" "$@"; do
-		if [[ -d "$BASEDIR/$name" ]]; then
-			D="$BASEDIR/$name"
+	local CANDIDATE
+	for NAME in "$IAM@$HOST" "$IAM@$HOSTNAME" "$HOST" "$HOSTNAME" "$@"; do
+		CANDIDATE="$BASEDIR/$NAME"
+		if ((LOCALROOT_IS_GIT)); then
+			CANDIDATE=$(resolve_git_symlink_chain "$BASEDIR" "$NAME") || continue
+		fi
+		if [[ -n "$CANDIDATE" && -d "$CANDIDATE" ]]; then
+			D="$CANDIDATE"
 			debug "D=%q" "$D"
 			return
 		fi
 	done
 	D="$BASEDIR/$DEFAULT"
+	if ((LOCALROOT_IS_GIT)); then
+		CANDIDATE=$(resolve_git_symlink_chain "$BASEDIR" "$DEFAULT") && [[ -n "$CANDIDATE" ]] && D="$CANDIDATE"
+	fi
 	debug "D=%q (fallback)" "$D"
 }
 
@@ -173,19 +207,19 @@ function execute_unconditional_override
 	determine_dir_by_precedence "$@"
 	if [[ -n "$D" && -d "$D" ]]; then
 		debug "unconditional overrides (D=%q)" "$D"
-		if [[ -x "${D%%/*}/ALL" && ! -d "${D%%/*}/ALL" ]]; then
-			STEP="pre" execute_customization "${D%%/*}" "ALL" "unconditional overrides (pre)"
-		elif [[ -x "${D%%/*}/ALL.sh" && ! -d "${D%%/*}/ALL.sh" ]]; then
-			STEP="pre" execute_customization "${D%%/*}" "ALL.sh" "unconditional overrides (pre)"
+		if [[ -x "$D/ALL" && ! -d "$D/ALL" ]]; then
+			STEP="pre" execute_customization "$D" "ALL" "unconditional overrides (pre)"
+		elif [[ -x "$D/ALL.sh" && ! -d "$D/ALL.sh" ]]; then
+			STEP="pre" execute_customization "$D" "ALL.sh" "unconditional overrides (pre)"
 		fi
 		info "Overriding from ${cW}local${cZ} files (${cW}%s${cZ})" "${D#$HOME/}"
 		while read fname; do
 			copy_file always "${fname##$D/}" "$TGTDIR" "$D"
-		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
-		if [[ -x "${D%%/*}/ALL" && ! -d "${D%%/*}/ALL" ]]; then
-			STEP="post" execute_customization "${D%%/*}" "ALL" "unconditional overrides (post)"
-		elif [[ -x "${D%%/*}/ALL.sh" && ! -d "${D%%/*}/ALL.sh" ]]; then
-			STEP="post" execute_customization "${D%%/*}" "ALL.sh" "unconditional overrides (post)"
+		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' ! -path "$D/ALL" ! -path "$D/ALL.sh" \) | sort)
+		if [[ -x "$D/ALL" && ! -d "$D/ALL" ]]; then
+			STEP="post" execute_customization "$D" "ALL" "unconditional overrides (post)"
+		elif [[ -x "$D/ALL.sh" && ! -d "$D/ALL.sh" ]]; then
+			STEP="post" execute_customization "$D" "ALL.sh" "unconditional overrides (post)"
 		fi
 	fi
 }
@@ -196,6 +230,11 @@ function execute_appends
 	determine_dir_by_precedence "$@"
 	debug "items to append (D=%q)" "$D"
 	if [[ -n "$D" && -d "$D" ]]; then
+		if [[ -x "$D/ALL" && ! -d "$D/ALL" ]]; then
+			STEP="pre" execute_customization "$D" "ALL" "append overrides (pre)"
+		elif [[ -x "$D/ALL.sh" && ! -d "$D/ALL.sh" ]]; then
+			STEP="pre" execute_customization "$D" "ALL.sh" "append overrides (pre)"
+		fi
 		echo -e "Appending from ${cW}local${cZ} files (${cW}${D#$HOME/}${cZ})"
 		while read fname; do
 			X="${fname##$D/}"
@@ -221,7 +260,12 @@ function execute_appends
 					echo -e "  ${cR}appending failed: $?${cZ}"
 				fi
 			fi
-		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' \) | sort)
+		done < <(find "$D/" -type f \( ! -path '*/.git/*' ! -path '*/.hg/*' ! -path "$D/ALL" ! -path "$D/ALL.sh" \) | sort)
+		if [[ -x "$D/ALL" && ! -d "$D/ALL" ]]; then
+			STEP="post" execute_customization "$D" "ALL" "append overrides (post)"
+		elif [[ -x "$D/ALL.sh" && ! -d "$D/ALL.sh" ]]; then
+			STEP="post" execute_customization "$D" "ALL.sh" "append overrides (post)"
+		fi
 	fi
 }
 
