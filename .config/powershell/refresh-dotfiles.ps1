@@ -30,5 +30,5 @@ function refresh-dotfiles {
         return
     }
 
-    & $bash -lc ('source ~/.bashrc.d/refresh-dotfiles && refresh-dotfiles ' + ($args -join ' '))
+    & $bash -lc 'source ~/.bashrc.d/refresh-dotfiles && refresh-dotfiles "$@"' 'refresh-dotfiles' $args
 }

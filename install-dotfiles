@@ -15,17 +15,32 @@ if [[ -n "${MACHINE:-}" ]]; then
 	MACHINE_HOSTNAME="$MACHINE"
 	MACHINE_HOST="${MACHINE%%.*}"
 else
-	# hostname -s/-f may resolve to "localhost" (e.g. when the machine's
-	# hostname is not (correctly) set in /etc/hosts or DNS). In that case fall
-	# back to the static hostname from uname(1) so that the per-machine
-	# override/append/custom directories still match.
-	MACHINE_HOSTNAME=$(hostname -f 2>/dev/null) || MACHINE_HOSTNAME="${COMPUTERNAME:-"localhost"}"
-	MACHINE_HOST=$(hostname -s 2>/dev/null) || MACHINE_HOST="${COMPUTERNAME:-"localhost"}"
-	if [[ "$MACHINE_HOST" == "localhost" || "$MACHINE_HOST" == "localhost.localdomain" ]] && [[ -n "$(uname -n)" ]]; then
-		printf >&2 "${cR}WARNING${cZ}: 'hostname -s' resolved to %q (instead of the machine's real name), falling back to static hostname %q. Fix /etc/hosts or DNS, or set MACHINE to silence this.\n" "$MACHINE_HOST" "$(uname -n)"
-		MACHINE_HOSTNAME=$(uname -n)
-		MACHINE_HOST="${MACHINE_HOSTNAME%%.*}"
-	fi
+	case "$OSTYPE" in
+		msys* | cygwin*)
+			# Windows/MSYS2: hostname(1) is Windows' HOSTNAME.EXE (ignores -f/-s);
+			# uname -n returns the real machine name here.
+			MACHINE_HOST="${COMPUTERNAME:-$(uname -n)}"
+			MACHINE_HOST="${MACHINE_HOST%%.*}"
+			if [[ -n "${USERDNSDOMAIN:-}" && "$USERDNSDOMAIN" != "$MACHINE_HOST" ]]; then
+				MACHINE_HOSTNAME="$MACHINE_HOST.$USERDNSDOMAIN"
+			else
+				MACHINE_HOSTNAME="$MACHINE_HOST"
+			fi
+			;;
+		*)
+			# hostname -s/-f may resolve to "localhost" (e.g. when the machine's
+			# hostname is not (correctly) set in /etc/hosts or DNS). In that case
+			# fall back to the static hostname from uname(1) so that the per-machine
+			# override/append/custom directories still match.
+			MACHINE_HOSTNAME=$(hostname -f 2>/dev/null) || MACHINE_HOSTNAME="$(uname -n 2>/dev/null)"
+			MACHINE_HOST=$(hostname -s 2>/dev/null) || MACHINE_HOST="${MACHINE_HOSTNAME%%.*}"
+			if [[ "$MACHINE_HOST" == "localhost" || "$MACHINE_HOST" == "localhost.localdomain" ]] && [[ -n "$(uname -n)" ]]; then
+				printf >&2 "${cR}WARNING${cZ}: 'hostname -s' resolved to %q (instead of the machine's real name), falling back to static hostname %q. Fix /etc/hosts or DNS, or set MACHINE to silence this.\n" "$MACHINE_HOST" "$(uname -n)"
+				MACHINE_HOSTNAME=$(uname -n)
+				MACHINE_HOST="${MACHINE_HOSTNAME%%.*}"
+			fi
+			;;
+	esac
 fi
 readonly HOSTNAME="$MACHINE_HOSTNAME"
 readonly HOST="$MACHINE_HOST"
