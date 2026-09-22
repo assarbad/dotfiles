@@ -1,8 +1,12 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
-export DOTFILES := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+export DOTFILES:=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+ifeq ($(HOME),)
+# cmd.exe has no HOME, only USERPROFILE -- fall back so TGTDIR below isn't empty.
+HOME:=$(subst \,/,$(USERPROFILE))
+endif
 TGTDIR ?= $(HOME)
-export TGTDIR := $(realpath $(TGTDIR))
+export TGTDIR:=$(realpath $(TGTDIR))
 ifneq ($(DEBUG),)
   DBG:=
 else
@@ -11,7 +15,48 @@ endif
 .DEFAULT: install
 
 ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
-SHELL := $(shell command -v bash)
+SHELL:=$(shell command -v bash)
+ifeq ($(strip $(SHELL)),)
+$(error No usable 'bash' found in PATH)
+endif
+else
+# Native Make's own SHELL guess may not resolve, silently falling back to
+# cmd.exe for recipes. Derive a path from git --exec-path via $(subst) only.
+sp:=$(subst x, ,x)
+exists = $(wildcard $(subst $(sp),\$(sp),$1))
+WINSH_GITEXE:=$(shell git --exec-path 2> NUL)
+REALSHELL:=$(subst /mingw64/libexec/git-core,/usr/bin/bash.exe,$(WINSH_GITEXE))
+ifeq ($(call exists,$(REALSHELL)),)
+REALSHELL:= $(subst /mingw64/libexec/git-core,/usr/bin/sh.exe,$(WINSH_GITEXE))
+endif
+ifeq ($(call exists,$(REALSHELL)),)
+REALSHELL:=$(subst /mingw64/libexec/git-core,/bin/bash.exe,$(WINSH_GITEXE))
+endif
+ifeq ($(call exists,$(REALSHELL)),)
+REALSHELL:=$(subst /mingw64/libexec/git-core,/bin/sh.exe,$(WINSH_GITEXE))
+endif
+ifeq ($(call exists,$(REALSHELL)),)
+$(error SHELL=$(SHELL) is not a usable shell, and no bash.exe/sh.exe was found near git --exec-path ($(WINSH_GITEXE)); run this from a Git Bash shell)
+endif
+SHELL:=$(subst \,/,$(REALSHELL))
+
+# Normalize HOME/DOTFILES/TGTDIR through cygpath so recipes see a consistent,
+# usable path form.
+# $(filter) would split on the space in "Program Files"; use $(subst) suffix-
+# stripping instead (only one of these ever actually matches).
+ifneq ($(SHELL),$(subst /usr/bin/bash.exe,,$(subst /usr/bin/sh.exe,,$(subst /bin/bash.exe,,$(subst /bin/sh.exe,,$(SHELL))))))
+$(warning Converting paths to mixed form)
+# cygpath.exe lives next to bash.exe/sh.exe; usr/bin is deliberately not on
+# PATH under Git for Windows, so "env cygpath" can't find it -- use the full
+# path instead, mirroring how REALSHELL itself was resolved above.
+WINSH_CYGPATH:=$(subst /mingw64/libexec/git-core,/usr/bin/cygpath.exe,$(WINSH_GITEXE))
+export HOME:=$(shell "$(WINSH_CYGPATH)" -m "$(HOME)")
+export DOTFILES:=$(shell "$(WINSH_CYGPATH)" -m "$(DOTFILES)")
+export TGTDIR:=$(shell "$(WINSH_CYGPATH)" -m "$(TGTDIR)")
+else
+$(warning SHELL=$(SHELL))
+endif
+endif
 NPD:=--no-print-directory
 
 # Allow overriding the machine name used for override/append/custom lookup in
@@ -21,16 +66,13 @@ ifdef MACHINE
   export MACHINE
 endif
 
-.PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link clean-legacy
+.PHONY: all install install.script info test nodel-test help configure.gitconfig bashrc.link profile.link
 
-install: clean-legacy install.script configure.gitconfig bashrc.link
+install: install.script configure.gitconfig bashrc.link profile.link
 
 install.script: $(DOTFILES)/install-dotfiles
 	-$(DBG)test -d "$(DOTFILES)/.hg" && cp hgrc.local "$(DOTFILES)/.hg/hgrc"
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./install-dotfiles
-
-clean-legacy:
-	$(DBG)if [[ -f "$(TGTDIR)/.oldstyle-beroot" ]]; then ( set -x; rm -f -- "$(TGTDIR)/.oldstyle-beroot" ); fi
 
 nodel-test test: TGTDIR:=$(HOME)/dotfile-test
 test:
@@ -73,92 +115,18 @@ info:
 .NOTPARALLEL: install test nodel-test
 .ONESHELL: help
 
-bashrc.link:
+# Try a symlink first; fall back to a hardlink copy where symlinks aren't permitted
+bashrc.link: $(TGTDIR)/.bash_profile
 	test -f $(TGTDIR)/.bashrc && rm -f -- $(TGTDIR)/.bashrc
-	$$SHELL -c "cd '$(TGTDIR)' && ln --symbolic .bash_profile .bashrc"
+	cd $(TGTDIR) && (ln --symbolic .bash_profile .bashrc || cp -alf .bash_profile .bashrc)
 
-else # on Windows
-
-ifeq ($(SHELL),C:/Program Files/Git/usr/bin/sh.exe)
-$(warning Converting paths to mixed form)
-export HOME:=$(shell /usr/bin/env cygpath -m "$$HOME")
-export DOTFILES:=$(shell /usr/bin/env cygpath -m "$$DOTFILES")
-export TGTDIR:=$(shell /usr/bin/env cygpath -m "$$TGTDIR")
-else
-$(warning SHELL=$(SHELL))
-endif
-FILES_TO_CONSIDER:=\
-	refresh-dotfiles \
-	.bashrc.d/gpg \
-	.bashrc.d/refresh-dotfiles \
-	.config/flake8 \
-	.config/powershell/refresh-dotfiles.ps1 \
-	.config/starship.toml \
-	$(wildcard .config/espanso/config/*.yml) \
-	$(wildcard .config/espanso/match/*.yml) \
-	$(wildcard .config/espanso/match/*.md) \
-	$(wildcard .config/cookiecutter/*) \
-	$(wildcard .config/rustfmt/*) \
-	$(wildcard .config/alacritty/*) \
-	.cargo/config.toml \
-	$(wildcard .config/git/*) \
-	.gnupg/gpg.conf \
-	.gnupg/.no-pubkey-fetch \
-	.bash_profile \
-	.common_profile \
-	.zshrc \
-	.hgrc \
-	.inputrc \
-	.vimrc \
-	Mercurial.ini
-$(warning Installing from DOTFILES=$(DOTFILES) into TGTDIR=$(TGTDIR) with HOME=$(HOME))
-
-clean-windows:
-	if [[ -f "$(HOME)/.gitrc.d/gitconfig.LOCAL" && ! -f "$(HOME)/.config/git/gitconfig.LOCAL" ]]; then \
-		( set -x; mv -- "$(HOME)/.gitrc.d/gitconfig.LOCAL" "$(HOME)/.config/git"/ ); \
-	fi; \
-	if [[ -f "$(HOME)/.gitrc.d/gitconfig.USER" && ! -f "$(HOME)/.config/git/gitconfig.USER" ]]; then \
-		( set -x; mv -- "$(HOME)/.gitrc.d/gitconfig.USER" "$(HOME)/.config/git"/ ); \
-	fi; \
-	if [[ -d "$(HOME)/.gitrc.d" ]]; then \
-		( set -x; rm -rf -- "$(HOME)/.gitrc.d" ); \
-	fi; \
-	if [[ -f "$(HOME)/.gitconfig" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.gitconfig" ); \
-	fi; \
-	if [[ -f "$(HOME)/.cargo/config" && ! -f "$(HOME)/.cargo/config.toml" ]]; then \
-		( set -x; mv -- "$(HOME)/.cargo/config" "$(HOME)/.cargo/config.toml" ); \
-	elif [[ -f "$(HOME)/.cargo/config" && -f "$(HOME)/.cargo/config.toml" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.cargo/config" ); \
-	fi; \
-	if [[ -f "$(HOME)/.bashrc" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.bashrc" ); \
+# Windows-only in practice; harmless no-op elsewhere since it just checks for
+# powershell.exe before doing anything (mirrors configure-gitconfig's own
+# tool-detection gating style).
+profile.link: $(DOTFILES)/configure-powershell-profile.ps1
+	@if type -P powershell.exe > /dev/null 2>&1; then \
+		powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(DOTFILES)/configure-powershell-profile.ps1"; \
 	fi
-	if [[ -f "$(HOME)/.bashrc.d/rust" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.bashrc.d/rust" ); \
-	fi
-	if [[ -f "$(HOME)/.config/git/gitconfig.gnupg4win" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.config/git/gitconfig.gnupg4win" ); \
-	fi
-	if [[ -f "$(HOME)/.oldstyle-beroot" ]]; then \
-		( set -x; rm -f -- "$(HOME)/.oldstyle-beroot" ); \
-	fi
-
-install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig bashrc.link profile.link
-
-$(HOME)/%: %
-	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
-	cp -f "$<" "$@"
-
-.PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows bashrc.link profile.link
-
-bashrc.link: $(HOME)/.bash_profile
-	cp -alf -- $(TGTDIR)/.bash_profile $(TGTDIR)/.bashrc
-
-profile.link: $(HOME)/.config/powershell/refresh-dotfiles.ps1
-	powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(DOTFILES)/configure-powershell-profile.ps1"
-
-endif
 
 configure.gitconfig: $(DOTFILES)/configure-gitconfig
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./configure-gitconfig

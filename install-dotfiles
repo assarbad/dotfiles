@@ -30,6 +30,15 @@ fi
 readonly HOSTNAME="$MACHINE_HOSTNAME"
 readonly HOST="$MACHINE_HOST"
 readonly DOMAIN=${HOSTNAME//$HOST/_}
+# Whether LOCALROOT is a git worktree. When it is, moniker directories under
+# override/append (e.g. override/cc) may themselves be git-tracked symlinks
+# chaining to another moniker's directory. We resolve those chains from git's
+# own tracked blob content.
+if type -P git > /dev/null 2>&1 && git -C "$LOCALROOT" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+	readonly LOCALROOT_IS_GIT=1
+else
+	readonly LOCALROOT_IS_GIT=0
+fi
 ###############################################################################
 ###############################################################################
 ### Logic:
@@ -237,7 +246,7 @@ done
 echo -e "Copying ${cW}base${cZ} files"
 while read fname; do
 	case "$fname" in
-		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|gnupg-keygen.sh|configure-gitconfig)
+		GNUmakefile|GNUmakefile.*|Mercurial.ini|README.rst|add-desktop-file|refresh-dotfiles|install-dotfiles|hgrc.*|termcolor|.vim/.remove-obsolete.sh|thoroughly-clean|gnupg-keygen.sh|configure-gitconfig|configure-powershell-profile.ps1)
 			;;
 		.config/sublime-text/*.olli)
 			copy_file newer_rename "$fname" "$TGTDIR/${fname%.olli}"
@@ -265,6 +274,26 @@ if [[ -f "$TGTDIR/.cargo/config" && ! -f "$TGTDIR/.cargo/config.toml" ]]; then
 	( set -x; mv -- "$TGTDIR/.cargo/config" "$TGTDIR/.cargo/config.toml" )
 elif [[ -f "$TGTDIR/.cargo/config" && -f "$TGTDIR/.cargo/config.toml" ]]; then
 	( set -x; rm -f -- "$TGTDIR/.cargo/config" )
+fi
+
+# Legacy cleanup
+if [[ -f "$TGTDIR/.gitrc.d/gitconfig.LOCAL" && ! -f "$TGTDIR/.config/git/gitconfig.LOCAL" ]]; then
+	( set -x; mv -- "$TGTDIR/.gitrc.d/gitconfig.LOCAL" "$TGTDIR/.config/git"/ )
+fi
+if [[ -f "$TGTDIR/.gitrc.d/gitconfig.USER" && ! -f "$TGTDIR/.config/git/gitconfig.USER" ]]; then
+	( set -x; mv -- "$TGTDIR/.gitrc.d/gitconfig.USER" "$TGTDIR/.config/git"/ )
+fi
+if [[ -d "$TGTDIR/.gitrc.d" ]]; then
+	( set -x; rm -rf -- "$TGTDIR/.gitrc.d" )
+fi
+if [[ -f "$TGTDIR/.bashrc.d/rust" ]]; then
+	( set -x; rm -f -- "$TGTDIR/.bashrc.d/rust" )
+fi
+if [[ -f "$TGTDIR/.config/git/gitconfig.gnupg4win" ]]; then
+	( set -x; rm -f -- "$TGTDIR/.config/git/gitconfig.gnupg4win" )
+fi
+if [[ -f "$TGTDIR/.oldstyle-beroot" ]]; then
+	( set -x; rm -f -- "$TGTDIR/.oldstyle-beroot" )
 fi
 
 # Fix the .gnupg/.ssh file/folder permissions
