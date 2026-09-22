@@ -24,7 +24,7 @@ else
 # cmd.exe for recipes. Derive a path from git --exec-path via $(subst) only.
 sp:=$(subst x, ,x)
 exists = $(wildcard $(subst $(sp),\$(sp),$1))
-WINSH_GITEXE:=$(shell git --exec-path 2> NUL)
+WINSH_GITEXE:=$(shell git --exec-path)
 REALSHELL:=$(subst /mingw64/libexec/git-core,/usr/bin/bash.exe,$(WINSH_GITEXE))
 ifeq ($(call exists,$(REALSHELL)),)
 REALSHELL:= $(subst /mingw64/libexec/git-core,/usr/bin/sh.exe,$(WINSH_GITEXE))
@@ -35,8 +35,9 @@ endif
 ifeq ($(call exists,$(REALSHELL)),)
 REALSHELL:=$(subst /mingw64/libexec/git-core,/bin/sh.exe,$(WINSH_GITEXE))
 endif
-ifeq ($(call exists,$(REALSHELL)),)
-$(error SHELL=$(SHELL) is not a usable shell, and no bash.exe/sh.exe was found near git --exec-path ($(WINSH_GITEXE)); run this from a Git Bash shell)
+# Fail loudly if we did not land on a real bash.exe/sh.exe.
+ifeq ($(filter bash.exe sh.exe,$(notdir $(REALSHELL))),)
+$(error No usable bash.exe/sh.exe found: git --exec-path '$(WINSH_GITEXE)' resolved to '$(REALSHELL)'. Run this from a Git Bash shell)
 endif
 SHELL:=$(subst \,/,$(REALSHELL))
 
@@ -120,13 +121,21 @@ bashrc.link: $(TGTDIR)/.bash_profile
 	test -f $(TGTDIR)/.bashrc && rm -f -- $(TGTDIR)/.bashrc
 	cd $(TGTDIR) && (ln --symbolic .bash_profile .bashrc || cp -alf .bash_profile .bashrc)
 
-# Windows-only in practice; harmless no-op elsewhere since it just checks for
-# powershell.exe before doing anything (mirrors configure-gitconfig's own
-# tool-detection gating style).
+# Windows-only in practice; harmless no-op elsewhere since it just probes for
+# pwsh.exe/powershell.exe before doing anything (mirrors configure-gitconfig's
+# own tool-detection gating style).
 profile.link: $(DOTFILES)/configure-powershell-profile.ps1
-	@if type -P powershell.exe > /dev/null 2>&1; then \
-		powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(DOTFILES)/configure-powershell-profile.ps1"; \
-	fi
+	@for name in pwsh.exe powershell.exe; do \
+		bin="$$(command -v "$$name" 2>/dev/null || true)"; \
+		if [ -z "$$bin" ] && [ "$$name" = "powershell.exe" ] && [ -n "$(WINSH_CYGPATH)" ]; then \
+			cand="$$($(WINSH_CYGPATH) -m "$$WINDIR\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" 2>/dev/null)"; \
+			[ -x "$$cand" ] && bin="$$cand"; \
+		fi; \
+		if [ -n "$$bin" ]; then \
+			echo "[INFO] wiring refresh-dotfiles via $$bin"; \
+			"$$bin" -NoProfile -ExecutionPolicy Bypass -File "$(DOTFILES)/configure-powershell-profile.ps1"; \
+		fi; \
+	done
 
 configure.gitconfig: $(DOTFILES)/configure-gitconfig
 	$(DBG)cd $(DOTFILES) && env TGTDIR="$(TGTDIR)" ./configure-gitconfig

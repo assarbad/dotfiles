@@ -44,7 +44,7 @@ else
 fi
 readonly HOSTNAME="$MACHINE_HOSTNAME"
 readonly HOST="$MACHINE_HOST"
-readonly DOMAIN=${HOSTNAME//$HOST/_}
+readonly DOMAIN="_${HOSTNAME#$HOST}"
 # Whether LOCALROOT is a git worktree. When it is, moniker directories under
 # override/append (e.g. override/cc) may themselves be git-tracked symlinks
 # chaining to another moniker's directory. We resolve those chains from git's
