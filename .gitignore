@@ -24,6 +24,7 @@
 !/README.rst
 !/add-desktop-file
 !/configure-gitconfig
+!/configure-powershell-profile.ps1
 !/gnupg-keygen.sh
 !/hgrc.local
 !/install-dotfiles

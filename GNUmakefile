@@ -88,8 +88,11 @@ else
 $(warning SHELL=$(SHELL))
 endif
 FILES_TO_CONSIDER:=\
+	refresh-dotfiles \
 	.bashrc.d/gpg \
+	.bashrc.d/refresh-dotfiles \
 	.config/flake8 \
+	.config/powershell/refresh-dotfiles.ps1 \
 	.config/starship.toml \
 	$(wildcard .config/espanso/config/*.yml) \
 	$(wildcard .config/espanso/match/*.yml) \
@@ -141,16 +144,19 @@ clean-windows:
 		( set -x; rm -f -- "$(HOME)/.oldstyle-beroot" ); \
 	fi
 
-install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig bashrc.link
+install: clean-windows $(addprefix $(HOME)/,$(FILES_TO_CONSIDER)) configure.gitconfig bashrc.link profile.link
 
 $(HOME)/%: %
 	@test -d "$(dir $@)" || mkdir -p "$(dir $@)"
 	cp -f "$<" "$@"
 
-.PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows bashrc.link
+.PHONY: install $(HOME)/.config/git/gitconfig.LOCAL configure.gitconfig clean-windows bashrc.link profile.link
 
 bashrc.link: $(HOME)/.bash_profile
 	cp -alf -- $(TGTDIR)/.bash_profile $(TGTDIR)/.bashrc
+
+profile.link: $(HOME)/.config/powershell/refresh-dotfiles.ps1
+	powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(DOTFILES)/configure-powershell-profile.ps1"
 
 endif
 

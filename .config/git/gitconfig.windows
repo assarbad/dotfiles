@@ -1,2 +1,7 @@
 # [core]
 # 	editor = \"C:\\Program Files\\Notepad++\\notepad++.exe\" -multiInst -notabbar -nosession -noPlugin
+[core]
+	sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+
+[ssh]
+	variant = ssh
