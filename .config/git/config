@@ -1,7 +1,7 @@
 [user]
 	email = oliver@assarbad.net
 	name = Oliver Schneider
-	signingkey = C779D8290E88590F
+	signingkey = 38B55EBAA470C0F7094281B8C779D8290E88590F
 
 # Commands and operations
 [advice]
