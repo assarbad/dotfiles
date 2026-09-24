@@ -1,10 +1,15 @@
 #!/usr/bin/make -f
 # vim: set autoindent smartindent ts=4 sw=4 sts=4 noet filetype=make:
 export DOTFILES:=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-ifeq ($(HOME),)
-# cmd.exe has no HOME, only USERPROFILE -- fall back so TGTDIR below isn't empty.
-HOME:=$(subst \,/,$(USERPROFILE))
+
+# Native Windows make has no usable Unix shell. Git Bash/MSYS sessions commonly
+# inherit COMSPEC, so only reject it when no Unix-like shell marker is present.
+ifneq ($(strip $(COMSPEC)$(ComSpec)),)
+ifeq ($(strip $(MSYSTEM)$(OSTYPE)),)
+$(error Native Windows/cmd.exe environments are unsupported; run make from Git Bash or another supported Unix-like shell)
 endif
+endif
+
 TGTDIR ?= $(HOME)
 export TGTDIR:=$(realpath $(TGTDIR))
 ifneq ($(DEBUG),)
@@ -14,49 +19,9 @@ else
 endif
 .DEFAULT: install
 
-ifeq ($(COMSPEC)$(ComSpec),) # not on Windows?
 SHELL:=$(shell command -v bash)
 ifeq ($(strip $(SHELL)),)
 $(error No usable 'bash' found in PATH)
-endif
-else
-# Native Make's own SHELL guess may not resolve, silently falling back to
-# cmd.exe for recipes. Derive a path from git --exec-path via $(subst) only.
-sp:=$(subst x, ,x)
-exists = $(wildcard $(subst $(sp),\$(sp),$1))
-WINSH_GITEXE:=$(shell git --exec-path)
-REALSHELL:=$(subst /mingw64/libexec/git-core,/usr/bin/bash.exe,$(WINSH_GITEXE))
-ifeq ($(call exists,$(REALSHELL)),)
-REALSHELL:= $(subst /mingw64/libexec/git-core,/usr/bin/sh.exe,$(WINSH_GITEXE))
-endif
-ifeq ($(call exists,$(REALSHELL)),)
-REALSHELL:=$(subst /mingw64/libexec/git-core,/bin/bash.exe,$(WINSH_GITEXE))
-endif
-ifeq ($(call exists,$(REALSHELL)),)
-REALSHELL:=$(subst /mingw64/libexec/git-core,/bin/sh.exe,$(WINSH_GITEXE))
-endif
-# Fail loudly if we did not land on a real bash.exe/sh.exe.
-ifeq ($(filter bash.exe sh.exe,$(notdir $(REALSHELL))),)
-$(error No usable bash.exe/sh.exe found: git --exec-path '$(WINSH_GITEXE)' resolved to '$(REALSHELL)'. Run this from a Git Bash shell)
-endif
-SHELL:=$(subst \,/,$(REALSHELL))
-
-# Normalize HOME/DOTFILES/TGTDIR through cygpath so recipes see a consistent,
-# usable path form.
-# $(filter) would split on the space in "Program Files"; use $(subst) suffix-
-# stripping instead (only one of these ever actually matches).
-ifneq ($(SHELL),$(subst /usr/bin/bash.exe,,$(subst /usr/bin/sh.exe,,$(subst /bin/bash.exe,,$(subst /bin/sh.exe,,$(SHELL))))))
-$(warning Converting paths to mixed form)
-# cygpath.exe lives next to bash.exe/sh.exe; usr/bin is deliberately not on
-# PATH under Git for Windows, so "env cygpath" can't find it -- use the full
-# path instead, mirroring how REALSHELL itself was resolved above.
-WINSH_CYGPATH:=$(subst /mingw64/libexec/git-core,/usr/bin/cygpath.exe,$(WINSH_GITEXE))
-export HOME:=$(shell "$(WINSH_CYGPATH)" -m "$(HOME)")
-export DOTFILES:=$(shell "$(WINSH_CYGPATH)" -m "$(DOTFILES)")
-export TGTDIR:=$(shell "$(WINSH_CYGPATH)" -m "$(TGTDIR)")
-else
-$(warning SHELL=$(SHELL))
-endif
 endif
 NPD:=--no-print-directory
 
