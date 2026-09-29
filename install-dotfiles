@@ -200,6 +200,7 @@ function determine_dir_by_precedence
 	local CANDIDATE
 	for NAME in "$IAM@$HOST" "$IAM@$HOSTNAME" "$HOST" "$HOSTNAME" "$@"; do
 		CANDIDATE="$BASEDIR/$NAME"
+		debug "checking moniker=%q candidate=%q exists=%s" "$NAME" "$CANDIDATE" "$([[ -d "$CANDIDATE" ]] && printf yes || printf no)"
 		if ((LOCALROOT_IS_GIT)); then
 			CANDIDATE=$(resolve_git_symlink_chain "$BASEDIR" "$NAME") || continue
 		fi
@@ -297,6 +298,7 @@ function handle_specific_overrides
 	STEP="post" execute_customization "$SRCBASEDIR/custom" "POST" "custom overrides (post)"
 }
 
+debug "identity: IAM=%q HOST=%q HOSTNAME=%q DOMAIN=%q" "$IAM" "$HOST" "$HOSTNAME" "$DOMAIN"
 # The base-file copy below relies on these tools
 for tool in find sed sort; do
 	type -P "$tool" > /dev/null 2>&1 || { error "required tool '%s' not found in PATH" "$tool"; exit 1; }
