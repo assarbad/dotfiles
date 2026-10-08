@@ -21,8 +21,10 @@
 	glog = log --cherry-mark --graph --simplify-by-decoration --oneline --all
 	history = blame --color-by-age -w -M -C -C -C -C
 	hru = reset --hard @{u}
+	ic = ignorecheck
 	id = show -s --format=%H
 	idshort = show -s --format=%h
+	ignorecheck = !bash "$HOME/.config/git/git-ignorecheck-shellfunc.sh" "$@"
 	lg = !git -P log --cherry-mark '--pretty=format:%C(magenta)%h%C(reset) %C(red)%d%C(reset) %s %C(dim green)(%cr) [%an]' --abbrev-commit -50 && echo ''
 	log1 = log --cherry-mark --oneline
 	ls = log --cherry-mark --stat --decorate '--pretty=format:commit %C(green)%G?%C(reset) %C(auto)%H%d%n%an <%ae>%n[%ai] %s%n' --graph
