@@ -1,3 +1,6 @@
+use-grammars = { except = [ "cylc" ] }
+# temporary exclusions so as to work around https://github.com/helix-editor/helix/issues/16447
+
 [[language]]
 name = "go"
 auto-format = true
